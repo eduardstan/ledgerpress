@@ -1,0 +1,50 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { profile } from '../lib/record';
+import { internalUrl } from '../lib/urls';
+
+const routes = [
+  { href: '/publications/', label: 'index' },
+  { href: '/lately/', label: 'lately' },
+  { href: '/professional_activities/', label: 'service' },
+  { href: '/projects/', label: 'projects' },
+  { href: '/talks/', label: 'talks' },
+  { href: '/blog/', label: 'blog' },
+  { href: '/cv/', label: 'cv' },
+  { href: '/search/', label: 'search' },
+];
+const base = import.meta.env.BASE_URL;
+const links = routes.map((link) => ({ ...link, href: internalUrl(link.href, base) }));
+
+// Astro's default `trailingSlash: 'ignore'` means the same page can be reached
+// with or without a slash, so normalise before comparing. The comparison is a
+// prefix, not an equality: /publications/type/ is still the index, and a blog
+// post is still the blog.
+const normalise = (path: string) => (path.endsWith('/') ? path : `${path}/`);
+const current = normalise(Astro.url.pathname);
+const isCurrent = (href: string) => current.startsWith(normalise(href));
+// The brand is derived like everything else: the name and the broadest
+// affiliation the CV states. Nothing here is written about a person.
+const { name, affiliation } = profile();
+const where = affiliation.at(-1);
+---
+
+<header class="bar" data-pagefind-ignore>
+  <a class="label who" href={internalUrl('/', base)}>{name}{where && ` / ${where}`}</a>
+  <nav aria-label="Main" class="label">
+    {
+      links.map((link) => (
+        <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+  {
+    /* The label for the inspect checkbox in BaseLayout. Its visible text is its
+       whole accessible name, and the checkbox announces its own on/off state, so
+       the switch graphic beside it is decoration only. */
+  }
+  <label class="label chip inspect-switch" for="inspect">Inspect sources</label>
+  <ThemeToggle />
+</header>

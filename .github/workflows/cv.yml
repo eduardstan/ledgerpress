@@ -1,0 +1,102 @@
+name: Build CV
+
+# Builds the PDF CV from content/cv.yaml + cv/cv.tex, proves a clean adopter can
+# build both outputs, and uploads the example PDF as an artifact.
+#
+# This workflow deliberately does NOT deploy or publish the PDF: deploy.yml builds
+# the same document and stages it for the Astro site.
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - "cv/**"
+      - "content/**"
+      - "scripts/build-cv-data.mjs"
+      - "scripts/build-cv-data.test.mjs"
+      - "scripts/check-adopter-build.mjs"
+      - "scripts/check-cv-baseline.sh"
+      - "data/cv-baseline/**"
+      - "package.json"
+      - "package-lock.json"
+      - "web/**"
+      - ".github/workflows/cv.yml"
+  pull_request:
+    paths:
+      - "cv/**"
+      - "content/**"
+      - "scripts/build-cv-data.mjs"
+      - "scripts/build-cv-data.test.mjs"
+      - "scripts/check-adopter-build.mjs"
+      - "scripts/check-cv-baseline.sh"
+      - "data/cv-baseline/**"
+      - "package.json"
+      - "package-lock.json"
+      - "web/**"
+      - ".github/workflows/cv.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The generated-file check below cannot catch a renderInline regression:
+      # it only compares the committed cv-data.tex against what the current
+      # code produces, so a consistent regression regenerates it identically.
+      - name: Run the generator's unit tests
+        run: node --test scripts/build-cv-data.test.mjs
+
+      # Guards against hand edits to the generated file: cv.yaml is the single
+      # source of truth, so a committed cv-data.tex that no longer matches it
+      # must fail rather than silently diverge.
+      - name: Check generated cv-data.tex is up to date
+        run: node scripts/build-cv-data.mjs --check
+
+      - name: Install PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
+
+      # xelatex is required: the CV uses academicons, which needs TU encoding.
+      # texlive_version is pinned to 2024: the "latest"/2025 images ship
+      # academicons v1.9.6-2, which switched to a fontspec name lookup for
+      # the icon font ("academicons") that doesn't match the family name
+      # fontconfig actually registers ("Academicons"), so the icon glyphs
+      # resolve to zero-height boxes and \resizebox's auto-ratio computation
+      # divides by zero. 2024 ships academicons v1.9.1, which loads the font
+      # via a plain NFSS .fd file and is unaffected.
+      - name: Build the PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: cv.tex
+          working_directory: cv
+          latexmk_use_xelatex: true
+          texlive_version: "2024"
+          extra_system_packages: grep nodejs npm poppler-utils
+          # The tracked-only proof needs web dependencies built for the same
+          # Alpine environment in which its pinned TeX tools run.
+          pre_compile: npm ci --prefix "$GITHUB_WORKSPACE/web"
+          post_compile: cd "$GITHUB_WORKSPACE" && node scripts/check-adopter-build.mjs
+
+      - name: Check the printed CV baseline
+        run: bash scripts/check-cv-baseline.sh
+
+      - name: Upload the PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: cv-pdf
+          path: cv/cv.pdf
+          if-no-files-found: error

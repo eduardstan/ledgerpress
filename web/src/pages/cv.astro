@@ -1,0 +1,245 @@
+---
+/**
+ * The curriculum vitae, rendered from `content/cv.yaml` — the same file the
+ * LaTeX CV is generated from, read directly rather than through the PDF.
+ *
+ * Nothing on this page is transcribed. Every row is one entry of one section in
+ * that file, and every source record below is derived from the object it
+ * describes: the counts, the field names and the totals are computed here at
+ * build time, so a change to the YAML changes the record with it.
+ *
+ * What the page leaves out is derived the same way, from the file's own sections
+ * minus the ones rendered here, so the omission list cannot drift.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
+import Record from '../components/Record.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Entries from '../components/Entries.astro';
+import { cv, CV_SOURCE, entriesOf, keysOf, noteOf, sections } from '../lib/cv';
+import { hasSource } from '../lib/record';
+import { inline } from '../lib/inline';
+import { internalUrl } from '../lib/urls';
+
+/**
+ * The printed CV, built from `cv/cv.tex` by the deploy workflow and dropped
+ * into `public/` just before `astro build`. It is never committed — no binary
+ * enters git history — so it is absent from a plain local build and the offer
+ * to download it is made only when the file is really there.
+ */
+const CV_PDF = 'web/public/assets/cv.pdf';
+const pdf = hasSource(CV_PDF);
+const base = import.meta.env.BASE_URL;
+const url = (path: string) => internalUrl(path, base);
+const render = (text: string | undefined) => inline(text, base);
+
+const appointments = entriesOf(cv.appointments);
+const education = entriesOf(cv.education);
+const teaching = entriesOf(cv.teaching);
+const supervision = entriesOf(cv.supervision);
+const awards = entriesOf(cv.awards);
+const languages = entriesOf(cv.languages);
+const leadership = entriesOf(cv.leadership);
+
+/** Every `rows:` table under a teaching post — the courses themselves. */
+const courses = teaching.flatMap((block) => block.rows ?? []);
+const withItems = (rows: { items?: string[] }[]) => rows.filter((row) => row.items?.length).length;
+const label = (key: string) => key[0].toUpperCase() + key.slice(1);
+
+/** Sections this page renders; every other one is named in a record below. */
+const rendered = [
+  'appointments',
+  'education',
+  'teaching',
+  'supervision',
+  'awards',
+  'languages',
+  'leadership',
+];
+const omitted = sections()
+  .map(([key]) => key)
+  .filter((key) => !rendered.includes(key));
+
+const description =
+  `Curriculum vitae — ${appointments.length} appointments, ${education.length} degrees, ` +
+  `${courses.length} courses and ${awards.length} awards, read from ${CV_SOURCE} at build time.`;
+---
+
+<BaseLayout title="Curriculum vitae" description={description}>
+  <PageHead title="Curriculum vitae">
+    <p class="blurb" set:html={render(cv.profile.focus)} />
+    <p class="blurb">
+      This page is built from <b>{CV_SOURCE}</b>, the single file the printed CV is also generated
+      from, read when the page was built. Turn <b>inspect sources</b> on, in the bar above, to see which
+      part of that file each section comes from. Publications are not repeated here: they have <a
+        href={url('/publications/')}>their own index</a
+      >, read from the bibliography.
+    </p>
+    {
+      pdf && (
+        <p class="blurb">
+          <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from {
+            CV_SOURCE
+          } by{' '}
+          <b>cv/cv.tex</b> when this page was built, so it states the same facts.
+        </p>
+      )
+    }
+  </PageHead>
+
+  <SectionHead source={`${CV_SOURCE} · profile.bio.short`}>Short bio</SectionHead>
+  <p class="blurb" set:html={render(cv.profile.bio?.short)} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered
+      with the file's own inline grammar (<b>**bold**</b>, <b>_italic_</b>, <b>[text](url)</b>). The
+      same two strings are what <b>scripts/build-cv-data.mjs</b> turns into LaTeX for the PDF.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · appointments[]`}>Appointments</SectionHead>
+  <Entries entries={appointments} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>appointments[]</b>, {appointments.length} entries in file order, newest
+      first as written. Keys read: {keysOf(appointments)}. {withItems(appointments)} of {
+        appointments.length
+      } carry an <b>items</b> list, shown as the bullets under the organisation.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · education[]`}>Education</SectionHead>
+  <Entries entries={education} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>education[]</b>, {education.length} entries. Keys read: {
+        keysOf(education)
+      }. The classification in each degree line (<i>cum laude</i>, 110/110) is part of the <b
+        >title</b
+      > string in the file, not added here.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · teaching[]`}>Teaching</SectionHead>
+  {
+    teaching.map((block) => (
+      <>
+        <ul class="defs">
+          <li>
+            <span class="a">
+              {block.url ? (
+                <a href={url(block.url)} set:html={render(block.org)} />
+              ) : (
+                <Fragment set:html={render(block.org)} />
+              )}
+            </span>
+            <span class="b label">
+              <Fragment set:html={render(block.title)} /> ·{' '}
+              <Fragment set:html={render(block.place)} /> ·{' '}
+              <Fragment set:html={render(block.dates)} />
+            </span>
+          </li>
+        </ul>
+        {
+          (block.rows ?? []).length > 0 && (
+            <div class="record-table-wrap">
+              <table class="record-table">
+                <thead>
+                  <tr>
+                    {Object.keys(block.rows![0]).map((key) => <th scope="col">{label(key)}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows!.map((row) => (
+                    <tr>
+                      {Object.entries(row).map(([key, value]) => (
+                        <td data-label={label(key)} set:html={render(value)} />
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        }
+      </>
+    ))
+  }
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>teaching[]</b>, {teaching.length} entries holding {courses.length}
+      {' '}courses between them in their <b>rows[]</b> tables. Each heading line is that entry's <b
+        >org</b
+      >, <b>title</b>, <b>place</b> and <b>dates</b>; each row below it is one row of its <b>rows[]</b
+      >, with keys {keysOf(courses)} — and those keys, in the order the file writes them, are also
+      the columns of the same table in the printed CV.
+    </p>
+    <p>
+      {teaching.map((block) => `${block.org}: ${(block.rows ?? []).length}`).join(', ')} rows. Column
+      names and order are read from each table's first row; the build refuses later rows whose
+      shape differs, so a local term such as <b>points</b> never needs a machinery edit.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · supervision`}>Supervision</SectionHead>
+  {noteOf(cv.supervision).map((paragraph) => <p class="blurb" set:html={render(paragraph)} />)}
+  <Entries entries={supervision} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above,
+      then <b>entries[]</b>, {supervision.length} rows with keys {keysOf(supervision)}. The counts in
+      the right-hand column are the <b>count</b> field verbatim, open-ended ({
+        supervision.map((row) => row.count).join(', ')
+      }) exactly as the file writes them.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · awards[]`}>Awards and scholarships</SectionHead>
+  <Entries entries={awards} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>awards[]</b>, {awards.length} entries with keys {keysOf(awards)}.{' '}
+      {withItems(awards)} carry an <b>items</b> list.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · leadership[]`}>Leadership and representation</SectionHead>
+  <Entries entries={leadership} />
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>leadership[]</b>, {leadership.length} entries with keys{' '}
+      {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does not
+      print, which is the whole answer to keeping a section off the PDF and on the site: leave its{' '}
+      <code>\cvpart</code> line out.
+    </p>
+    <p>
+      These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {
+        omitted.join(', ')
+      }. The list is derived from the file's own top-level sections minus the ones rendered above.
+      Both have pages of their own, read from this same file: <b>service</b> at <a
+        href={url('/professional_activities/')}>/professional_activities/</a
+      > and <b>projects</b> at <a href={url('/projects/')}>/projects/</a>.
+    </p>
+  </Record>
+
+  <SectionHead source={`${CV_SOURCE} · languages[]`}>Languages</SectionHead>
+  <ul class="defs">
+    {
+      languages.map((language) => (
+        <li>
+          <span class="a" set:html={render(language.title)} />
+          <span class="b label" set:html={render(language.detail)} />
+        </li>
+      ))
+    }
+  </ul>
+  <Record>
+    <p>
+      <b>{CV_SOURCE}</b> — <b>languages[]</b>, {languages.length} entries with keys {
+        keysOf(languages)
+      }, in file order. The levels are the file's own words ({
+        [...new Set(languages.map((language) => language.detail))].join(', ')
+      }), not a CEFR scale.
+    </p>
+  </Record>
+</BaseLayout>

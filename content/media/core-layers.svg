@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">Sediment core layers</title>
+  <desc id="desc">An abstract diagram of coloured sediment bands crossed by labelled sample markers.</desc>
+  <rect width="1200" height="600" fill="#f2ede3"/>
+  <g transform="translate(110 90)">
+    <rect width="980" height="80" fill="#164e59"/>
+    <rect y="80" width="980" height="64" fill="#ce7a52"/>
+    <rect y="144" width="980" height="112" fill="#d3b04f"/>
+    <rect y="256" width="980" height="58" fill="#486a73"/>
+    <rect y="314" width="980" height="106" fill="#8f5d4d"/>
+    <path d="M0 144c160-38 310 36 470 0s320-36 510 0" fill="none" stroke="#f2ede3" stroke-width="10" opacity=".8"/>
+    <g stroke="#172f38" stroke-width="5">
+      <path d="M180-30v480"/><path d="M490-30v480"/><path d="M790-30v480"/>
+    </g>
+    <g fill="#172f38" font-family="monospace" font-size="28">
+      <text x="135" y="-45">S-12</text><text x="445" y="-45">S-31</text><text x="745" y="-45">S-48</text>
+    </g>
+  </g>
+</svg>

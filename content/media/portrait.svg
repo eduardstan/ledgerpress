@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">Abstract portrait placeholder for Sahana Aster Kōwhai</title>
+  <desc id="desc">A deliberately non-photographic geometric portrait in blue, ochre, coral and cream.</desc>
+  <rect width="640" height="640" fill="#e9e4d8"/>
+  <circle cx="320" cy="250" r="126" fill="#d66f52"/>
+  <path d="M194 251c8-94 62-151 134-151 79 0 129 65 124 171-38-25-72-64-93-112-33 54-82 88-165 92z" fill="#1f3140"/>
+  <path d="M132 640c8-166 73-257 188-257s180 91 188 257z" fill="#174f5a"/>
+  <path d="M246 282c21 17 43 25 67 25 29 0 55-10 78-31-12 64-38 96-75 96-36 0-59-30-70-90z" fill="#f3c7a8"/>
+  <circle cx="273" cy="247" r="8" fill="#1f3140"/>
+  <circle cx="363" cy="247" r="8" fill="#1f3140"/>
+  <path d="M278 326c24 15 50 15 76 0" fill="none" stroke="#8f3f35" stroke-width="8" stroke-linecap="round"/>
+  <path d="M132 568c83-37 146-19 188 54 42-73 105-91 188-54v72H132z" fill="#d7a72e"/>
+</svg>

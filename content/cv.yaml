@@ -1,0 +1,234 @@
+# This is a complete fictional record. Replace everything in content/ with your
+# own material; content/README.md documents every field and the smallest file
+# that builds.
+
+profile:
+  name: Sahana Aster KŌWHAI, Ph.D.
+  site: https://sahana-kowhai.example
+  headline: Associate Professor of Palaeoclimatology
+  affiliation:
+    - label: Te Tari Tātai Arowhenua — Department of Geology
+      url: https://www.otago.ac.nz/geology
+    - label: University of Otago — Ōtākou Whakaihu Waka
+      url: https://www.otago.ac.nz/
+    - label: Antarctic Research Centre, Te Herenga Waka
+      url: https://www.wgtn.ac.nz/antarctic
+  place: Ōtepoti Dunedin, Aotearoa New Zealand
+  address:
+    - 360 Leith Street
+  email: sahana.kowhai@example.edu
+  website:
+    label: Staff profile
+    url: https://profiles.example.edu/sahana-kowhai
+  links:
+    orcid: 0000-0000-0000-0000
+    scholar: sahana-kowhai-example
+    bluesky:
+      label: Bluesky
+      url: https://bsky.app/profile/sahana-kowhai.example
+  portrait: portrait.svg
+  favicon: favicon.svg
+  bio:
+    short: >-
+      Sahana Aster Kōwhai is a **fictional** palaeoclimatologist whose _research_
+      reconstructs Southern Ocean change from marine sediment archives.
+    long: >-
+      I reconstruct how the Southern Ocean changed across abrupt climate
+      transitions, combining geochemical proxies, sediment cores and
+      age-depth modelling.
+
+
+      My group works across oceanography, geology and _mātauranga-informed_
+      environmental practice. We build open records that make uncertainty,
+      provenance and field decisions visible.
+  focus: >-
+    Southern Ocean palaeoceanography across glacial terminations, with an
+    emphasis on multiproxy reconstructions, reproducible chronology and
+    equitable Antarctic field partnerships.
+  footer: >-
+    **Example record.** This curriculum vitae describes a fictional scholar and
+    is supplied only to demonstrate the template.
+
+strands:
+  - title: Ocean archives
+    detail: >-
+      Reading marine sediments as layered records of temperature, circulation
+      and sea-ice change.
+    items:
+      - Evidence lives in content/publications.bib and the fieldwork section.
+  - title: Chronology and uncertainty
+    detail: >-
+      Making age models, proxy calibration and uncertainty legible from sample
+      to published claim.
+    items:
+      - Evidence lives in content/publications.bib and the teaching record.
+  - title: Open polar practice
+    detail: >-
+      Designing reusable datasets and reciprocal field partnerships for
+      Southern Ocean research.
+    items:
+      - Evidence lives in the projects and service sections.
+
+appointments:
+  - title: Associate Professor of Palaeoclimatology
+    org: University of Otago — Ōtākou Whakaihu Waka
+    place: Ōtepoti Dunedin, Aotearoa New Zealand
+    dates: Feb 2021 – Present
+    detail: Department of Geology
+    url: https://www.otago.ac.nz/geology
+    items:
+      - Cross-appointed affiliate of the Antarctic Research Centre, Te Herenga Waka.
+    announced: 2021-02-15
+  - title: Senior Lecturer in Marine Geology
+    org: University of Tasmania
+    place: nipaluna Hobart, Australia
+    dates: Jul 2016 – Jan 2021
+    detail: Institute for Marine and Antarctic Studies
+    announced: 2016-07-01
+
+education:
+  - title: Ph.D. in Marine Geology
+    org: Australian National University
+    place: Canberra, Australia
+    dates: 2010 – 2014
+    items:
+      - "Thesis: Foraminiferal Mg/Ca and Southern Ocean warming across Termination I."
+  - title: M.Sc. in Earth Sciences (First Class Honours)
+    org: University of Cape Town
+    place: Cape Town, South Africa
+    dates: 2008 – 2009
+  - title: B.Sc. in Geology and Oceanography
+    org: University of Madras
+    place: Chennai, India
+    dates: 2005 – 2008
+
+teaching:
+  - title: Course coordinator and lecturer
+    org: University of Otago — Ōtākou Whakaihu Waka
+    place: Ōtepoti Dunedin, Aotearoa New Zealand
+    dates: 2021 – Present
+    rows:
+      - course: GEOL 273
+        programme: B.Sc. Geology
+        topics: Palaeoclimate archives; proxy calibration
+        points: "18"
+      - course: GEOL 472
+        programme: B.Sc. (Hons)
+        topics: Marine cores; age-depth modelling
+        points: "18"
+      - course: OCEN 405
+        programme: M.Sc. Oceanography
+        topics: Southern Ocean circulation; uncertainty
+        points: "20"
+
+supervision:
+  note:
+    - "**Current supervision:** projects span marine geochemistry, chronology and open polar data."
+  entries:
+    - title: Doctoral candidates
+      count: "4"
+      detail: Primary supervisor for two; co-supervisor for two
+    - title: M.Sc. and honours researchers
+      count: "9"
+      detail: Completed and current research dissertations
+
+service:
+  - title: Associate Editor
+    org: Paleoceanography and Paleoclimatology
+    dates: 2023 – Present
+    detail: Marine palaeoclimate
+    announced: 2023-03-10
+  - title: Scientific Steering Committee
+    org: Southern Ocean Observing System
+    years: [2022, 2023, 2024, 2025, 2026]
+  - title: Panel reviewer
+    org: Royal Society Te Apārangi
+    dates: 2021 – Present
+  - title: Reviewer
+    org: Quaternary Science Reviews
+
+projects:
+  - title: TIDE — Termination Ice Dynamics and Ecosystems
+    org: Royal Society Te Apārangi
+    dates: 2024 – 2027
+    detail: Principal investigator
+    funding: NZ$960,000
+    url: https://research.example.edu/tide
+    announced: 2024-06-03
+    items:
+      - Multiproxy reconstruction of Southern Ocean fronts across Termination II.
+  - title: Open Core Chronologies
+    org: Australian Antarctic Program Partnership
+    dates: 2022 – 2025
+    detail: Co-investigator
+    funding: A$420,000
+    items:
+      - Reusable age-depth models and provenance for legacy sediment cores.
+
+fieldwork:
+  - title: Pukaki Rise sediment coring voyage
+    org: RV Tangaroa
+    place: Southern Ocean
+    dates: Jan – Feb 2025
+    detail: Co-chief scientist
+    announced: 2025-01-12
+  - title: East Antarctic margin core curation
+    org: National Marine Geoscience Collection
+    place: Te Whanganui-a-Tara Wellington
+    dates: Nov 2022
+    detail: Visiting scientist
+
+awards:
+  - title: Early Career Research Excellence Award
+    org: Geoscience Society of New Zealand
+    dates: "2019"
+    announced: 2019-11-20
+  - title: SCAR Visiting Fellowship
+    org: Scientific Committee on Antarctic Research
+    place: Cambridge, United Kingdom
+    dates: "2017"
+
+leadership:
+  - title: Co-chair, Open Polar Data Working Group
+    org: Southern Ocean Knowledge and Information community
+    dates: 2024 – Present
+    announced: 2024-02-01
+  - title: Faculty representative
+    org: Pacific research partnerships committee
+    dates: 2022 – 2024
+
+languages:
+  - title: Tamil
+    detail: Native
+  - title: English
+    detail: Fluent
+  - title: te reo Māori
+    detail: Intermediate learner
+
+publications:
+  sections:
+    - title: Journal articles (peer-reviewed)
+      short: Journal
+      types: [article]
+      exclude_keywords: [underreview]
+    - title: Books and chapters
+      short: Books
+      types: [incollection, book]
+    - title: Data and software
+      short: Data
+      types: [dataset, misc]
+    - title: Manuscripts under review
+      short: Review
+      types: [article]
+      keywords: [underreview]
+
+talks:
+  sections:
+    - title: Invited and keynote talks
+      short: Invited
+      types: [unpublished]
+      keywords: [invited]
+    - title: Conference presentations
+      short: Conference
+      types: [unpublished]
+      exclude_keywords: [invited]
