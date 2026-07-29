@@ -20,7 +20,7 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
     <div>
       <h2 class="label">Elsewhere</h2>
       <div class="stack">
-        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        {links.map((link) => <a href={url(link.href)}>{link.label}</a>)}
         <a href={url('/rss.xml')}>RSS</a>
         <a href={url('/sitemap-index.xml')}>Sitemap</a>
       </div>

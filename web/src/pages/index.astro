@@ -12,6 +12,7 @@ import { internalUrl } from '../lib/urls';
 
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => internalUrl(path, base);
+const render = (text: string | undefined) => inline(text, base);
 const { name, affiliation } = profile();
 const { portrait } = identity(base);
 const bio = about(base);
@@ -175,19 +176,23 @@ const withheld = feed.items.length - shown.length;
                 <li>
                   <span class="a">
                     {entry.url ? (
-                      <a href={entry.url} set:html={inline(entry.org)} />
+                      <a href={url(entry.url)} set:html={render(entry.org)} />
                     ) : (
-                      <Fragment set:html={inline(entry.org)} />
+                      <Fragment set:html={render(entry.org)} />
                     )}
                     {entry.metric &&
                       (entry.rank_url ? (
-                        <a class="rank" href={entry.rank_url} set:html={inline(entry.metric)} />
+                        <a
+                          class="rank"
+                          href={url(entry.rank_url)}
+                          set:html={render(entry.metric)}
+                        />
                       ) : (
-                        <span class="rank" set:html={inline(entry.metric)} />
+                        <span class="rank" set:html={render(entry.metric)} />
                       ))}
                   </span>
                   {serviceWhen(entry) && (
-                    <span class="b label" set:html={inline(serviceWhen(entry))} />
+                    <span class="b label" set:html={render(serviceWhen(entry))} />
                   )}
                 </li>
               ))}

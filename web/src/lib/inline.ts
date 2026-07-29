@@ -13,13 +13,17 @@
  * renderer. Text is escaped before it is emitted, and a URL is escaped into its
  * attribute, so nothing in the YAML can inject markup of its own.
  */
+import { internalUrl } from './urls.ts';
+
 const W = 'A-Za-z0-9';
 const MARKUP = String.raw`\*\*([\s\S]+?)\*\*|(?<![${W}])_(?=[^\s_])([^_\n]+?)(?<=[^\s_])_(?![${W}])|\[([^\]\n]+)\]\(([^)\s]+)\)`;
 
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function inline(text: string | undefined): string {
+export function inline(text: string | undefined): string;
+export function inline(text: string | undefined, base: string): string;
+export function inline(text: string | undefined, base = '/'): string {
   const source = String(text ?? '');
   // A fresh matcher per call: `inline` recurses, and a shared regex's lastIndex
   // would be reset by the inner call and restart the outer scan.
@@ -29,9 +33,9 @@ export function inline(text: string | undefined): string {
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(source)) !== null) {
     out += escape(source.slice(last, match.index));
-    if (match[1] !== undefined) out += `<b>${inline(match[1])}</b>`;
-    else if (match[2] !== undefined) out += `<i>${inline(match[2])}</i>`;
-    else out += `<a href="${escape(match[4])}">${inline(match[3])}</a>`;
+    if (match[1] !== undefined) out += `<b>${inline(match[1], base)}</b>`;
+    else if (match[2] !== undefined) out += `<i>${inline(match[2], base)}</i>`;
+    else out += `<a href="${escape(internalUrl(match[4], base))}">${inline(match[3], base)}</a>`;
     last = match.index + match[0].length;
   }
   return out + escape(source.slice(last));

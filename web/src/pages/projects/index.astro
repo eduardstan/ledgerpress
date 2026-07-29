@@ -21,7 +21,9 @@ import { profile } from '../../lib/record';
 import { internalUrl } from '../../lib/urls';
 
 const projects = entriesOf(cv.projects);
-const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
+const base = import.meta.env.BASE_URL;
+const url = (path: string) => internalUrl(path, base);
+const render = (text: string | undefined) => inline(text, base);
 const funded = projects.filter((project) => project.funding);
 const running = projects.filter((project) => /present\s*$/i.test(project.dates ?? ''));
 const github = profile().links.find((link) => link.kind === 'github')?.href;
@@ -49,24 +51,24 @@ const description =
         <li>
           <span class="k">
             {project.url ? (
-              <a href={project.url} set:html={inline(project.title)} />
+              <a href={url(project.url)} set:html={render(project.title)} />
             ) : (
-              <Fragment set:html={inline(project.title)} />
+              <Fragment set:html={render(project.title)} />
             )}
-            {project.detail && <span class="sub" set:html={inline(project.detail)} />}
+            {project.detail && <span class="sub" set:html={render(project.detail)} />}
           </span>
           <span class="v">
             {project.items && (
               <ul>
                 {project.items.map((item) => (
-                  <li set:html={inline(item)} />
+                  <li set:html={render(item)} />
                 ))}
               </ul>
             )}
           </span>
           <span class="when">
-            <Fragment set:html={inline(project.dates)} />
-            {project.funding && <span class="sub" set:html={inline(project.funding)} />}
+            <Fragment set:html={render(project.dates)} />
+            {project.funding && <span class="sub" set:html={render(project.funding)} />}
           </span>
         </li>
       ))
@@ -89,7 +91,7 @@ const description =
       {
         github && (
           <>
-            the code behind the work is on <a href={github}>GitHub</a> and{' '}
+            the code behind the work is on <a href={url(github)}>GitHub</a> and{' '}
           </>
         )
       }the papers are in the <a href={url('/publications/')}>publications index</a>.

@@ -29,7 +29,9 @@ import { internalUrl } from '../lib/urls';
  */
 const CV_PDF = 'web/public/assets/cv.pdf';
 const pdf = hasSource(CV_PDF);
-const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
+const base = import.meta.env.BASE_URL;
+const url = (path: string) => internalUrl(path, base);
+const render = (text: string | undefined) => inline(text, base);
 
 const appointments = entriesOf(cv.appointments);
 const education = entriesOf(cv.education);
@@ -65,7 +67,7 @@ const description =
 
 <BaseLayout title="Curriculum vitae" description={description}>
   <PageHead title="Curriculum vitae">
-    <p class="blurb" set:html={inline(cv.profile.focus)} />
+    <p class="blurb" set:html={render(cv.profile.focus)} />
     <p class="blurb">
       This page is built from <b>{CV_SOURCE}</b>, the single file the printed CV is also generated
       from, read when the page was built. Turn <b>inspect sources</b> on, in the bar above, to see which
@@ -86,7 +88,7 @@ const description =
   </PageHead>
 
   <SectionHead source={`${CV_SOURCE} · profile.bio.short`}>Short bio</SectionHead>
-  <p class="blurb" set:html={inline(cv.profile.bio?.short)} />
+  <p class="blurb" set:html={render(cv.profile.bio?.short)} />
   <Record>
     <p>
       <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered
@@ -126,15 +128,15 @@ const description =
           <li>
             <span class="a">
               {block.url ? (
-                <a href={block.url} set:html={inline(block.org)} />
+                <a href={url(block.url)} set:html={render(block.org)} />
               ) : (
-                <Fragment set:html={inline(block.org)} />
+                <Fragment set:html={render(block.org)} />
               )}
             </span>
             <span class="b label">
-              <Fragment set:html={inline(block.title)} /> ·{' '}
-              <Fragment set:html={inline(block.place)} /> ·{' '}
-              <Fragment set:html={inline(block.dates)} />
+              <Fragment set:html={render(block.title)} /> ·{' '}
+              <Fragment set:html={render(block.place)} /> ·{' '}
+              <Fragment set:html={render(block.dates)} />
             </span>
           </li>
         </ul>
@@ -151,7 +153,7 @@ const description =
                   {block.rows!.map((row) => (
                     <tr>
                       {Object.entries(row).map(([key, value]) => (
-                        <td data-label={label(key)} set:html={inline(value)} />
+                        <td data-label={label(key)} set:html={render(value)} />
                       ))}
                     </tr>
                   ))}
@@ -180,7 +182,7 @@ const description =
   </Record>
 
   <SectionHead source={`${CV_SOURCE} · supervision`}>Supervision</SectionHead>
-  {noteOf(cv.supervision).map((paragraph) => <p class="blurb" set:html={inline(paragraph)} />)}
+  {noteOf(cv.supervision).map((paragraph) => <p class="blurb" set:html={render(paragraph)} />)}
   <Entries entries={supervision} />
   <Record>
     <p>
@@ -225,8 +227,8 @@ const description =
     {
       languages.map((language) => (
         <li>
-          <span class="a" set:html={inline(language.title)} />
-          <span class="b label" set:html={inline(language.detail)} />
+          <span class="a" set:html={render(language.title)} />
+          <span class="b label" set:html={render(language.detail)} />
         </li>
       ))
     }

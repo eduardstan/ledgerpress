@@ -242,6 +242,10 @@ assert.equal(inline('**bold**'), '<b>bold</b>');
 assert.equal(inline('_italic_'), '<i>italic</i>');
 assert.equal(inline('[text](https://example.org/a)'), '<a href="https://example.org/a">text</a>');
 assert.equal(inline('a **b _c_ d** e'), 'a <b>b <i>c</i> d</b> e');
+assert.equal(
+  inline('**[figure](/media/figure.svg)**', '/scholar/'),
+  '<b><a href="/scholar/media/figure.svg">figure</a></b>',
+);
 assert.equal(inline(undefined), '');
 
 // The two rules the LaTeX generator already settled, and where a regex renderer

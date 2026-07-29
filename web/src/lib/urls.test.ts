@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { inline } from './inline.ts';
+import { inlineHtml } from './record.ts';
 import {
   absoluteInternalUrl,
   cssInternalUrls,
@@ -23,6 +25,10 @@ test('root deployment URLs stay byte-identical', () => {
   for (const path of paths) assert.equal(internalUrl(path, '/'), path);
   const css = "src: url('/fonts/LedgerSerif-Regular.woff2') format('woff2');";
   assert.equal(cssInternalUrls(css, '/'), css);
+  assert.equal(
+    inline('[figure](/media/figure.svg)', '/'),
+    '<a href="/media/figure.svg">figure</a>',
+  );
   assert.equal(
     absoluteInternalUrl('/cv/', 'https://example.edu', '/').href,
     'https://example.edu/cv/',
@@ -75,4 +81,18 @@ test('Markdown links and media use the same deployment boundary', () => {
       { properties: { href: 'https://example.edu' } },
     ],
   });
+});
+
+test('every inline renderer prefixes nested root-relative targets', () => {
+  const base = '/scholar/';
+  const expected = 'href="/scholar/media/figure.svg"';
+  const rendered = [
+    inline('[figure](/media/figure.svg)', base),
+    inline('**[figure](/media/figure.svg)**', base),
+    inlineHtml('[figure](/media/figure.svg)', base),
+  ];
+  for (const html of rendered) {
+    assert.ok(html.includes(expected), `renderer lost the deployment base: ${html}`);
+    assert.ok(!html.includes('href="/media/'), `renderer emitted an origin-root URL: ${html}`);
+  }
 });
