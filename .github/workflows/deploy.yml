@@ -99,6 +99,9 @@ jobs:
         run: npm run build
         working-directory: web
 
+      - name: Check project-subpath deployment base 🔗
+        run: npm run check:deployment-base
+
       # Without .nojekyll, Pages' own legacy Jekyll pass over gh-pages strips
       # _astro/ and the site publishes with no CSS and no JavaScript. It ships
       # from web/public/, so this only fails the build if it ever stops.
