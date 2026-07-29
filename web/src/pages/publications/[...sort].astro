@@ -1,0 +1,308 @@
+---
+/**
+ * The publications index, in four orders.
+ *
+ * Sorting is pre-rendered, not computed in the browser: each order is its own
+ * static page and the column headers are links between them. That keeps the
+ * page working with JavaScript off, keeps the inspect switch's zero-JS property
+ * intact, and gives every order a URL that can be linked and bookmarked. Four
+ * pages of the same bibliography is a rounding error next to the fonts.
+ *
+ * Searching is not reimplemented here. The site already has Pagefind at
+ * /search/, which indexes these rows — including the abstracts — so the index
+ * points at it rather than shipping a second search box.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Record from '../../components/Record.astro';
+import {
+  bibliography,
+  profile,
+  publicationSections,
+  SOURCES,
+  yearSpan,
+  type Publication,
+} from '../../lib/record';
+
+/**
+ * The order `content/cv.yaml` declares the groups in, which is also the order
+ * the printed CV prints them in. Nothing is listed here by hand, so "by type"
+ * cannot come to disagree with the CV. An entry in no declared group is
+ * labelled "Other" and sorts last rather than being dropped.
+ */
+const KIND_ORDER = publicationSections().map((section) => section.short);
+const byKind = (entry: Publication) => {
+  const rank = KIND_ORDER.indexOf(entry.kind);
+  return rank === -1 ? KIND_ORDER.length : rank;
+};
+const newestFirst = (a: Publication, b: Publication) =>
+  b.year - a.year || a.title.localeCompare(b.title);
+
+const SORTS = {
+  year: {
+    label: 'Newest first',
+    column: 'yr',
+    marker: '↓',
+    compare: newestFirst,
+  },
+  'year-asc': {
+    label: 'Oldest first',
+    column: 'yr',
+    marker: '↑',
+    compare: (a: Publication, b: Publication) => a.year - b.year || a.title.localeCompare(b.title),
+  },
+  type: {
+    label: 'By type',
+    column: 'ty',
+    marker: '↓',
+    compare: (a: Publication, b: Publication) => byKind(a) - byKind(b) || newestFirst(a, b),
+  },
+  title: {
+    label: 'By title',
+    column: 't',
+    marker: '↓',
+    compare: (a: Publication, b: Publication) => a.title.localeCompare(b.title),
+  },
+} as const;
+
+type SortKey = keyof typeof SORTS;
+
+export const getStaticPaths = (() => [
+  { params: { sort: undefined } },
+  { params: { sort: 'year-asc' } },
+  { params: { sort: 'type' } },
+  { params: { sort: 'title' } },
+]) satisfies GetStaticPaths;
+
+const active = ((Astro.params.sort as SortKey | undefined) ?? 'year') satisfies SortKey;
+const bib = bibliography();
+const entries = [...bib.entries].sort(SORTS[active].compare);
+
+/** The Year header toggles direction; the others switch to their own order. */
+const columns = [
+  { column: 'yr', label: 'Year', href: active === 'year' ? 'year-asc' : 'year' },
+  { column: 'ty', label: 'Type', href: 'type' },
+  { column: 't', label: 'Title / authors / venue', href: 'title' },
+] as const;
+const href = (sort: string) => (sort === 'year' ? '/publications/' : `/publications/${sort}/`);
+const marker = (column: string) => (SORTS[active].column === column ? ` ${SORTS[active].marker}` : '');
+
+const owner = profile().bibliographyName;
+const isOwner = (author: string) => author === owner;
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+const span = yearSpan(bib.years);
+const description = `${bib.entries.length} entries${span && `, ${span}`}, read from ${SOURCES.bibliography} at build time.`;
+---
+
+{
+  /* Only the default order is indexed, and the other three name it as their
+     canonical URL. They hold the same rows, and four copies of every paper in
+     the search results helps nobody. */
+}
+<BaseLayout
+  title={`Index of publications — ${SORTS[active].label}`}
+  description={description}
+  canonical={active === 'year' ? undefined : '/publications/'}
+  noindex={active !== 'year'}
+>
+  <section class="pagehead">
+    <h1>Index</h1>
+    <p class="blurb">
+      <b>{bib.entries.length} entries{span && `, ${span}`}</b>, read from <b
+        >{SOURCES.bibliography}</b
+      > when this page was built, and nothing is left out — manuscripts under review and released
+      software are entries here like any other. Open a row for its abstract, its record and its
+      BibTeX. Order the index by year, type or title, <a href="/search/">search the site</a> to find
+      a paper by title, author or a word in its abstract, and turn <b>inspect sources</b> on, in the
+      bar above, to see where each part of this page comes from.
+    </p>
+  </section>
+
+  {
+    /* Below 900px the column headings are not on screen, so the same links
+       appear as an ordinary row of controls. */
+  }
+  <nav class="sortbar label" aria-label="Order the index">
+    <span>Order</span>
+    {
+      (Object.keys(SORTS) as SortKey[]).map((key) => (
+        <a href={href(key)} aria-current={key === active ? 'page' : undefined}>
+          {SORTS[key].label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="index">
+    <div class="index-head label">
+      <span>No.</span>
+      {
+        columns.map((column) => (
+          <a href={href(column.href)} aria-current={column.href === active ? 'page' : undefined}>
+            {column.label}
+            {marker(column.column)}
+          </a>
+        ))
+      }
+      <span>Record</span>
+    </div>
+    {
+      entries.map((entry, index) => (
+        <div class="entry-row">
+          <details class="entry">
+            <summary>
+              <span class="no">{pad(index)}</span>
+              <span class="yr">{entry.year > 0 ? entry.year : '—'}</span>
+              <span class="ty">{entry.kind}</span>
+              <div class="body">
+                <h2 class="t">{entry.title}</h2>
+                <p class="au">
+                  {entry.authors.map((author, position) => (
+                    <>
+                      {position > 0 && ', '}
+                      {isOwner(author) ? <b>{author}</b> : author}
+                    </>
+                  ))}
+                </p>
+                <p class="vn">{entry.citation}</p>
+                {
+                  /* The citation above is a rendered claim like any other, so it
+                     opens to the record it was assembled from: the entry it came
+                     from and the fields that were present in it. Both are read
+                     from the .bib at build time — the list of fields is the list
+                     the assembler actually used. */
+                }
+                <Record>
+                  <p>
+                    <b>{SOURCES.bibliography}</b> — @{entry.type}
+                    {'{'}
+                    {entry.key}
+                    {'}'}; venue from <b>{entry.venueField ?? 'no venue field'}</b>, citation from{' '}
+                    {entry.citationFields.join(', ')};{' '}
+                    {entry.link ? (
+                      <>
+                        link from <b>{entry.link.field}</b>
+                      </>
+                    ) : (
+                      'no doi, url, html or pdf field, so no link'
+                    )}.
+                  </p>
+                </Record>
+              </div>
+              <div class="acts">
+                <span class="more" aria-hidden="true" />
+              </div>
+            </summary>
+            <div class="reveal">
+              {entry.abstract && <p class="abstract">{entry.abstract}</p>}
+              <dl>
+                {entry.detail && (
+                  <>
+                    <dt>Record</dt>
+                    <dd>{entry.detail}</dd>
+                  </>
+                )}
+                {entry.doi && (
+                  <>
+                    <dt>DOI</dt>
+                    <dd>{entry.doi}</dd>
+                  </>
+                )}
+                {entry.link && entry.link.field !== 'doi' && (
+                  <>
+                    <dt>{entry.link.field}</dt>
+                    <dd>{entry.link.href}</dd>
+                  </>
+                )}
+                {!entry.link && (
+                  <>
+                    <dt>Link</dt>
+                    <dd>No doi, url, html or pdf field in the BibTeX entry.</dd>
+                  </>
+                )}
+                {!entry.abstract && (
+                  <>
+                    <dt>Abstract</dt>
+                    <dd>No abstract in the BibTeX entry.</dd>
+                  </>
+                )}
+              </dl>
+              <div class="bibtex">
+                <p class="bibtex-head">
+                  <span class="label">BibTeX</span>
+                  <button type="button" class="chip label copy" hidden aria-live="polite">
+                    Copy
+                  </button>
+                </p>
+                <pre>{entry.raw}</pre>
+              </div>
+              {entry.link && (
+                <a class="open" href={entry.link.href}>
+                  Open the {entry.link.label === 'DOI' ? 'paper by its DOI' : 'paper'} →
+                </a>
+              )}
+            </div>
+          </details>
+        {
+          /* Outside the <details>, not inside <summary>: a link inside the
+             summary is an interactive descendant of the row's own control, and
+             anything inside the details but outside the summary is in
+             `::details-content` and so is not painted while the row is closed.
+             A sibling is the only place it is both reachable and visible
+             collapsed; it is positioned over the row's right edge. */
+        }
+        {
+          entry.link && (
+            <a class="go" href={entry.link.href}>
+              {entry.link.label} ↗
+            </a>
+          )
+        }
+        </div>
+      ))
+    }
+  </div>
+
+  <Record>
+    <p>
+      <b>{SOURCES.bibliography}</b> — {bib.entries.length} entries parsed at build, shown here {
+        SORTS[active].label.toLowerCase()
+      }. Every row is one entry: the number is its position in this order, the type is its BibTeX
+      entry type, and everything under an open row is that entry's own text. Nothing on this page is
+      transcribed by hand.
+    </p>
+    <p>
+      {bib.byKind.map((kind) => `${kind.count} ${kind.kind.toLowerCase()}`).join(', ')}.{' '}
+      {bib.entries.filter((entry) => entry.abstract).length} of {bib.entries.length} entries carry an
+      abstract; the rest show their record only. The four orders are four static pages —
+      /publications/, /publications/year-asc/, /publications/type/ and /publications/title/ — so
+      ordering the index needs no JavaScript.
+    </p>
+  </Record>
+
+</BaseLayout>
+
+<script>
+  // The only script on this page, and the only thing it does is put an entry on
+  // the clipboard. The button ships hidden and is revealed here, so a browser
+  // without the Clipboard API never shows a control that cannot work — the
+  // BibTeX is plain <pre> text and stays selectable either way.
+  if (navigator.clipboard) {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.copy')) {
+      button.hidden = false;
+    }
+    document.addEventListener('click', async (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('.copy');
+      const entry = button?.closest('.bibtex')?.querySelector('pre');
+      if (!button || !entry) return;
+      try {
+        await navigator.clipboard.writeText(entry.textContent ?? '');
+        button.textContent = 'Copied';
+        setTimeout(() => (button.textContent = 'Copy'), 1500);
+      } catch {
+        // Denied or unavailable: the entry is still there to select by hand.
+        button.textContent = 'Select it';
+      }
+    });
+  }
+</script>

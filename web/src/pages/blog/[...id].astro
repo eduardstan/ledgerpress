@@ -1,0 +1,65 @@
+---
+/**
+ * One post.
+ *
+ * The route is `/blog/<id>/` and the entries live under `content/posts/<year>/`,
+ * so a post's address is `/blog/2024/xai2-manifesto/` — the same address
+ * the previous site gave it, which is what `src/lib/announcements.ts` links the feed to.
+ * Renaming those directories changes published URLs.
+ */
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Record from '../../components/Record.astro';
+import { dateFormat, getPublishedPosts, postSource } from '../../lib/content';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const source = postSource(post.filePath);
+const labels = [...post.data.categories, ...post.data.tags];
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="single">
+    <h1 class="posttitle">{post.data.title}</h1>
+    <p class="label postmeta">
+      <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
+      {labels.length > 0 && <> · {labels.join(' · ')}</>}
+      {
+        post.data.updated && (
+          <>
+            {' '}· updated{' '}
+            <time datetime={post.data.updated.toISOString()}>
+              {dateFormat.format(post.data.updated)}
+            </time>
+          </>
+        )
+      }
+    </p>
+    <p class="blurb">{post.data.description}</p>
+    <Record>
+      <p>
+        <b>{source}</b> — front matter: <b>date</b> {post.data.date.toISOString().slice(0, 10)}
+        {
+          post.data.updated && (
+            <>
+              , <b>updated</b> {post.data.updated.toISOString().slice(0, 10)}
+            </>
+          )
+        }
+        {labels.length > 0 && <>, filed under {labels.join(', ')}</>}. Rendered through the
+        collection's own Markdown pipeline; {headings.length} headings.
+      </p>
+      <p>
+        The <a href="/lately/">register</a> reads this same file: a post is announced on the date its
+        own front matter carries, so the announcement cannot drift from the post.
+      </p>
+    </Record>
+    <div class="prose"><Content /></div>
+  </article>
+</BaseLayout>

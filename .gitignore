@@ -1,0 +1,35 @@
+_site
+.bundle
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+.DS_store
+.ruby-version
+.tweet-cache
+Gemfile.lock
+assets/libs/
+node_modules/
+vendor
+.idea
+
+# CV: LaTeX build artefacts (the PDF is a CI artifact, not a tracked file)
+cv/*.pdf
+cv/*.aux
+cv/*.bbl
+cv/*.bcf
+cv/*.blg
+cv/*.fdb_latexmk
+cv/*.fls
+cv/*.log
+cv/*.out
+cv/*.run.xml
+cv/*.synctex.gz
+cv/*.toc
+cv/*.xdv
+cv/build/
+
+# The CV PDF is built by the deploy workflow, never committed.
+web/public/assets/cv.pdf
+
+# Staged from content/media before every astro build; content/ is the source.
+web/public/media/

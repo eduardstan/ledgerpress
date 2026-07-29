@@ -1,0 +1,11 @@
+---
+import PageHead from '../components/PageHead.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Page not found">
+  <PageHead title="404" />
+  <div class="prose single">
+    <p>That page does not exist. Try the <a href="/">home page</a> or <a href="/search/">search</a>.</p>
+  </div>
+</BaseLayout>

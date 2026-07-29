@@ -1,0 +1,17 @@
+{
+  "name": "ledgerpress",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One academic record, published as a website and PDF CV.",
+  "scripts": {
+    "build": "node scripts/build-cv-data.mjs && npm --prefix web run build",
+    "build:cv-data": "node scripts/build-cv-data.mjs",
+    "check:adopter": "node scripts/check-adopter-build.mjs",
+    "format": "prettier . --write",
+    "test": "npm --prefix web test && node --test scripts/build-cv-data.test.mjs && node scripts/build-cv-data.mjs --check"
+  },
+  "devDependencies": {
+    "js-yaml": "^5.2.2",
+    "prettier": "3.9.6"
+  }
+}
