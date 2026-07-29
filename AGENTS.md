@@ -65,3 +65,7 @@ Keep this file for knowledge useful to almost every future agent session in this
 No value that lives in another file may be restated here; point to the authoritative file or
 command instead. Prefer rewriting or pruning existing entries over appending new ones. When
 updating this file, preserve this bar for all agents and keep entries concise.
+
+Keep `.claude/CLAUDE.md` as the single one-line import of this file for Claude-compatible tools.
+Do not add another pointer at the repository root: having both pointers makes those tools load the
+same instructions twice.
