@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /ledgerpress-proof/
+
+Sitemap: https://example.github.io/ledgerpress-proof/sitemap-index.xml
