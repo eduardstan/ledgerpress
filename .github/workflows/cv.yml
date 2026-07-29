@@ -85,7 +85,7 @@ jobs:
           working_directory: cv
           latexmk_use_xelatex: true
           texlive_version: "2024"
-          extra_system_packages: nodejs npm poppler-utils
+          extra_system_packages: grep nodejs npm poppler-utils
           # The tracked-only proof needs web dependencies built for the same
           # Alpine environment in which its pinned TeX tools run.
           pre_compile: npm ci --prefix "$GITHUB_WORKSPACE/web"
