@@ -10,8 +10,8 @@ name: Deploy site
 # on every push costs a few minutes and cannot silently skip a change.
 #
 # On a pull request everything runs except the publish step, so a PR proves the
-# site still builds. This is the only workflow that builds web/; there is no
-# separate CI workflow to disagree with it.
+# publishable site still builds. The CV workflow separately runs the synthetic
+# adopter proof for both outputs in its pinned TeX environment.
 
 on:
   push:
@@ -54,19 +54,10 @@ jobs:
       - name: Check generated CV data 🔎
         run: node scripts/build-cv-data.mjs --check
 
-      # check-adopter-build.mjs deliberately starts again from tracked files,
-      # swaps only content/, and builds both outputs. GitHub Docker actions do
-      # not leave their binaries on the host, so the cold-start proof needs a
-      # host TeX installation in addition to the pinned build below.
-      - name: Install cold-start PDF tools 🔎
+      - name: Install PDF inspection tools 🔎
         run: |
           sudo apt-get update
-          sudo apt-get install --yes \
-            latexmk \
-            poppler-utils \
-            texlive-bibtex-extra \
-            texlive-fonts-extra \
-            texlive-xetex
+          sudo apt-get install --yes poppler-utils
 
       # The printed CV is typeset from the committed generated form of the same
       # content/cv.yaml the /cv/ page renders. It is never committed — no binary
@@ -103,9 +94,6 @@ jobs:
       - name: Self-check 🧪
         run: npm test
         working-directory: web
-
-      - name: Prove adopter cold start 🧊
-        run: node scripts/check-adopter-build.mjs
 
       - name: Build 🔧
         run: npm run build

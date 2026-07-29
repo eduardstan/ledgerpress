@@ -54,10 +54,10 @@ and the bundled `LedgerSerif` faces. Keep those names distinct and intentional.
 
 ## Delivery
 
-`.github/workflows/deploy.yml` builds the CV, runs its baseline, stages the PDF, validates the
-adopter cold start, builds the website, and publishes the generated distribution to `gh-pages`.
-`.github/workflows/cv.yml` exposes the PDF separately as a review artifact. The deploy workflow has
-no path filters because almost any tracked file can affect a build.
+`.github/workflows/deploy.yml` builds the CV, runs its baseline, stages the PDF, builds the website,
+and publishes the generated distribution to `gh-pages`. `.github/workflows/cv.yml` exposes the PDF
+as a review artifact and runs the whole adopter cold start inside its pinned TeX environment. The
+deploy workflow has no path filters because almost any tracked file can affect a build.
 
 ## Maintaining this file
 

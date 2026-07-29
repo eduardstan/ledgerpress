@@ -1,10 +1,10 @@
 name: Build CV
 
-# Builds the PDF CV from content/cv.yaml + cv/cv.tex and uploads it as an artifact.
+# Builds the PDF CV from content/cv.yaml + cv/cv.tex, proves a clean adopter can
+# build both outputs, and uploads the example PDF as an artifact.
 #
 # This workflow deliberately does NOT deploy or publish the PDF: deploy.yml builds
-# the same document and stages it for the Astro site. This workflow only provides
-# a reviewable artifact for CV-specific changes.
+# the same document and stages it for the Astro site.
 
 on:
   push:
@@ -16,8 +16,12 @@ on:
       - "content/**"
       - "scripts/build-cv-data.mjs"
       - "scripts/build-cv-data.test.mjs"
+      - "scripts/check-adopter-build.mjs"
       - "scripts/check-cv-baseline.sh"
       - "data/cv-baseline/**"
+      - "package.json"
+      - "package-lock.json"
+      - "web/**"
       - ".github/workflows/cv.yml"
   pull_request:
     paths:
@@ -25,8 +29,12 @@ on:
       - "content/**"
       - "scripts/build-cv-data.mjs"
       - "scripts/build-cv-data.test.mjs"
+      - "scripts/check-adopter-build.mjs"
       - "scripts/check-cv-baseline.sh"
       - "data/cv-baseline/**"
+      - "package.json"
+      - "package-lock.json"
+      - "web/**"
       - ".github/workflows/cv.yml"
   workflow_dispatch:
 
@@ -77,6 +85,11 @@ jobs:
           working_directory: cv
           latexmk_use_xelatex: true
           texlive_version: "2024"
+          extra_system_packages: nodejs npm poppler-utils
+          # The tracked-only proof needs web dependencies built for the same
+          # Alpine environment in which its pinned TeX tools run.
+          pre_compile: npm ci --prefix "$GITHUB_WORKSPACE/web"
+          post_compile: cd "$GITHUB_WORKSPACE" && node scripts/check-adopter-build.mjs
 
       - name: Check the printed CV baseline
         run: bash scripts/check-cv-baseline.sh
