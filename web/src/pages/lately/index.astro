@@ -18,8 +18,11 @@ import PageHead from '../../components/PageHead.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Record from '../../components/Record.astro';
 import { announcements, formatStamp } from '../../lib/announcements';
+import { internalUrl } from '../../lib/urls';
 
-const feed = announcements();
+const base = import.meta.env.BASE_URL;
+const feed = announcements(base);
+const url = (path: string) => internalUrl(path, base);
 const filters = [
   { name: 'All', slug: 'all', count: feed.items.length, kind: false },
   ...feed.kinds.map((kind) => ({ ...kind, kind: true })),
@@ -157,7 +160,7 @@ const filterCss = filters
     <p>
       <b>{feed.undated.length}</b> announceable facts carry no defensible date and are listed below
       rather than given an invented one. They are not missing from the site: a manuscript under
-      review is on <a href="/publications/">/publications/</a> like any other entry.
+      review is on <a href={url('/publications/')}>/publications/</a> like any other entry.
     </p>
     {
       feed.undated.map((fact) => (

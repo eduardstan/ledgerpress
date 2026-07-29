@@ -85,8 +85,9 @@ profile:
                                 # the site's masthead. Surname capitalised and a
                                 # degree appended are conventions, not rules —
                                 # write your name the way you want it set.
-  site: https://ada.example     # where THIS site is published. Canonical links,
-                                # feeds and the sitemap all use this one origin.
+  site: https://ada.example     # final published URL. Include a project path,
+                                # e.g. https://name.github.io/repository/, when
+                                # the site is not served from the origin root.
   headline: Reader in Analytical Engines        # your role, alone. No institution.
   affiliation:                  # smallest unit first: group, then department,
     - label: Analytical Engine Group            # then institution. A list, so a
@@ -360,7 +361,8 @@ draft: false
 
 Images. `profile.portrait` and the optional `profile.favicon` name files here by bare filename;
 **inside a post or an item, refer to one as `/media/<file>`** — the directory is published at
-that address.
+that address. The build prefixes the project path from `profile.site` when the site is deployed
+below an origin root.
 
 ## Announcements
 

@@ -10,14 +10,18 @@ import rehypeKatex from 'rehype-katex';
 import { parse } from 'yaml';
 import { consistency, report } from './src/lib/consistency.ts';
 import { legacyRedirects } from './src/lib/legacy-urls.ts';
+import { cssInternalUrls, deploymentBase, rehypeInternalUrls } from './src/lib/urls.ts';
 
 const content = parse(readFileSync(new URL('../content/cv.yaml', import.meta.url), 'utf8'));
-const site = content?.profile?.site;
-if (!site) {
+const publishedSite = process.env.LEDGERPRESS_SITE ?? content?.profile?.site;
+if (!publishedSite) {
   throw new Error(
-    'Missing `profile.site` in `content/cv.yaml`: set it to the origin where this site is published (see `content/README.md`).',
+    'Missing `profile.site` in `content/cv.yaml`: set it to the final URL where this site is published (see `content/README.md`).',
   );
 }
+const publishedUrl = new URL(publishedSite);
+const base = deploymentBase(publishedUrl);
+const site = publishedUrl.origin;
 
 /**
  * The consistency gate, with teeth.
@@ -44,9 +48,22 @@ function consistencyGate() {
   };
 }
 
+/** @returns {import('vite').Plugin} */
+function deploymentCssUrls() {
+  return {
+    name: 'deployment-css-urls',
+    enforce: 'pre',
+    transform(source, id) {
+      if (!id.endsWith('.css')) return;
+      return cssInternalUrls(source, base);
+    },
+  };
+}
+
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
   site,
+  base,
   // Addresses the Jekyll site published and this one does not generate. See
   // `src/lib/legacy-urls.ts` for why they are written down rather than derived.
   redirects: legacyRedirects,
@@ -57,7 +74,7 @@ export default defineConfig({
     // `@astrojs/mdx` inherits `markdown.processor`, so .mdx gets math too.
     processor: unified({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
+      rehypePlugins: [rehypeKatex, [rehypeInternalUrls, { base }]],
     }),
     syntaxHighlight: 'shiki',
     shikiConfig: {
@@ -73,6 +90,6 @@ export default defineConfig({
   },
   integrations: [mdx(), sitemap(), consistencyGate()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [deploymentCssUrls(), tailwindcss()],
   },
 });

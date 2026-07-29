@@ -14,16 +14,18 @@ import rss from '@astrojs/rss';
 import type { APIRoute } from 'astro';
 import { announcements, formatStamp } from '../lib/announcements';
 import { profile } from '../lib/record';
+import { absoluteInternalUrl, internalUrl } from '../lib/urls';
 
 export const GET: APIRoute = async (context) => {
-  const feed = announcements();
+  const base = import.meta.env.BASE_URL;
+  const feed = announcements(base);
   const { name } = profile();
 
   return rss({
     title: name,
     description: `Announcements by ${name}, generated from the records they announce.`,
     // `context.site` comes from the `site` option in astro.config.mjs.
-    site: context.site!,
+    site: absoluteInternalUrl('/', context.site!, base),
     // Every link ends in a fragment, and the default would append the site's
     // trailing slash after it — `/lately/#id/` is not the anchor.
     trailingSlash: false,
@@ -36,7 +38,7 @@ export const GET: APIRoute = async (context) => {
       content: item.html,
       pubDate: item.at,
       categories: [item.kind],
-      link: `/lately/#${item.id}`,
+      link: internalUrl(`/lately/#${item.id}`, base),
     })),
   });
 };

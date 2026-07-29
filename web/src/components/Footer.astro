@@ -1,9 +1,11 @@
 ---
 import Record from './Record.astro';
 import { profile, SOURCES } from '../lib/record';
+import { internalUrl } from '../lib/urls';
 
 const { name, email, links, missing, address, addressSource } = profile();
 const year = new Date().getFullYear();
+const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
 ---
 
 <footer class="sheet-footer" data-pagefind-ignore>
@@ -19,8 +21,8 @@ const year = new Date().getFullYear();
       <h2 class="label">Elsewhere</h2>
       <div class="stack">
         {links.map((link) => <a href={link.href}>{link.label}</a>)}
-        <a href="/rss.xml">RSS</a>
-        <a href="/sitemap-index.xml">Sitemap</a>
+        <a href={url('/rss.xml')}>RSS</a>
+        <a href={url('/sitemap-index.xml')}>Sitemap</a>
       </div>
       <Record>
         <p>

@@ -16,6 +16,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { bibSectionFor, keywordList, type BibSection, type CV } from './cv-schema.ts';
+import { internalUrl } from './urls.ts';
 
 /**
  * Repository root — the directory holding `content/cv.yaml`, found by walking up
@@ -431,10 +432,14 @@ function citationOf(
  * address is used as it stands, anything else names a file under the site's
  * assets (`_layouts/bib.liquid`).
  */
-function linkOf(fields: Record<string, string>, doi: string | undefined): Link | undefined {
+function linkOf(
+  fields: Record<string, string>,
+  doi: string | undefined,
+  base: string,
+): Link | undefined {
   const asset = (name: string, directory: string) => {
     const value = deLatexUrl(fields[name]);
-    return value.includes('://') ? value : `/assets/${directory}/${value}`;
+    return value.includes('://') ? value : internalUrl(`/assets/${directory}/${value}`, base);
   };
   if (doi) return { href: `https://doi.org/${doi}`, field: 'doi', label: 'DOI' };
   if (fields.html) return { href: asset('html', 'html'), field: 'html', label: 'Paper' };
@@ -448,6 +453,7 @@ function toPublication(
   key: string,
   fields: Record<string, string>,
   raw: string,
+  base: string,
 ): Publication {
   const venueField = VENUE_FIELDS.find((name) => fields[name]);
   const venue = venueField ? deLatex(fields[venueField]) : '';
@@ -463,7 +469,7 @@ function toPublication(
     .filter(Boolean)
     .join(', ');
   const doi = fields.doi ? deLatexUrl(fields.doi) : undefined;
-  const link = linkOf(fields, doi);
+  const link = linkOf(fields, doi, base);
   return {
     key,
     type,
@@ -509,36 +515,66 @@ export interface BibEntry {
  */
 export function parseBib(raw: string): BibEntry[] {
   const entries: BibEntry[] = [];
-  const entryPattern = /^@([a-zA-Z]+)\s*\{\s*([^,]+),/gm;
+  const entryPattern = /^@([a-zA-Z]+)\s*([{(])/gm;
+  const directives = new Set(['comment', 'preamble', 'string']);
   let match: RegExpExecArray | null;
   while ((match = entryPattern.exec(raw)) !== null) {
-    const start = match.index + match[0].length;
-    // The entry ends at the closing brace balancing the one after the entry type.
-    let depth = 0;
-    let cursor = match.index;
+    const type = match[1].toLowerCase();
+    const open = match[2];
+    const close = open === '{' ? '}' : ')';
+    const bodyStart = match.index + match[0].length;
+    let depth = 1;
+    let braceDepth = 0;
+    let inQuotes = false;
+    let escaped = false;
+    let cursor = bodyStart;
     for (; cursor < raw.length; cursor++) {
-      if (raw[cursor] === '{') depth++;
-      else if (raw[cursor] === '}') {
-        depth--;
-        if (depth === 0) break;
+      const character = raw[cursor];
+      if (character === '"' && !escaped && braceDepth === 0) {
+        inQuotes = !inQuotes;
+      } else if (!inQuotes) {
+        if (open === '{') {
+          if (character === open) depth++;
+          else if (character === close && --depth === 0) break;
+        } else if (character === '{') {
+          braceDepth++;
+        } else if (character === '}' && braceDepth > 0) {
+          braceDepth--;
+        } else if (braceDepth === 0 && character === open) {
+          depth++;
+        } else if (braceDepth === 0 && character === close && --depth === 0) {
+          break;
+        }
       }
+      escaped = character === '\\' ? !escaped : false;
     }
-    entries.push({
-      type: match[1].toLowerCase(),
-      key: match[2].trim(),
-      fields: parseFields(raw.slice(start, cursor)),
-      raw: raw.slice(match.index, cursor + 1),
-    });
+    if (depth !== 0) break;
+    if (!directives.has(type)) {
+      const header = /^\s*([^,]+),/.exec(raw.slice(bodyStart, cursor));
+      if (!header) {
+        entryPattern.lastIndex = cursor + 1;
+        continue;
+      }
+      const fieldsStart = bodyStart + header[0].length;
+      entries.push({
+        type,
+        key: header[1].trim(),
+        fields: parseFields(raw.slice(fieldsStart, cursor)),
+        raw: raw.slice(match.index, cursor + 1),
+      });
+    }
+    entryPattern.lastIndex = cursor + 1;
   }
   return entries;
 }
 
-let bibliographyCache: Bibliography | undefined;
+const bibliographyCache = new Map<string, Bibliography>();
 
-export function bibliography(): Bibliography {
-  if (bibliographyCache) return bibliographyCache;
+export function bibliography(base = '/'): Bibliography {
+  const cached = bibliographyCache.get(base);
+  if (cached) return cached;
   const entries = parseBib(read(SOURCES.bibliography)).map((entry) =>
-    toPublication(entry.type, entry.key, entry.fields, entry.raw),
+    toPublication(entry.type, entry.key, entry.fields, entry.raw, base),
   );
   entries.sort((a, b) => b.year - a.year || a.title.localeCompare(b.title));
 
@@ -546,13 +582,14 @@ export function bibliography(): Bibliography {
   for (const entry of entries) counts.set(entry.kind, (counts.get(entry.kind) ?? 0) + 1);
   const years = entries.map((entry) => entry.year).filter((year) => year > 0);
 
-  bibliographyCache = {
+  const result = {
     source: SOURCES.bibliography,
     entries,
     byKind: [...counts].map(([kind, count]) => ({ kind, count })).sort((a, b) => b.count - a.count),
     years: span(years),
   };
-  return bibliographyCache;
+  bibliographyCache.set(base, result);
+  return result;
 }
 
 // ---------------------------------------------------------------- talks ----
@@ -646,7 +683,7 @@ const dashes = (value: string) => value.replace(/---/g, '—').replace(/(?<!-)--
 const unescape = (value: string) => value.replace(/\\([\\`*_{}[\]()#+\-.!"'~<>|])/g, '$1');
 
 /** Markdown emphasis and links, inline only — these bodies are a single line. */
-export function inlineHtml(markdown: string): string {
+export function inlineHtml(markdown: string, base = '/'): string {
   const escaped = dashes(markdown)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -657,7 +694,10 @@ export function inlineHtml(markdown: string): string {
     .trim();
   return unescape(
     escaped
-      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>')
+      .replace(
+        /\[([^\]]+)\]\(([^)\s]+)\)/g,
+        (_match, label: string, url: string) => `<a href="${internalUrl(url, base)}">${label}</a>`,
+      )
       .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
       .replace(/__([^_]+)__/g, '<b>$1</b>')
       .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<i>$1</i>')
@@ -724,7 +764,7 @@ export interface About {
 /** One full stop, not two: a paragraph that is one sentence already has one. */
 const sentence = (value: string) => (/[.!?]$/.test(value) ? value : `${value}.`);
 
-export function about(): About {
+export function about(base = '/'): About {
   const long = profileBlock().bio?.long ?? '';
   const paragraphs = long
     .split(/\n{2,}/)
@@ -732,7 +772,7 @@ export function about(): About {
     .filter(Boolean);
   return {
     source: `${SOURCES.cv} · profile.bio.long`,
-    paragraphs: paragraphs.map(inlineHtml),
+    paragraphs: paragraphs.map((paragraph) => inlineHtml(paragraph, base)),
     // The opening sentence, as written. Nothing is trimmed off it: an edit that
     // rewords the sentence changes the quote and nothing else. The full stop is
     // put back only when the split took one off — a one-sentence paragraph
@@ -799,16 +839,18 @@ export function profile(): Profile {
   };
 }
 
-const mediaUrl = (filename: string | undefined) =>
-  filename && hasSource(`content/media/${filename}`) ? `/media/${filename}` : undefined;
+const mediaUrl = (filename: string | undefined, base: string) =>
+  filename && hasSource(`content/media/${filename}`)
+    ? internalUrl(`/media/${filename}`, base)
+    : undefined;
 
 /** The display name, headline and profile-owned media for the pages that set them. */
-export const identity = () => {
+export const identity = (base = '/') => {
   const block = profileBlock();
   return {
     name: block.name ?? '',
     headline: block.headline ?? '',
-    portrait: mediaUrl(block.portrait),
-    favicon: mediaUrl(block.favicon),
+    portrait: mediaUrl(block.portrait, base),
+    favicon: mediaUrl(block.favicon, base),
   };
 };

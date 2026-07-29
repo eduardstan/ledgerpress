@@ -43,9 +43,17 @@ Use GitHub's **Use this template** button, create a repository, then:
 ```sh
 git clone https://github.com/YOUR-NAME/YOUR-REPOSITORY.git
 cd YOUR-REPOSITORY
+git remote add ledgerpress https://github.com/eduardstan/ledgerpress.git
+git fetch ledgerpress
 npm ci
 npm ci --prefix web
 ```
+
+This is the quickest route: GitHub gives the new repository a clean one-commit history rather than
+ledgerpress's history. That means its first upstream update must explicitly join unrelated
+histories, as documented below. Choose the history-preserving fork or clone route instead if clean
+ongoing merges matter more than a fresh history, especially before customising machinery. If
+GitHub does not show the button, use that history-preserving route.
 
 You need Node.js 22.12 or newer. Building the PDF locally also needs XeLaTeX, biber, latexmk and
 Poppler's `pdftotext`/`pdfinfo`; the included GitHub workflows provide those tools in CI.
@@ -101,6 +109,7 @@ gaps.
 npm test
 npm --prefix web run check
 npm --prefix web run build
+npm run check:deployment-base
 npm run check:adopter
 latexmk -xelatex -cd cv/cv.tex
 bash scripts/check-cv-baseline.sh
@@ -121,10 +130,12 @@ publishes `web/dist/` to the `gh-pages` branch.
 
 In the repository settings:
 
-1. Open **Pages**.
-2. Choose **Deploy from a branch**.
-3. Select `gh-pages` and `/ (root)`.
-4. Keep Actions enabled.
+1. Set `profile.site` to the exact published URL, including `/YOUR-REPOSITORY/` for a GitHub project
+   site.
+2. Open **Pages**.
+3. Choose **Deploy from a branch**.
+4. Select `gh-pages` and `/ (root)`.
+5. Keep Actions enabled.
 
 Push to `main`, or run **Deploy site** from the Actions tab. Pull requests run every build and gate
 without publishing.
@@ -150,17 +161,81 @@ Both layouts still input `cv/generated/cv-data.tex`, so a later fact edit reache
 
 ## Take later ledgerpress improvements
 
-Keep this repository as a second remote in your personal site. Template improvements flow in;
-personal data never flows out.
+Keep ledgerpress as a read-only second remote in your personal site. Template improvements flow in;
+personal data never flows out. Choose one route and keep it: the template route starts fastest but
+has one unrelated-history update; a fork or history-preserving clone keeps ancestry and makes every
+update an ordinary merge.
 
-Run once in your personal repository:
+### If you used **Use this template**
+
+The setup above already added the remote. For the first update, join the two histories, take the
+upstream machinery side of their initial add/add conflicts, and then restore your record before
+committing:
 
 ```sh
+git switch main
+git pull --ff-only
+git fetch ledgerpress
+git merge --allow-unrelated-histories --no-commit --no-ff -X theirs ledgerpress/main
+git restore --source=HEAD --staged --worktree content/
+git diff --check
+git diff --stat HEAD
+git commit -m "chore: connect ledgerpress updates"
+npm ci
+npm ci --prefix web
+npm test
+npm run check:adopter
+```
+
+`-X theirs` is deliberate only for this first unrelated merge: it takes ledgerpress's current
+machinery while the following `git restore` keeps your `content/`. Review the remaining diff before
+committing; if you have already customised machinery, use the history-preserving route below or
+resolve those files by hand.
+
+If you recorded the ledgerpress commit used to create your template, you may take only later
+upstream commits instead of joining histories. Replace the two values below with that recorded
+commit and the last commit you want, then run:
+
+```sh
+LEDGERPRESS_BASE=<RECORDED-TEMPLATE-COMMIT>
+LEDGERPRESS_LAST=<LAST-UPSTREAM-COMMIT>
+git fetch ledgerpress
+git cherry-pick --no-commit "$LEDGERPRESS_BASE".."$LEDGERPRESS_LAST"
+git restore --source=HEAD --staged --worktree content/
+git diff --check
+git commit -m "chore: take ledgerpress improvements"
+```
+
+That cherry-pick route deliberately does not create shared ancestry. Record the new last commit and
+repeat from it next time.
+
+After the first unrelated merge, every later update uses the ordinary merge recipe in the next
+section.
+
+### If you want history-preserving updates
+
+Either fork ledgerpress on GitHub and clone your fork:
+
+```sh
+git clone https://github.com/YOUR-NAME/YOUR-FORK.git YOUR-REPOSITORY
+cd YOUR-REPOSITORY
 git remote add ledgerpress https://github.com/eduardstan/ledgerpress.git
 git fetch ledgerpress
 ```
 
-For each update:
+Or create an empty repository of your own, then preserve ledgerpress's history while assigning the
+two remotes explicitly:
+
+```sh
+git clone https://github.com/eduardstan/ledgerpress.git YOUR-REPOSITORY
+cd YOUR-REPOSITORY
+git remote rename origin ledgerpress
+git remote add origin https://github.com/YOUR-NAME/YOUR-REPOSITORY.git
+git push -u origin main
+```
+
+Replace only `content/`, commit it to your own `origin`, and use this recipe for every update (and
+for every template-route update after its first merge):
 
 ```sh
 git switch main

@@ -17,11 +17,13 @@ import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { CV_SOURCE, editionYear, keysOf, service, serviceGroups, type Entry } from '../lib/cv';
 import { inline } from '../lib/inline';
+import { internalUrl } from '../lib/urls';
 
 // The same grouping the home page's service column uses, so the two pages
 // cannot disagree about a list they both read from `service[]`.
 const roles = service();
 const groups = serviceGroups();
+const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
 
 /** The editions an entry records, as the years the file lists. */
 const editions = (entry: Entry) => (entry.years ?? []).map(editionYear).join(', ');
@@ -128,7 +130,8 @@ const description =
       {noTerm.length} entries state neither <b>dates</b> nor <b>years[]</b>, so the column on the right
       is empty for them. {announcedOnly.length} of those carry an <b>announced</b> day ({
         announcedOnly.map((entry) => entry.org).join('; ')
-      }), which is the date the <a href="/lately/">register</a> announces the invitation on — the day it
+      }), which is the date the <a href={url('/lately/')}>register</a> announces the invitation on
+      — the day it
       was accepted, not a term of service, so it is not printed here as one. The remaining {
         dateless.length
       } carry no date of any kind ({dateless.map((entry) => entry.org).join('; ')}), and are shown

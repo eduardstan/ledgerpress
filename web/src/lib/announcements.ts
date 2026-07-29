@@ -197,7 +197,13 @@ function monthStamp(dates: string | undefined): string | undefined {
 
 // ------------------------------------------------------------ assembly -----
 
-function item(stamp: string, kind: string, markdown: string, source: string): Announcement {
+function item(
+  stamp: string,
+  kind: string,
+  markdown: string,
+  source: string,
+  base: string,
+): Announcement {
   const precision = precisionOf(stamp);
   if (!precision) throw new Error(`Not an ISO 8601 date: ${stamp} (${source}, "${markdown}")`);
   return {
@@ -207,7 +213,7 @@ function item(stamp: string, kind: string, markdown: string, source: string): An
     precision,
     kind,
     kindSlug: '',
-    html: inlineHtml(markdown),
+    html: inlineHtml(markdown, base),
     text: stripMarkdown(markdown),
     source,
   };
@@ -334,7 +340,7 @@ function cvEntryLabel(entries: Entry[], index: number): string {
 const cvSource = (key: string, label: string, edition?: number) =>
   `${SOURCES.cv} (${key}[] · ${label}${edition === undefined ? '' : ` · ${edition} edition`})`;
 
-function fromCv(into: Announcement[], undated: Undated[]): void {
+function fromCv(into: Announcement[], undated: Undated[], base: string): void {
   for (const [key, section] of sections(cv)) {
     const entries = entriesOf(section);
     // An entry with nothing to date it is only a gap where the section's facts
@@ -362,7 +368,7 @@ function fromCv(into: Announcement[], undated: Undated[]): void {
       const record = cvSource(key, cvEntryLabel(entries, entryIndex));
 
       const stamp = entry.announced ?? monthStamp(entry.dates);
-      if (stamp) into.push(item(stamp, kind, say(kind, { what, where, detail }), record));
+      if (stamp) into.push(item(stamp, kind, say(kind, { what, where, detail }), record, base));
 
       for (const edition of entry.years ?? []) {
         const year = typeof edition === 'number' ? edition : edition.year;
@@ -382,6 +388,7 @@ function fromCv(into: Announcement[], undated: Undated[]): void {
             kind,
             say(kind, { what, where, detail, year: String(year) }),
             editionRecord,
+            base,
           ),
         );
       }
@@ -424,8 +431,8 @@ function publicationStamp(entry: Publication): string | undefined {
   return month === -1 ? year : `${year}-${String(month + 1).padStart(2, '0')}`;
 }
 
-function fromBibliography(into: Announcement[], undated: Undated[]): void {
-  for (const entry of bibliography().entries) {
+function fromBibliography(into: Announcement[], undated: Undated[], base: string): void {
+  for (const entry of bibliography(base).entries) {
     const stamp = publicationStamp(entry);
     const source = `${SOURCES.bibliography} (${entry.key})`;
     if (!stamp) {
@@ -447,12 +454,13 @@ function fromBibliography(into: Announcement[], undated: Undated[]): void {
           where: md(entry.venue) || undefined,
         }),
         source,
+        base,
       ),
     );
   }
 }
 
-function fromTalks(into: Announcement[], undated: Undated[]): void {
+function fromTalks(into: Announcement[], undated: Undated[], base: string): void {
   for (const talk of parseBib(readSource(SOURCES.talks))) {
     const stamp = talk.fields.date?.trim();
     const source = `${SOURCES.talks} (${talk.key})`;
@@ -476,12 +484,13 @@ function fromTalks(into: Announcement[], undated: Undated[]): void {
           where: [field('eventtitle'), field('venue')].filter(Boolean).join(', ') || undefined,
         }),
         source,
+        base,
       ),
     );
   }
 }
 
-function fromPosts(into: Announcement[], undated: Undated[]): void {
+function fromPosts(into: Announcement[], undated: Undated[], base: string): void {
   for (const path of listSources(SOURCES.posts, ['.md', '.mdx'])) {
     const raw = readSource(path);
     const frontmatter = /^---\n([\s\S]*?)\n---/.exec(raw)?.[1] ?? '';
@@ -500,7 +509,7 @@ function fromPosts(into: Announcement[], undated: Undated[]): void {
     }
     const id = path.slice(`${SOURCES.posts}/`.length).replace(/\.(?:md|mdx)$/, '');
     into.push(
-      item(stamp, 'Writing', say('Writing', { what: link(md(title), `/blog/${id}/`) }), path),
+      item(stamp, 'Writing', say('Writing', { what: link(md(title), `/blog/${id}/`) }), path, base),
     );
   }
 }
@@ -549,16 +558,17 @@ export function allocateKindSlugs(names: Iterable<string>): Map<string, string> 
   return allocated;
 }
 
-let cache: Feed | undefined;
+const cache = new Map<string, Feed>();
 
-export function announcements(): Feed {
-  if (cache) return cache;
+export function announcements(base = '/'): Feed {
+  const cached = cache.get(base);
+  if (cached) return cached;
   const items: Announcement[] = [];
   const undated: Undated[] = [];
-  fromCv(items, undated);
-  fromBibliography(items, undated);
-  fromTalks(items, undated);
-  fromPosts(items, undated);
+  fromCv(items, undated, base);
+  fromBibliography(items, undated, base);
+  fromTalks(items, undated, base);
+  fromPosts(items, undated, base);
 
   // Newest first. Two facts sharing an instant are ordered by precision — a
   // dated announcement outranks a bare year that merely starts the same period —
@@ -588,7 +598,7 @@ export function announcements(): Feed {
   const kindSlugs = allocateKindSlugs(counts.keys());
   for (const announcement of items) announcement.kindSlug = kindSlugs.get(announcement.kind)!;
 
-  cache = {
+  const result = {
     items,
     kinds: [...counts]
       .map(([name, count]) => ({ name, slug: kindSlugs.get(name)!, count }))
@@ -596,7 +606,8 @@ export function announcements(): Feed {
     undated,
     sources: [SOURCES.cv, SOURCES.bibliography, SOURCES.talks, `${SOURCES.posts}/**/*.{md,mdx}`],
   };
-  return cache;
+  cache.set(base, result);
+  return result;
 }
 
 /** The date as the source states it, never finer. */

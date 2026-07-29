@@ -16,6 +16,7 @@ import {
   about,
   bibliography,
   profile,
+  parseBib,
   publicationKind,
   publicationSections,
   stripMarkdown,
@@ -24,6 +25,7 @@ import {
 } from './record.ts';
 import { keywordList } from './cv-schema.ts';
 import { announcements, formatStamp, say, shortVenue, TEMPLATES } from './announcements.ts';
+import { bibEntryCount } from '../../../scripts/build-cv-data.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const bib = bibliography();
@@ -46,7 +48,7 @@ for (const entry of bib.entries) {
     !entry.authors.some((a) => /[{}\\]/.test(a)),
     `${entry.key}: unresolved LaTeX in authors`,
   );
-  assert.ok(entry.raw.startsWith('@') && entry.raw.endsWith('}'), `${entry.key}: raw not captured`);
+  assert.ok(entry.raw.startsWith('@') && /[})]$/.test(entry.raw), `${entry.key}: raw not captured`);
 }
 
 const dataset = bib.entries.find((entry) => entry.key === 'kowhai2025cores');
@@ -87,6 +89,34 @@ assert.deepEqual(
 );
 
 const generated = readFileSync(root + 'cv/generated/cv-data.tex', 'utf8');
+const generatedPublicationCount = Number(
+  /\\newcommand\{\\cvPublicationsCount\}\{(\d+)\}/.exec(generated)?.[1],
+);
+assert.equal(
+  generatedPublicationCount,
+  bib.entries.length,
+  'the generated PDF count and website bibliography count disagree',
+);
+const parenthesized = String.raw`
+@article(parenthesized,
+  author = {Lovelace, Ada},
+  title = {A valid entry (with nested parentheses)},
+  journaltitle = {Journal of Durable Imports},
+  year = {1843}
+)
+`;
+const parsedParenthesized = parseBib(parenthesized);
+assert.equal(parsedParenthesized.length, 1, 'the website parser dropped a parenthesized entry');
+assert.equal(parsedParenthesized[0].fields.title, 'A valid entry (with nested parentheses)');
+assert.equal(
+  parsedParenthesized.length,
+  bibEntryCount(parenthesized),
+  'website and generated PDF counts disagree for parenthesized BibTeX',
+);
+assert.ok(
+  bib.entries.find((entry) => entry.key === 'kowhai2025cores')?.raw.endsWith(')'),
+  'the real cross-publication proof is no longer parenthesis-delimited',
+);
 const printedHeadings = [
   ...generated.matchAll(
     /\\printbibliography\[heading=bibsubheading, title=\{(.+?)\}, filter=Publications/g,

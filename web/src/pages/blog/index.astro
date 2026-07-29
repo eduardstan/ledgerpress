@@ -13,8 +13,10 @@ import Record from '../../components/Record.astro';
 import SectionHead from '../../components/SectionHead.astro';
 import { dateFormat, getPublishedPosts, postSource } from '../../lib/content';
 import { profile } from '../../lib/record';
+import { internalUrl } from '../../lib/urls';
 
 const posts = await getPublishedPosts();
+const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
 const labelsOf = (post: (typeof posts)[number]) => [...post.data.categories, ...post.data.tags];
 const labels = [...new Set(posts.flatMap(labelsOf))];
 
@@ -24,9 +26,12 @@ const description = `${posts.length} posts by ${profile().name}.`;
 <BaseLayout title="Blog" description={description}>
   <PageHead title="Blog">
     <p class="blurb">
-      <b>{posts.length} posts</b>, newest first. Each is announced in the <a href="/lately/"
+      <b>{posts.length} posts</b>, newest first. Each is announced in the <a
+        href={url('/lately/')}
         >register</a
-      > on the date its own front matter carries, and syndicated at <a href="/rss.xml">/rss.xml</a>.
+      > on the date its own front matter carries, and syndicated at <a href={url('/rss.xml')}
+        >/rss.xml</a
+      >.
     </p>
   </PageHead>
 
@@ -36,7 +41,7 @@ const description = `${posts.length} posts by ${profile().name}.`;
       posts.map((post) => (
         <li>
           <span class="k">
-            <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            <a href={url(`/blog/${post.id}/`)}>{post.data.title}</a>
             {labelsOf(post).length > 0 && <span class="sub">{labelsOf(post).join(' · ')}</span>}
           </span>
           <span class="v">{post.data.description}</span>

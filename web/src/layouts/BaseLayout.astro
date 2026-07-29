@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import ThemeScript from '../components/ThemeScript.astro';
 import { identity, profile } from '../lib/record';
+import { absoluteInternalUrl, internalUrl } from '../lib/urls';
 
 interface Props {
   title: string;
@@ -19,10 +20,14 @@ interface Props {
 }
 
 const { name } = profile();
-const { favicon } = identity();
+const base = import.meta.env.BASE_URL;
+const { favicon } = identity(base);
 const { title, description = `Personal site of ${name}.`, canonical: canonicalPath, noindex = false } =
   Astro.props;
-const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
+const canonical = canonicalPath
+  ? absoluteInternalUrl(canonicalPath, Astro.site!, base)
+  : Astro.url;
+const url = (path: string) => internalUrl(path, base);
 ---
 
 <html lang="en" data-theme="light">
@@ -33,13 +38,25 @@ const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {favicon && <link rel="icon" href={favicon} />}
-    <link rel="alternate" type="application/rss+xml" title={name} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={name} href={url('/rss.xml')} />
     {
       /* The masthead face and the body face are needed for first paint; the
          other four load as the page uses them. */
     }
-    <link rel="preload" href="/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/LedgerSerif-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href={url('/fonts/Archivo-Black.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={url('/fonts/LedgerSerif-Regular.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <ThemeScript />
     <slot name="head" />
   </head>

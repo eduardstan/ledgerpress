@@ -8,12 +8,15 @@ import { inline } from '../lib/inline';
 import { announcements, formatStamp } from '../lib/announcements';
 import { strands } from '../lib/strands';
 import { consistency, coverage } from '../lib/consistency';
+import { internalUrl } from '../lib/urls';
 
+const base = import.meta.env.BASE_URL;
+const url = (path: string) => internalUrl(path, base);
 const { name, affiliation } = profile();
-const { portrait } = identity();
-const bio = about();
-const bib = bibliography();
-const feed = announcements();
+const { portrait } = identity(base);
+const bio = about(base);
+const bib = bibliography(base);
+const feed = announcements(base);
 const research = strands();
 const gate = consistency();
 const researchDescription = research
@@ -203,7 +206,9 @@ const withheld = feed.items.length - shown.length;
           badges are the <b>metric</b> field, linked to the <b>rank_url</b> beside it.
         </p>
         <p>
-          This column and <a href="/professional_activities/">/professional_activities/</a> read the
+          This column and <a href={url('/professional_activities/')}
+            >/professional_activities/</a
+          > read the
           same list through the same grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot
           disagree. They once came from two files that had drifted apart; there is one file now, and
           it is the one the printed CV is generated from.
@@ -300,7 +305,7 @@ const withheld = feed.items.length - shown.length;
         }
       </ul>
       <p class="more-feed">
-        <a class="label" href="/lately/">All {feed.items.length} items →</a>
+        <a class="label" href={url('/lately/')}>All {feed.items.length} items →</a>
       </p>
       <Record>
         <p>
@@ -317,7 +322,7 @@ const withheld = feed.items.length - shown.length;
         <p>
           This column is capped at {LATELY}, so {shown.length} of {feed.items.length} are shown here
           and {withheld} {withheld === 1 ? 'is' : 'are'} not; the full feed is at{' '}
-          <a href="/lately/">/lately/</a>.
+          <a href={url('/lately/')}>/lately/</a>.
         </p>
       </Record>
     </div>
