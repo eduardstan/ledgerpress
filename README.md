@@ -55,8 +55,9 @@ histories, as documented below. Choose the history-preserving fork or clone rout
 ongoing merges matter more than a fresh history, especially before customising machinery. If
 GitHub does not show the button, use that history-preserving route.
 
-You need Node.js 22.12 or newer. Building the PDF locally also needs XeLaTeX, biber, latexmk and
-Poppler's `pdftotext`/`pdfinfo`; the included GitHub workflows provide those tools in CI.
+You need Node.js 22.12 or newer. Building the PDF locally also needs XeLaTeX, biber and latexmk;
+checking it against the included baseline additionally needs Poppler's `pdftotext`/`pdfinfo`. The
+GitHub workflows provide all of those tools in CI.
 
 Now replace the example:
 

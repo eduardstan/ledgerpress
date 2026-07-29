@@ -23,6 +23,7 @@ Astro 7 requires Node.js 22.12 or newer.
 | `src/lib/announcements.ts` | One generated announcement stream for home, `/lately/` and RSS |
 | `src/lib/consistency.ts`   | Production contradiction gate                                  |
 | `src/lib/inline.ts`        | Shared inline markup grammar                                   |
+| `src/lib/urls.ts`          | Canonical and project-subpath URL boundary                     |
 | `src/styles/global.css`    | The Ledger design system                                       |
 | `src/pages/`               | Static routes                                                  |
 
@@ -59,9 +60,10 @@ analytics or visitor tracking.
 
 ## Build behaviour
 
-`astro.config.mjs` reads `profile.site` for canonical URLs and runs the consistency gate after a
-production build. Development never refuses a contradiction; the inspect record shows it while the
-author works. The production build fails before anything can be published.
+`astro.config.mjs` reads `profile.site` for canonical URLs and the deployment base, then runs the
+consistency gate after a production build. Development never refuses a contradiction; the inspect
+record shows it while the author works. The production build fails before anything can be
+published.
 
 The deploy workflow builds the PDF first and stages it at `public/assets/cv.pdf`; a plain local site
 build omits the download rather than offering a stale file.

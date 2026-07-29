@@ -88,6 +88,7 @@ profile:
   site: https://ada.example     # final published URL. Include a project path,
                                 # e.g. https://name.github.io/repository/, when
                                 # the site is not served from the origin root.
+                                # Do not include a query string or fragment.
   headline: Reader in Analytical Engines        # your role, alone. No institution.
   affiliation:                  # smallest unit first: group, then department,
     - label: Analytical Engine Group            # then institution. A list, so a
@@ -255,6 +256,9 @@ supervision:
 Everything else is escaped for you, including `$`, `&`, `%` and `#` — `NZ$960,000` is safe.
 The **one** exception is a URL: no address may contain `\ ~ _ ^ $ { }`, so percent-encode those
 (`~` is `%7E`, `_` is `%5F`, `\` is `%5C`). The build refuses rather than emitting a wrong link.
+On the website, a root-relative address in inline link markup or a profile/section URL field is
+prefixed with the project path from `profile.site`; absolute and non-root-relative addresses are
+used as written.
 
 The CV is set in the Unicode TeX Gyre Pagella family. It includes Latin Extended characters such
 as the macrons in `Te Apārangi`; search the LaTeX log for `Missing character` if your record uses
