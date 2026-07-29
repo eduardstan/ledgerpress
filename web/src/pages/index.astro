@@ -1,0 +1,335 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Record from '../components/Record.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { about, bibliography, identity, profile, SOURCES, yearSpan } from '../lib/record';
+import { CV_SOURCE, isEditorial, service, serviceGroups, serviceWhen } from '../lib/cv';
+import { inline } from '../lib/inline';
+import { announcements, formatStamp } from '../lib/announcements';
+import { strands } from '../lib/strands';
+import { consistency, coverage } from '../lib/consistency';
+import { internalUrl } from '../lib/urls';
+
+const base = import.meta.env.BASE_URL;
+const url = (path: string) => internalUrl(path, base);
+const render = (text: string | undefined) => inline(text, base);
+const { name, affiliation } = profile();
+const { portrait } = identity(base);
+const bio = about(base);
+const bib = bibliography(base);
+const feed = announcements(base);
+const research = strands();
+const gate = consistency();
+const researchDescription = research
+  .map((strand, index) =>
+    index === 0 ? strand.title : strand.title[0].toLowerCase() + strand.title.slice(1),
+  )
+  .join(', ');
+
+/**
+ * Service, read from `content/cv.yaml` — the file the printed CV is generated
+ * from — through the grouping `/professional_activities/` uses.
+ *
+ * It used to be read from a hand-written third copy of the same list while that
+ * page read the YAML. The two pages therefore stated the same facts from two
+ * sources and disagreed on four of them. There is now one source for both.
+ */
+const roles = service();
+const groups = serviceGroups();
+const editorials = groups.filter((group) => isEditorial(group.role)).flatMap((group) => group.entries);
+
+const counts = [
+  { n: bib.entries.length, label: 'entries in this bibliography' },
+  ...bib.byKind.map((kind) => ({ n: kind.count, label: `${kind.kind.toLowerCase()} entries` })),
+  { n: editorials.length, label: 'editorial boards' },
+  { n: roles.length, label: 'service roles on record' },
+];
+
+/**
+ * How many announcements the front page carries. Six is what balances the third
+ * column against the lead at 1440 without the page turning into a scroll; the
+ * whole feed lives at /lately/. One edit here retunes it.
+ */
+const LATELY = 6;
+const shown = feed.items.slice(0, LATELY);
+const withheld = feed.items.length - shown.length;
+---
+
+<BaseLayout
+  title={name}
+  description={`${affiliation[0]}, ${affiliation.at(-1)}. ${researchDescription}.`}
+>
+  <section class="masthead">
+    <h1>{name}</h1>
+    {
+      /* The dateline states the size of the record, so both figures are counted
+         at build rather than typed. */
+    }
+    <div class="dateline label">
+      {affiliation.map((line) => <span>{line}</span>)}
+      <span class="em">
+        {bib.entries.length} publications · {editorials.length} editorial boards
+      </span>
+    </div>
+  </section>
+
+  <div class="sheet">
+    <div class="col lead">
+      {
+        /* The person, above the fold and inside the grid: a portrait and one
+           sentence in their own voice, both taken from the repository rather than
+           written for the occasion. */
+      }
+      <figure class:list={['person', { 'no-portrait': !portrait }]}>
+        {
+          portrait && (
+            <img
+              src={portrait}
+              width="500"
+              height="500"
+              alt={`Portrait of ${name}`}
+            />
+          )
+        }
+        <div>
+          <blockquote>{bio.firstPerson}</blockquote>
+          <figcaption class="label">{name} · {affiliation[0]}</figcaption>
+          <Record>
+            <p>Quoted verbatim from <b>{bio.firstPersonSource}</b>.</p>
+          </Record>
+        </div>
+      </figure>
+
+      <SectionHead source={bio.source}>The work</SectionHead>
+      {bio.paragraphs.map((paragraph) => <p set:html={paragraph} />)}
+      <Record>
+        <p>
+          <b>{bio.source}</b> — {bio.paragraphs.length} paragraphs, rendered verbatim. The printed CV
+          does not carry them: it prints <b>profile.bio.short</b>, the same person in the third
+          person.
+        </p>
+      </Record>
+
+      <SectionHead source={`${CV_SOURCE} · strands[]`}>Research strands</SectionHead>
+      <ol class="strands">
+        {
+          research.map((strand) => (
+            <li>
+              <h3>{strand.title}</h3>
+              <p>{strand.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <Record>
+        <p>
+          <b>{CV_SOURCE}</b> — <b>strands[]</b>, {research.length} entries in file order. The
+          title, explanatory copy and evidence note are all part of the adopter-owned record.
+        </p>
+        {
+          research.map((strand) => (
+            <p>
+              <b>{strand.title}</b> — {strand.source}
+              {strand.evidence.length > 0 && ` · ${strand.evidence.join(' ')}`}
+            </p>
+          ))
+        }
+      </Record>
+    </div>
+
+    <div class="col">
+      <SectionHead source={SOURCES.bibliography}>The count</SectionHead>
+      <ul class="stats">
+        {
+          counts.map((count) => (
+            <li>
+              <span class="n">{count.n}</span>
+              <span class="l label">{count.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <Record>
+        <p>
+          <b>{SOURCES.bibliography}</b> — {bib.entries.length} entries{
+            yearSpan(bib.years) && `, ${yearSpan(bib.years)}`
+          }, counted at build by parsing the file. The two service figures are counted from <b
+            >{CV_SOURCE}</b
+          >: <b>{editorials.length}</b> entries of <b>service[]</b> whose <b>title</b> matches
+          “editor” ({editorials.map((entry) => entry.org).join(', ')}), and <b>
+            {roles.length}
+          </b> entries in that list altogether.
+        </p>
+      </Record>
+
+      {
+        groups.map((group, index) => (
+          <>
+            <SectionHead
+              source={`${CV_SOURCE} · service[] · role: ${group.role}`}
+              id={index === 0 ? 'service' : undefined}
+            >
+              {group.role}
+            </SectionHead>
+            <ul class="defs">
+              {group.entries.map((entry) => (
+                <li>
+                  <span class="a">
+                    {entry.url ? (
+                      <a href={url(entry.url)} set:html={render(entry.org)} />
+                    ) : (
+                      <Fragment set:html={render(entry.org)} />
+                    )}
+                    {entry.metric &&
+                      (entry.rank_url ? (
+                        <a
+                          class="rank"
+                          href={url(entry.rank_url)}
+                          set:html={render(entry.metric)}
+                        />
+                      ) : (
+                        <span class="rank" set:html={render(entry.metric)} />
+                      ))}
+                  </span>
+                  {serviceWhen(entry) && (
+                    <span class="b label" set:html={render(serviceWhen(entry))} />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        ))
+      }
+      <Record>
+        <p>
+          <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length} entries grouped into {
+            groups.length
+          } roles by their own <b>title</b> field ({
+            groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
+          }), in the order those roles first appear in the file. The meta on each row is the entry's{' '}
+          <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the
+          badges are the <b>metric</b> field, linked to the <b>rank_url</b> beside it.
+        </p>
+        <p>
+          This column and <a href={url('/professional_activities/')}
+            >/professional_activities/</a
+          > read the
+          same list through the same grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot
+          disagree. They once came from two files that had drifted apart; there is one file now, and
+          it is the one the printed CV is generated from.
+        </p>
+      </Record>
+
+      {
+        /* The consistency gate's own record. The same function that renders here
+           throws in `astro:build:done`, so a published page cannot show an
+           unexcused contradiction — what a visitor can see is the roster, the
+           coverage, and anything that has been excused, with the reason. */
+      }
+      <Record>
+        <p>
+          <b>web/src/lib/consistency.ts</b> — the consistency gate: {coverage(gate)}. Each check
+          compares two hand-typed records of one fact — a date the fact states and the date it says
+          it was announced on — joined by being the same entry rather than by matching prose. A
+          contradiction refuses <code>astro build</code>; <code>astro dev</code> never fails, so this
+          block is where the author sees one.
+        </p>
+        {
+          gate.checks.map((check) => (
+            <p>
+              <b>{check.id}</b> — {check.statement}. Over {check.sources.join(', ')}.
+            </p>
+          ))
+        }
+        {
+          gate.contradictions.map((finding) => (
+            <p>
+              <b>{finding.check}</b> — contradiction · {finding.subject}
+              {finding.sides.map((side) => (
+                <>
+                  <br />
+                  {side.label}: {side.value} — <b>{side.source}</b>
+                </>
+              ))}
+              <br />
+              {finding.why}
+            </p>
+          ))
+        }
+        {
+          gate.excused.map((finding) => (
+            <p>
+              <b>{finding.check}</b> — excused ·{' '}
+              {finding.sides.map((side) => `${side.label} ${side.value}`).join(' vs ')} ·{' '}
+              {finding.subject} · <b>{finding.sides.map((side) => side.source).join(', ')}</b>
+              <br />
+              {finding.excused!.because} · expires {finding.excused!.until}
+            </p>
+          ))
+        }
+        {
+          gate.exceptionProblems.map((item) => (
+            <p>
+              Exception rejected — {item.what} {item.why} (<b>{item.source}</b>).
+            </p>
+          ))
+        }
+        {
+          gate.stale.map(({ subject, exception }) => (
+            <p>
+              <b>{exception.check}</b> — stale exception · {subject}
+              <br />
+              {exception.because} · expires {exception.until}
+            </p>
+          ))
+        }
+        {
+          gate.uncomparable.map((item) => (
+            <p>
+              Not compared — {item.what} {item.why} (<b>{item.source}</b>).
+            </p>
+          ))
+        }
+      </Record>
+    </div>
+
+    <div class="col">
+      <SectionHead source={SOURCES.cv}>Lately</SectionHead>
+      <ul class="feed">
+        {
+          shown.map((item) => (
+            <li>
+              <span class="when label">
+                <time datetime={item.stamp}>{formatStamp(item)}</time>
+                {' · '}
+                {item.kind}
+              </span>
+              <p set:html={item.html} />
+            </li>
+          ))
+        }
+      </ul>
+      <p class="more-feed">
+        <a class="label" href={url('/lately/')}>All {feed.items.length} items →</a>
+      </p>
+      <Record>
+        <p>
+          {feed.items.length} announcements, generated from the facts themselves — {
+            feed.sources.map((file, index) => (
+              <>
+                {index > 0 && ', '}
+                <b>{file}</b>
+              </>
+            ))
+          }. Nothing is written twice: a fact is announced on the date it carries, and the feed shows
+          that date at the precision the source states it and no finer.
+        </p>
+        <p>
+          This column is capped at {LATELY}, so {shown.length} of {feed.items.length} are shown here
+          and {withheld} {withheld === 1 ? 'is' : 'are'} not; the full feed is at{' '}
+          <a href={url('/lately/')}>/lately/</a>.
+        </p>
+      </Record>
+    </div>
+  </div>
+</BaseLayout>

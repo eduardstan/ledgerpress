@@ -1,0 +1,55 @@
+---
+import Record from './Record.astro';
+import { profile, SOURCES } from '../lib/record';
+import { internalUrl } from '../lib/urls';
+
+const { name, email, links, missing, address, addressSource } = profile();
+const year = new Date().getFullYear();
+const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
+---
+
+<footer class="sheet-footer" data-pagefind-ignore>
+  <div class="footer-grid">
+    <div>
+      <h2 class="label">Contact</h2>
+      {email && <a href={`mailto:${email}`}>{email}</a>}
+      <Record>
+        <p><b>{SOURCES.cv}</b> — <code>profile.email</code> and <code>profile.name</code>.</p>
+      </Record>
+    </div>
+    <div>
+      <h2 class="label">Elsewhere</h2>
+      <div class="stack">
+        {links.map((link) => <a href={url(link.href)}>{link.label}</a>)}
+        <a href={url('/rss.xml')}>RSS</a>
+        <a href={url('/sitemap-index.xml')}>Sitemap</a>
+      </div>
+      <Record>
+        <p>
+          <b>{SOURCES.cv}</b> — one link per <code>profile.links</code> entry. Scholar, ORCID,
+          GitHub and LinkedIn may be compact IDs whose addresses are derived; any other service is
+          a <code>{'{ label, url }'}</code> pair used by both outputs.
+          {
+            missing.length > 0 && (
+              <>
+                {' '}
+                No ID in the file, so not shown: {missing.map((kind) => <code>{kind}</code>)}.
+              </>
+            )
+          }
+        </p>
+      </Record>
+    </div>
+    <div>
+      <h2 class="label">Post</h2>
+      <address>{address.map((line) => <>{line}<br /></>)}</address>
+      <Record>
+        <p>
+          <b>{addressSource}</b> — <code>affiliation[]</code> broadest first, then{' '}
+          <code>address[]</code> and <code>place</code>.
+        </p>
+      </Record>
+    </div>
+  </div>
+  <p class="label colophon">&copy; {year} {name}</p>
+</footer>
