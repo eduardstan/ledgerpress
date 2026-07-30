@@ -135,7 +135,7 @@ The PDF is written to `cv/cv.pdf`. The website is written to `web/dist/`.
 - Search the repository and the built output for the previous person's name and domain.
   `web/src/lib/fixtures/record/` is the self-checks' own record and is never published; the rest
   should be yours.
-- Open the PDF and every website route before pushing.
+- Open all three printed documents and every website route before pushing.
 - Run the cold-start proof below.
 
 Do not solve a missing fact by guessing it. Omit the field; ledgerpress is designed to show honest

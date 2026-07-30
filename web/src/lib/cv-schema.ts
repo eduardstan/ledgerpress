@@ -424,7 +424,17 @@ function readSection(value: unknown, where: string): void {
   const entries = Array.isArray(value) ? value : map(value, where).entries;
   if (!Array.isArray(value)) {
     const written = value as Record<string, unknown>;
-    known(written, ['note', 'entries'], where);
+    // `heading` and `printed` are the record's own controls over the printed CV,
+    // read by scripts/build-cv-data.mjs. They are section-level, not entry-level.
+    known(written, ['note', 'entries', 'heading', 'printed'], where);
+    if (written.heading !== undefined) {
+      written.heading = text(written.heading, `${where}.heading`);
+    }
+    if (written.printed !== undefined && typeof written.printed !== 'boolean') {
+      throw new RecordError(
+        `${where}.printed: expected true or false, found ${describe(written.printed)}`,
+      );
+    }
     if (written.note !== undefined) {
       written.note = Array.isArray(written.note)
         ? written.note.map((line, index) => text(line, `${where}.note[${index}]`))
