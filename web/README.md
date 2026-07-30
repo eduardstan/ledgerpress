@@ -65,5 +65,6 @@ consistency gate after a production build. Development never refuses a contradic
 record shows it while the author works. The production build fails before anything can be
 published.
 
-The deploy workflow builds the PDF first and stages it at `public/assets/cv.pdf`; a plain local site
-build omits the download rather than offering a stale file.
+The deploy workflow builds the printed CVs first and stages them at `public/assets/cv.pdf`,
+`cv-short.pdf` and `cv-teaching.pdf`; a plain local site build omits each download rather than
+offering a stale file, and `/cv/` offers only the ones really staged.

@@ -5,8 +5,9 @@ name: Build CV
 # the example PDFs as artifacts.
 #
 # This workflow deliberately does NOT deploy or publish any PDF: deploy.yml builds
-# cv/cv.tex alone and stages it for the Astro site. The site links one canonical
-# CV; which PDFs it should offer is a separate question from whether they build.
+# the same three documents, stages them for the Astro site and publishes them.
+# The two workflows must therefore agree on the set — a document added here has
+# to be added there, or it builds for review and never reaches a reader.
 
 on:
   push:
@@ -27,6 +28,7 @@ on:
       - "package-lock.json"
       - "web/**"
       - ".github/workflows/cv.yml"
+      - ".github/workflows/deploy.yml"
   pull_request:
     paths:
       - "cv/**"
@@ -42,6 +44,7 @@ on:
       - "package-lock.json"
       - "web/**"
       - ".github/workflows/cv.yml"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 jobs:

@@ -1,5 +1,5 @@
 % -----------------------------------------------------------------------------
-% THE SHORT CV: the full record cut to one page.
+% THE SHORT CV: a compact cut of the full record.
 %
 % This file is a VARIANT. It repeats no fact: every line below either shares
 % cv/preamble.tex and cv/header.tex with the full CV, or names a generated macro
@@ -71,8 +71,10 @@
 
 % \cvPublicationsCount is how many entries content/publications.bib holds, not
 % how many the filter matches, so this guards against an empty file rather than
-% against an empty selection. A record with publications but nothing marked
-% `selected` prints this heading over nothing.
+% against an empty selection: a record with publications but nothing marked
+% `selected` still reaches the heading below. \cvbibfiltered is what keeps that
+% case honest - it prints a line naming the filter instead of leaving the
+% heading over silence. See cv/preamble.tex.
 \cvdeclarebib{Publications}
 \ifnum\cvPublicationsCount>0
 \section{\textbf{Selected Publications}}
@@ -80,7 +82,7 @@
 \begin{refsection}[../content/publications.bib]
 \nocite{*}
 
-\printbibliography[heading=bibsubheading, title={Peer-reviewed}, filter=shortselected, resetnumbers=true]
+\cvbibfiltered{Peer-reviewed}{shortselected}
 
 \end{refsection}
 \fi

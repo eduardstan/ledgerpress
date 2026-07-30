@@ -12,6 +12,9 @@ name: Deploy site
 # On a pull request everything runs except the publish step, so a PR proves the
 # publishable site still builds. The CV workflow separately runs the synthetic
 # adopter proof for both outputs in its pinned TeX environment.
+#
+# It builds and publishes all three printed documents. /cv/ links the full CV as
+# the primary download and the two variants beside it.
 
 on:
   push:
@@ -59,27 +62,40 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes poppler-utils
 
-      # The printed CV is typeset from the committed generated form of the same
-      # content/cv.yaml the /cv/ page renders. It is never committed — no binary
-      # enters git history — so it is built here and dropped into web/public/
-      # before astro build picks it up. The texlive pin and the xelatex
-      # requirement are explained in cv.yml, which builds the same document on
-      # its own for review.
-      - name: Build the CV PDF 📄
+      # The printed CVs are typeset from the committed generated form of the same
+      # content/cv.yaml the /cv/ page renders. They are never committed — no
+      # binary enters git history — so they are built here and dropped into
+      # web/public/ before astro build picks them up. The texlive pin and the
+      # xelatex requirement are explained in cv.yml, which builds the same three
+      # documents on its own for review. Both workflows must build the same set:
+      # a variant that only cv.yml builds is a variant the site cannot offer.
+      - name: Build the CV PDFs 📄
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: cv.tex
+          root_file: |
+            cv.tex
+            short.tex
+            teaching.tex
           working_directory: cv
           latexmk_use_xelatex: true
           texlive_version: "2024"
 
-      - name: Check the printed CV baseline 🔎
-        run: bash scripts/check-cv-baseline.sh
+      - name: Check the printed CV baselines 🔎
+        run: |
+          bash scripts/check-cv-baseline.sh
+          bash scripts/check-cv-baseline.sh cv/short.pdf
+          bash scripts/check-cv-baseline.sh cv/teaching.pdf
 
-      - name: Stage the CV PDF 📄
+      # The published names are cv.pdf and cv-<variant>.pdf: cv.pdf keeps the
+      # address every existing link already uses, and the variants sort beside it
+      # under a name that still says "CV" once it is sitting in a stranger's
+      # downloads folder — which a bare short.pdf does not.
+      - name: Stage the CV PDFs 📄
         run: |
           mkdir -p web/public/assets
           cp cv/cv.pdf web/public/assets/cv.pdf
+          cp cv/short.pdf web/public/assets/cv-short.pdf
+          cp cv/teaching.pdf web/public/assets/cv-teaching.pdf
 
       - name: Install web dependencies 💾
         run: npm ci
@@ -109,6 +125,8 @@ jobs:
         run: |
           test -f web/dist/.nojekyll
           test -f web/dist/assets/cv.pdf
+          test -f web/dist/assets/cv-short.pdf
+          test -f web/dist/assets/cv-teaching.pdf
           test -f web/dist/index.html
 
       - name: Deploy 🚀
