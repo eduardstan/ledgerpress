@@ -33,13 +33,30 @@ import { inline } from '../lib/inline';
 import { internalUrl } from '../lib/urls';
 
 /**
- * The printed CV, built from `cv/cv.tex` by the deploy workflow and dropped
- * into `public/` just before `astro build`. It is never committed — no binary
- * enters git history — so it is absent from a plain local build and the offer
- * to download it is made only when the file is really there.
+ * The printed CVs, built from `cv/*.tex` by the deploy workflow and dropped into
+ * `public/` just before `astro build`. They are never committed — no binary
+ * enters git history — so they are absent from a plain local build and each
+ * offer to download is made only when that file is really there.
+ *
+ * The full CV is the primary download and always the first link. The two
+ * variants are secondary: each is the same record curated for one reader, so
+ * they are offered beside it rather than in place of it, and a repository whose
+ * workflow builds only `cv.tex` simply shows the one link.
  */
 const CV_PDF = 'web/public/assets/cv.pdf';
 const pdf = hasSource(CV_PDF);
+const variants = [
+  // What each variant curates, not how long it runs: the length depends on the
+  // record, so a page count written here would be a number the build never
+  // checked. Both descriptions restate the curation their own .tex declares.
+  { file: 'cv-short.pdf', label: 'Short CV', tex: 'cv/short.tex', blurb: 'the record cut short' },
+  {
+    file: 'cv-teaching.pdf',
+    label: 'Teaching CV',
+    tex: 'cv/teaching.tex',
+    blurb: 'led by teaching and supervision',
+  },
+].filter((variant) => hasSource(`web/public/assets/${variant.file}`));
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => internalUrl(path, base);
 const render = (text: string | undefined) => inline(text, base);
@@ -99,6 +116,20 @@ const description =
         <p class="blurb">
           <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from{' '}
           {CV_SOURCE} by <b>cv/cv.tex</b> when this page was built, so it states the same facts.
+          {variants.length > 0 && (
+            <>
+              {' '}
+              Curated cuts of the same record:{' '}
+              {variants.map((variant, index) => (
+                <>
+                  {index > 0 && ' · '}
+                  <a href={url(`/assets/${variant.file}`)}>{variant.label} (PDF)</a> —{' '}
+                  {variant.blurb}, from <b>{variant.tex}</b>
+                </>
+              ))}
+              .
+            </>
+          )}
         </p>
       )
     }

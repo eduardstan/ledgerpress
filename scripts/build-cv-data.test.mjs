@@ -545,3 +545,60 @@ for (const document of ["cv.tex", "short.tex", "teaching.tex"]) {
     assert.deepEqual([...new Set(referenced.filter((name) => !defined.has(name)))], []);
   });
 }
+
+// The two workflows must build the same documents. .github/workflows/cv.yml
+// builds every printed document for review; deploy.yml builds them again and is
+// the only one that publishes. A document added to one and not the other either
+// never reaches a reader, or reaches one unreviewed - and the /cv/ page links
+// what deploy.yml stages, so a missing stage is a 404 on a live site.
+test("both workflows build every printed document, and the deploy publishes each one", () => {
+  const workflow = (name) => readFileSync(join(root, ".github/workflows", name), "utf8");
+  const built = (text) => [...text.matchAll(/^\s*(\w+)\.tex$/gm)].map((m) => m[1]).sort();
+  const deploy = workflow("deploy.yml");
+
+  const documents = ["cv", "short", "teaching"];
+  assert.deepEqual([...new Set(built(workflow("cv.yml")))], documents, "cv.yml must build every printed document");
+  assert.deepEqual([...new Set(built(deploy))], documents, "deploy.yml must build the same set cv.yml does");
+
+  // The published names: cv.pdf keeps the address every existing link uses, and
+  // each variant is staged as cv-<variant>.pdf beside it.
+  for (const document of documents) {
+    const asset = document === "cv" ? "cv.pdf" : `cv-${document}.pdf`;
+    assert.ok(deploy.includes(`cp cv/${document}.pdf web/public/assets/${asset}`), `deploy.yml must stage ${document}.pdf as ${asset}`);
+    assert.ok(deploy.includes(`test -f web/dist/assets/${asset}`), `deploy.yml must prove ${asset} reaches the published distribution`);
+  }
+});
+
+// A filtered bibliography that matches nothing prints nothing at all - biblatex
+// skips the block, its own heading included. Under a hand-written \section that
+// leaves a title with silence beneath it, which an adopter cannot diagnose: the
+// document is not broken, no entry simply carries the keyword yet. Every
+// hand-written filtered block therefore goes through \cvbibfiltered, which says
+// so and names the filter. The generated sections in cv/generated/cv-data.tex
+// are exempt and must stay so: cv.tex prints one heading over the whole
+// sequence, so a section that matches nothing correctly leaves no trace.
+for (const document of ["cv.tex", "short.tex", "teaching.tex"]) {
+  test(`cv/${document} announces a filtered bibliography that matched nothing`, () => {
+    const tex = layout(document);
+    assert.doesNotMatch(
+      tex,
+      /\\printbibliography\[[^\]]*filter=/,
+      `${document} must print a filtered bibliography through \\cvbibfiltered, or a filter that matches nothing leaves its heading over silence`
+    );
+  });
+}
+
+test("\\cvbibfiltered prints its own heading and a named placeholder when nothing matched", () => {
+  const tex = layout("preamble.tex");
+  const macro = tex.match(/\\newcommand\{\\cvbibfiltered\}\[2\]\{([\s\S]*?)\n\}/);
+  assert.ok(macro, "cv/preamble.tex must define \\cvbibfiltered");
+  assert.match(macro[1], /\\setcounter\{cvbibmatched\}\{0\}/, "the count must be reset before the block, not carried over from an earlier one");
+  assert.match(macro[1], /\\ifnum\\value\{cvbibmatched\}=0/, "the placeholder must be guarded on nothing having matched");
+  assert.match(macro[1], /#1/, "the placeholder must repeat the heading biblatex skipped");
+  assert.match(macro[1], /#2/, "the placeholder must name the filter, which is the word to grep for");
+  assert.match(
+    tex,
+    /\\AtEveryBibitem\{\\stepcounter\{cvbibmatched\}\}/,
+    "nothing increments the count without this hook, so every section would report itself empty"
+  );
+});
