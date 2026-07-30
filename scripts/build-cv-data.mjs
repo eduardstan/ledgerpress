@@ -229,13 +229,14 @@ const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
  * Section keys derive from identifiers (e.g. `field_work` -> "Field Work")
  * when a section does not declare an explicit `heading:`. Course-table column
  * headers, by contrast, are printed verbatim as written in the record.
+ * Section-key casing must match `headingCase` in `web/src/lib/cv-schema.ts`.
  */
 const headingCase = (key) => key.replace(/[\p{L}\p{N}]+/gu, capitalise);
 
-/** The header row for those columns: the key names verbatim, as headings. */
-const tableHeader = (rows, strict = true) =>
+/** Course-table labels stay verbatim; per-section schema fields explicitly pass `headingCase`. */
+const tableHeader = (rows, strict = true, displayKey = (key) => key) =>
   `${tableKeys(rows, strict)
-    .map((k) => `\\textbf{${escapeLatex(k)}}`)
+    .map((key) => `\\textbf{${escapeLatex(displayKey(key))}}`)
     .join(" & ")} \\\\`;
 
 /** One `\cventry`, plus its bullets and its table where it has them. */
@@ -583,7 +584,7 @@ function render(cv) {
       macro(`cv${name}Note`, note.map(renderInline).join("\n\\cvnotesep\n")),
       macro(`cv${name}`, rows.map((r, i) => `\\ifnum${i + 1}>\\cvmax\\else\n${entry(r)}\n\\fi`).join("\n\n")),
       macro(`cv${name}Rows`, rows.length ? tableRows(rows, false) : ""),
-      macro(`cv${name}Header`, rows.length ? tableHeader(rows, false) : ""),
+      macro(`cv${name}Header`, rows.length ? tableHeader(rows, false, headingCase) : ""),
       macro(`cv${name}Inline`, rows.map((r) => arg(r.detail ? `${r.title} (${r.detail})` : r.title)).join(", ")),
       `\\newcommand{\\cv${name}Count}{${rows.length}}`
     );

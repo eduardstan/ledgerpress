@@ -152,6 +152,17 @@ test("a table's header is its own row keys verbatim, so renaming a key renames a
   assert.equal(tableHeader([{ "Programme / level": "B.Sc.", "Key topics": "proxies" }]), "\\textbf{Programme / level} & \\textbf{Key topics} \\\\");
 });
 
+test("a section header macro title-cases its schema field names", () => {
+  const tex = render({
+    profile: { name: "Alex Newcomer" },
+    appointments: [{ title: "Postdoctoral Researcher", org: "University of Example" }],
+  });
+  assert.match(
+    tex,
+    /\\newcommand\{\\cvAppointmentsHeader\}\{%\n\\textbf\{Title\} & \\textbf\{Org\} \\\\%\n\}/
+  );
+});
+
 test("a table refuses rows whose columns or key order disagree", () => {
   assert.throws(
     () =>

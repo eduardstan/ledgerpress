@@ -72,7 +72,6 @@ const leadership = entriesOf(cv.leadership);
 /** Every `rows:` table under a teaching post — the courses themselves. */
 const courses = teaching.flatMap((block) => block.rows ?? []);
 const withItems = (rows: { items?: string[] }[]) => rows.filter((row) => row.items?.length).length;
-const label = (key: string) => key;
 const appointmentEntries = countPhrase(appointments.length);
 const awardEntries = countPhrase(awards.length);
 
@@ -199,7 +198,7 @@ const description =
               <thead>
                 <tr>
                   {Object.keys(block.rows![0]).map((key) => (
-                    <th scope="col">{label(key)}</th>
+                    <th scope="col">{key}</th>
                   ))}
                 </tr>
               </thead>
@@ -207,7 +206,7 @@ const description =
                 {block.rows!.map((row) => (
                   <tr>
                     {Object.entries(row).map(([key, value]) => (
-                      <td data-label={label(key)} set:html={render(value)} />
+                      <td data-label={key} set:html={render(value)} />
                     ))}
                   </tr>
                 ))}

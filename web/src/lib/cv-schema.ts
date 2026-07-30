@@ -612,6 +612,7 @@ export const keysOf = (rows: object[]) =>
  *
  * Used for announcement kind chips on `/lately/`. Course-table column headers,
  * by contrast, are printed verbatim as written in the record.
+ * Section-key casing must match `headingCase` in `scripts/build-cv-data.mjs`.
  */
 export const headingCase = (key: string) =>
   key.replace(/[\p{L}\p{N}]+/gu, (word) => word[0].toUpperCase() + word.slice(1));
