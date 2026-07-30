@@ -670,7 +670,7 @@ export interface ServiceGroup {
  * Service entries grouped by their own `title` field, roles in the order they
  * first appear in the file.
  *
- * Shared by `/professional_activities/` and the home page's service column so
+ * Shared by `/service/` and the home page's service column so
  * the two cannot group the same list differently — the whole reason this reader
  * exists is that those two pages used to take these facts from two files.
  */

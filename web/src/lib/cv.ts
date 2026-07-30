@@ -30,5 +30,5 @@ export const sections = () => sectionsOf(cv);
 
 export const service = () => entriesOf(cv.service);
 
-/** Service grouped by role — the home page and `/professional_activities/`. */
+/** Service grouped by role — the home page and `/service/`. */
 export const serviceGroups = () => groupByTitle(service());

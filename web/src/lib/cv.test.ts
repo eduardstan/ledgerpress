@@ -224,7 +224,7 @@ for (const row of supervision) {
 
 assert.ok(awards.length > 0, 'the fixture lost its award entries');
 
-// `service[]` feeds /professional_activities/, which groups by `title` and hangs
+// `service[]` feeds /service/, which groups by `title` and hangs
 // a linked rank badge off `metric`. A `metric` with no `rank_url` is a badge that
 // claims a ranking and cannot show where it is published.
 assert.ok(service.length >= 1, `service[] lost entries: ${service.length}`);
@@ -259,7 +259,7 @@ for (const entry of service) {
       );
   }
 }
-// The home page and /professional_activities/ both render `service[]` through
+// The home page and /service/ both render `service[]` through
 // `groupByTitle()`. The grouping is asserted here against the same YAML, so a
 // change that makes one page's grouping lose entries fails the build rather than
 // making the two pages disagree again.
@@ -330,7 +330,7 @@ assert.equal(`${countPhrase(1).text} · Books & chapters`, '1 entry · Books & c
 
 const countSensitivePages = [
   '../pages/index.astro',
-  '../pages/professional_activities.astro',
+  '../pages/service.astro',
   '../pages/projects/index.astro',
   '../pages/publications/[...sort].astro',
   '../pages/talks.astro',

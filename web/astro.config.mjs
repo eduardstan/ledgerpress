@@ -11,7 +11,12 @@ import { parse } from 'yaml';
 import { consistency, report } from './src/lib/consistency.ts';
 import { readCv } from './src/lib/cv-schema.ts';
 import { legacyRedirects } from './src/lib/legacy-urls.ts';
-import { cssInternalUrls, deploymentBase, rehypeInternalUrls } from './src/lib/urls.ts';
+import {
+  cssInternalUrls,
+  deploymentBase,
+  internalUrl,
+  rehypeInternalUrls,
+} from './src/lib/urls.ts';
 
 const recordSource = 'content/cv.yaml';
 const content = readCv(
@@ -71,7 +76,9 @@ export default defineConfig({
   base,
   // Addresses the Jekyll site published and this one does not generate. See
   // `src/lib/legacy-urls.ts` for why they are written down rather than derived.
-  redirects: legacyRedirects,
+  redirects: Object.fromEntries(
+    Object.entries(legacyRedirects).map(([from, to]) => [from, internalUrl(to, base)]),
+  ),
   markdown: {
     // Astro 7 renders Markdown with Sätteri by default, and Sätteri's plugin API
     // is deliberately not remark/rehype compatible. The existing posts rely on
