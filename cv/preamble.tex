@@ -230,28 +230,33 @@
 % `printed: false`, prints nothing at all - no heading, no gap - so this line
 % can stay. Reorder the CV by reordering these lines in the document body.
 %
-% The whole thing is one group so that \cvmax is restored afterwards: a
-% \cvpart[3] must not silently truncate the section written after it.
+% The entry limit and printing are grouped so that \cvmax is restored
+% afterwards: a \cvpart[3] must not silently truncate the section written after
+% it. \cvdeclare stays OUTSIDE that group: its \providecommand declarations are
+% local, so scoping them here would leave \cv<Key>Printed and the rest undefined
+% for a later hand-written block - the cold-start trap they exist to prevent.
 %
 % The count is tested alongside the section's own: \cvpart[0] asks for no
 % entries, and every entry is then suppressed by the generated guard, so
 % printing the heading would open an itemize with nothing to put in it.
-\newcommand{\cvpart}[3][\cvall]{{%
-  \renewcommand{\cvmax}{#1}%
+\newcommand{\cvpart}[3][\cvall]{%
   \cvdeclare{#3}%
-  \ifnum#1>0
-  \ifnum\csname cv#3Count\endcsname>0
-  \ifnum\csname cv#3Printed\endcsname>0
-  \section{\textbf{#2}}
-  \vspace{-0.4mm}
-  \resumeSubHeadingListStart
-  \csname cv#3\endcsname
-  \resumeSubHeadingListEnd
-  \vspace{-6mm}
-  \fi
-  \fi
-  \fi
-}}
+  {%
+    \renewcommand{\cvmax}{#1}%
+    \ifnum#1>0
+    \ifnum\csname cv#3Count\endcsname>0
+    \ifnum\csname cv#3Printed\endcsname>0
+    \section{\textbf{#2}}
+    \vspace{-0.4mm}
+    \resumeSubHeadingListStart
+    \csname cv#3\endcsname
+    \resumeSubHeadingListEnd
+    \vspace{-6mm}
+    \fi
+    \fi
+    \fi
+  }%
+}
 
 % One section of the record's own section sequence: `\cvpart`, unless this file
 % has already laid that key out by hand above. Every line of \cvAutoSections is
@@ -264,16 +269,20 @@
 % `\cvpart`, with the second line of every entry set the other way. Which
 % sections use which is a layout choice and lives here; cv.yaml says nothing
 % about it.
-\newcommand{\cvpartflush}[3][\cvall]{{%
-  \renewcommand{\cventry}[4]{%
-    \vspace{0.5mm}\item
-    \begin{tabularx}{0.98\textwidth}[t]{@{}Y >{\raggedleft\arraybackslash}p{4.8cm}@{}}
-        \textbf{##1} & \textit{\footnotesize{##3}} \\
-        \footnotesize{\textit{##2}} & \footnotesize{##4}
-    \end{tabularx}
-    \vspace{-2.4mm}
+\newcommand{\cvpartflush}[3][\cvall]{%
+  \cvdeclare{#3}%
+  {%
+    \renewcommand{\cventry}[4]{%
+      \vspace{0.5mm}\item
+      \begin{tabularx}{0.98\textwidth}[t]{@{}Y >{\raggedleft\arraybackslash}p{4.8cm}@{}}
+          \textbf{##1} & \textit{\footnotesize{##3}} \\
+          \footnotesize{\textit{##2}} & \footnotesize{##4}
+      \end{tabularx}
+      \vspace{-2.4mm}
+    }%
+    \cvpart[#1]{#2}{#3}%
   }%
-  \cvpart[#1]{#2}{#3}}}
+}
 
 % A table hanging under an entry: `rows:` in cv.yaml. #1 is a generated
 % equal-width column specification, #2 the generated headings and #3 the rows.
