@@ -31,8 +31,9 @@ const {
 } = Astro.props;
 const canonical = canonicalPath ? absoluteInternalUrl(canonicalPath, Astro.site!, base) : Astro.url;
 const url = (path: string) => internalUrl(path, base);
-/** Anything below `/blog/` is one post; the `/blog/` index itself is not. */
-const isPost = /\/blog\/./.test(canonical.pathname);
+/** Anything below the blog index is one post; the index itself is not. */
+const blogIndex = url('/blog/');
+const isPost = canonical.pathname.startsWith(blogIndex) && canonical.pathname !== blogIndex;
 const socialImageUrl =
   portrait && /\.(?:png|jpe?g|webp)$/i.test(portrait)
     ? new URL(portrait, Astro.site!).href
