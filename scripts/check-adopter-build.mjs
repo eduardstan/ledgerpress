@@ -120,7 +120,7 @@ appointments: []
 outreach:
   - title: Sediment cores for schools
     org: Somewhere Public Library
-    date: 2026
+    dates: "2026"
 `
   );
   writeFileSync(join(content, "publications.bib"), "");

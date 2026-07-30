@@ -23,6 +23,7 @@ import {
   entriesOf,
   keysOf,
   noteOf,
+  optsOutOfCv,
   printsInCv,
   sections,
 } from '../lib/cv';
@@ -245,15 +246,20 @@ const description =
       } keys {keysOf(leadership)}. It is an ordinary section of the file, and the printed CV prints
       every section unless the record says otherwise.{' '}
       {
-        printsInCv(cv.leadership) ? (
+        optsOutOfCv(cv.leadership) ? (
+          <>
+            This one carries <code>printed: false</code>, which is the whole answer to keeping a
+            section on the site and off the PDF.
+          </>
+        ) : printsInCv(cv.leadership) ? (
           <>
             This one says nothing, so it is printed there as well as here, under the heading its own
             key spells out.
           </>
         ) : (
           <>
-            This one carries <code>printed: false</code>, which is the whole answer to keeping a
-            section on the site and off the PDF.
+            This one holds no entries in this record, so there is nothing for either output to
+            print.
           </>
         )
       }
