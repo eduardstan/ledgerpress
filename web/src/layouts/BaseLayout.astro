@@ -12,7 +12,8 @@ interface Props {
   /**
    * Where this page's content really lives, when it is an alternate view of
    * another page. One `<link rel="canonical">` is emitted either way: a second,
-   * conflicting one would make search engines ignore both.
+   * conflicting one would make search engines ignore both. Alternate views
+   * leave Open Graph and Twitter metadata to the canonical page.
    */
   canonical?: string;
   /** Keeps the page out of the Pagefind index — `<main>` is the indexed body. */

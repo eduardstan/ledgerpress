@@ -73,6 +73,8 @@ try {
   assert.ok(home.includes(`property="og:url" content="${site}"`), "og:url lost deployment site base");
   assert.ok(home.includes('property="og:type" content="website"'));
   assert.ok(home.includes('name="twitter:card" content="summary"'));
+  assert.ok(home.includes(`&copy; ${new Date().getFullYear()} `), "footer copyright year is not separated from the owner name");
+  assert.ok(home.includes('<a href="https://github.com/eduardstan/ledgerpress">ledgerpress</a>'), "footer template credit link is missing");
   if (portrait) {
     assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
     if (/\.(?:png|jpe?g|webp)$/i.test(portrait)) {
