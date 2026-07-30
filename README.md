@@ -1,8 +1,51 @@
 # Your CV and your website, from one file, that cannot disagree.
 
+[![Build CV](https://github.com/eduardstan/ledgerpress/actions/workflows/cv.yml/badge.svg)](https://github.com/eduardstan/ledgerpress/actions/workflows/cv.yml)
+[![Deploy site](https://github.com/eduardstan/ledgerpress/actions/workflows/deploy.yml/badge.svg)](https://github.com/eduardstan/ledgerpress/actions/workflows/deploy.yml)
+[![Prettier](https://github.com/eduardstan/ledgerpress/actions/workflows/prettier.yml/badge.svg)](https://github.com/eduardstan/ledgerpress/actions/workflows/prettier.yml)
+[![MIT licence](https://img.shields.io/github/license/eduardstan/ledgerpress)](https://github.com/eduardstan/ledgerpress/blob/main/LICENSE)
+[![Live example](https://img.shields.io/website?url=https%3A%2F%2Feduardstan.github.io%2Fledgerpress%2F&label=live%20example)](https://eduardstan.github.io/ledgerpress/)
+
 ledgerpress turns one academic record into a searchable website and a typeset PDF CV. Drop in the
 BibTeX you already have, write your record in `content/`, and every publication, date, count, feed
 item and source note is rebuilt from the same facts.
+
+**[See the working example →](https://eduardstan.github.io/ledgerpress/)**
+
+<table>
+  <tr>
+    <th>Website</th>
+    <th>Printed PDF</th>
+  </tr>
+  <tr>
+    <td width="62%">
+      <a href="https://eduardstan.github.io/ledgerpress/">
+        <img src=".github/readme/home-desktop.png" alt="The ledgerpress example home page">
+      </a>
+    </td>
+    <td width="38%">
+      <a href="https://eduardstan.github.io/ledgerpress/assets/cv.pdf">
+        <img src=".github/readme/cv-print.png" alt="The first page of the typeset example CV">
+      </a>
+    </td>
+  </tr>
+</table>
+
+One record publishes both. Change a fact once; the website and PDF change together.
+
+<details>
+  <summary>See the dark theme and the website's record-derived CV page</summary>
+  <table>
+    <tr>
+      <td width="50%">
+        <img src=".github/readme/home-dark.png" alt="The ledgerpress example home page in dark mode">
+      </td>
+      <td width="50%">
+        <img src=".github/readme/cv-page.png" alt="The ledgerpress CV page with record provenance">
+      </td>
+    </tr>
+  </table>
+</details>
 
 **`content/` owns your record — every fact about you, and which sections your CV prints.** Replacing
 the example with your own material is a `content/` job and nothing else. Changing the **design** —
@@ -17,11 +60,11 @@ publish.
 
 ## Why ledgerpress
 
-- **Import wins adoption.** Replace `content/publications.bib` with a Zotero, Mendeley, DBLP or
-  Google Scholar export. Journal articles, chapters, books, datasets and other BibTeX types render
-  without transcription.
+- **Import wins adoption.** Turn your public ORCID employment and education into reviewable YAML,
+  then replace `content/publications.bib` with a Zotero, Mendeley, DBLP or Google Scholar export.
+  Journal articles, chapters, books, datasets and other BibTeX types render without transcription.
 - **CV variants win the argument.** Facts and layout are separate. A short CV and a teaching CV ship
-  alongside the full one, built from the same record—without copying a single appointment or
+  alongside the full one, built from the same record - without copying a single appointment or
   publication. Each is one small `.tex` that names sections, orders them and says how many to print.
 - **The record balances.** Publication groups are declared once and drive both the website's type
   column and the PDF's headings and numbering.
@@ -371,7 +414,8 @@ The important contracts are kept executable:
 
 ## Roadmap
 
-- Structured importers are coming; none is claimed here today.
+- The ORCID importer covers public employment, education and qualifications. Importing ORCID works
+  is deliberately not on this list: your BibTeX export is the more complete source.
 - An existing LaTeX or PDF CV can realistically be transcribed by giving it and
   `content/README.md` to an assistant, then reviewing every resulting fact. That is not a supported
   import route yet: a generative step sits between source facts and a public claim, so ledgerpress
