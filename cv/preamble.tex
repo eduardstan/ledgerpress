@@ -407,6 +407,37 @@
   \vspace{0.8mm}\textbf{#1}\par\vspace{-0.3mm}
 }
 
+% A \printbibliography whose filter matches nothing prints NOTHING - biblatex
+% skips the block, its own heading included. Where the record's own sections are
+% printed that is the wanted behaviour and needs no help: cv.tex prints one
+% \section over \cvPublicationsSections, so a section that matches nothing simply
+% leaves no trace. It is wrong wherever a document writes its OWN \section above
+% a single filtered block, as cv/short.tex does: the adopter gets a title with
+% silence underneath and nothing to diagnose it by.
+%
+% \cvbibfiltered prints such a block and, when it matched nothing, says so and
+% names the filter. It does not fail the build: an adopter who has simply not
+% marked any work yet has a valid record, and a variant they never asked for must
+% not stop their CV from building. The line names the filter and the document
+% that defined it, which is the pair to grep for - cv/short.tex defines
+% `shortselected` beside the comment explaining which keyword fills it.
+%
+% The count comes from \AtEveryBibitem, which steps a global counter as each
+% entry is typeset, so it is already correct on the line after the block. Nothing
+% is typeset by the step itself: a document with matches is byte-identical.
+\newcounter{cvbibmatched}
+\AtEveryBibitem{\stepcounter{cvbibmatched}}
+\newcommand{\cvbibfiltered}[2]{%
+  \setcounter{cvbibmatched}{0}%
+  \printbibliography[heading=bibsubheading, title={#1}, filter=#2, resetnumbers=true]%
+  \ifnum\value{cvbibmatched}=0
+    \vspace{0.8mm}\textbf{#1}\par\vspace{-0.3mm}
+    {\footnotesize Nothing in the bibliography matches the \texttt{#2} filter,
+    so this section is empty. That filter is defined in \texttt{cv/\jobname.tex},
+    which explains what it selects.\par}
+  \fi
+}
+
 % No filters here. Which entry type belongs under which heading is a curated
 % opinion, so it is declared in `content/cv.yaml` under `publications:` and
 % `talks:` and read by the website too. build-cv-data.mjs turns each declared

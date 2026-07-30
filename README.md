@@ -259,8 +259,8 @@ affected baselines and explain why in `data/cv-baseline/README.md`.
 
 ## Deploy on GitHub Pages
 
-The deploy workflow builds and validates both outputs, stages the fresh PDF into the site, and
-publishes `web/dist/` to the `gh-pages` branch.
+The deploy workflow builds and validates the website and all three printed documents, stages the
+fresh PDFs into the site, and publishes `web/dist/` to the `gh-pages` branch.
 
 The branch must exist before Pages can be pointed at it, so publish first and configure second:
 
@@ -299,11 +299,15 @@ merge you resolve rather than a conflict with your record.
 
 Three documents ship, all built from the one record:
 
-| File              | Builds to         | What it is                                                       |
-| ----------------- | ----------------- | ---------------------------------------------------------------- |
-| `cv/cv.tex`       | `cv/cv.pdf`       | the full CV, and the one the website links                       |
-| `cv/short.tex`    | `cv/short.pdf`    | one page: appointments, education, awards, selected publications |
-| `cv/teaching.tex` | `cv/teaching.pdf` | teaching and supervision first, appointments truncated           |
+| File              | Builds to         | Published as              | What it is                                                |
+| ----------------- | ----------------- | ------------------------- | --------------------------------------------------------- |
+| `cv/cv.tex`       | `cv/cv.pdf`       | `/assets/cv.pdf`          | the full CV, and the primary download on `/cv/`           |
+| `cv/short.tex`    | `cv/short.pdf`    | `/assets/cv-short.pdf`    | appointments, education, awards and selected publications |
+| `cv/teaching.tex` | `cv/teaching.pdf` | `/assets/cv-teaching.pdf` | teaching and supervision first, appointments truncated    |
+
+The deploy workflow builds and publishes all three; `/cv/` links the full CV first and the two
+variants beside it. The published names keep `cv.pdf` where every existing link already points and
+prefix each variant with `cv-`, so a downloaded file still says what it is once it has left the site.
 
 ```sh
 latexmk -xelatex -cd cv/short.tex
@@ -326,7 +330,11 @@ the contact block are written once and shared. A variant differs only in layout,
   `content/cv.yaml`.
 - **Print a narrower slice of the bibliography** with a `\defbibfilter` in the variant's own preamble,
   matching a keyword you set on the entries in `content/publications.bib`. `cv/short.tex` filters on
-  `selected` this way.
+  `selected` this way, and prints it with `\cvbibfiltered{<heading>}{<filter>}` rather than
+  `\printbibliography`. Use the same macro in your own variant: biblatex prints _nothing_ for a filter
+  that matches nothing, its heading included, so a raw `\printbibliography` under your own `\section`
+  would leave a title with silence beneath it. `\cvbibfiltered` prints one line naming the filter
+  instead — nothing yet marked `selected` is a valid record, not a broken build.
 
 That last one is deliberate and worth knowing: do **not** add a "Selected publications" section under
 `publications:` in `content/cv.yaml` to get it. That list is one ordering shared by the full CV and the
@@ -345,8 +353,11 @@ For prose a variant needs and the full CV does not — a teaching statement in p
 focus — add a top-level section with a `note:` and no entries; see `teaching_statement:` in
 `content/cv.yaml`. `profile:` itself is a fixed set of fields.
 
-Add a variant to CI by adding its file to `root_file:` in `.github/workflows/cv.yml` and recording a
-baseline for it; `data/cv-baseline/README.md` has the two commands.
+Add a variant to CI by adding its file to `root_file:` in **both** `.github/workflows/cv.yml` and
+`.github/workflows/deploy.yml`, staging it in the deploy workflow, adding its conditional link in
+`web/src/pages/cv.astro`, and recording a baseline for it; `data/cv-baseline/README.md` has the two
+commands. The two workflows must name the same set — one builds for review, the other is the only
+one that publishes — and `npm test` fails when they disagree.
 
 ## Take later ledgerpress improvements
 
@@ -471,8 +482,6 @@ The important contracts are kept executable:
   `content/README.md` to an assistant, then reviewing every resulting fact. That is not a supported
   import route yet: a generative step sits between source facts and a public claim, so ledgerpress
   ships no official prompt or verification checklist and promises no automatic accuracy.
-- A variant that prints a filtered bibliography has no count of what its filter matched, only of what
-  the `.bib` holds, so it prints its heading over nothing when the filter matches no entry.
 
 ## Licence
 

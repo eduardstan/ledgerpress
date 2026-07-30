@@ -95,6 +95,10 @@ Publication and talk grouping is declared under
   contradict. It walks every top-level list and never joins facts by matching prose.
 - Counts, provenance, omissions, sorting views, announcements, and gaps are derived at build time.
   Do not replace them with hand-written numbers or copy.
+- A `\printbibliography` whose filter matches nothing prints nothing at all, its own heading
+  included. Under a hand-written `\section` that leaves a title over silence, so every hand-written
+  filtered block goes through `\cvbibfiltered` (`cv/preamble.tex`), which names the filter that
+  matched nothing instead of failing the build. The generated sections are exempt and must stay so.
 - A zero-entry bibliography must skip its entire `refsection`; biber otherwise silently emits `[0]`
   labels. `\cvdeclare` and `\cvdeclarebib` keep missing sections safe for a minimal record, and
   `scripts/build-cv-data.test.mjs` proves every document names only macros they define.
@@ -112,12 +116,16 @@ and the bundled `LedgerSerif` faces. Keep those names distinct and intentional.
 
 ## Delivery
 
-`.github/workflows/deploy.yml` builds `cv/cv.tex` alone, runs its baseline, stages that PDF, builds
-the website, and publishes the generated distribution to `gh-pages`: the site links one canonical CV,
-and whether it should offer the variants is unanswered. `.github/workflows/cv.yml` builds all three,
-checks each baseline, exposes them as review artifacts, and runs the whole adopter cold start inside
-its pinned TeX environment. The deploy workflow has no path filters because almost any tracked file
-can affect a build.
+`.github/workflows/deploy.yml` builds all three printed documents, runs each baseline, stages them
+into the website's ignored assets directory as `cv.pdf` and `cv-<variant>.pdf`, builds the website,
+and publishes the generated distribution to `gh-pages`. `/cv/` links the full CV as the primary
+download and the variants beside it, each offered only when its file is really staged; `.gitignore`
+lists the three staged names.
+`.github/workflows/cv.yml` builds the same three for review, checks each baseline, exposes them as
+artifacts, and runs the whole adopter cold start inside its pinned TeX environment. The two must
+agree on the set — a document only one of them builds either never reaches a reader or reaches one
+unreviewed — and `scripts/build-cv-data.test.mjs` fails when they disagree. The deploy workflow has
+no path filters because almost any tracked file can affect a build.
 
 ## Maintaining this file
 
