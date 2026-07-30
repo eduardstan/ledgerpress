@@ -18,3 +18,17 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+Third-Party Notices
+
+This project derives part of its LaTeX CV layout from the following third-party work:
+
+Academic CV Template
+- Upstream Work: Academic CV Template
+- Author: Dubasi Pavan Kumar (Email: pavankumard.pg19.ma@nitp.ac.in, LinkedIn: https://www.linkedin.com/in/im-pavankumar/)
+- Primary Location: Overleaf Template Gallery (https://www.overleaf.com/latex/templates/)
+- License Terms: MIT License (declared in source header) / Creative Commons Attribution 4.0 International (CC BY 4.0) (Overleaf Gallery listing)
+- Derived Files: cv/preamble.tex (and LaTeX CV layouts under cv/)
+
