@@ -1,5 +1,5 @@
 /**
- * Self-check for the announcement stream, against the repository's real data.
+ * Self-check for the announcement stream, against `fixtures/record/`.
  *
  *   cd web && node --experimental-strip-types src/lib/announcements.test.ts
  *
@@ -13,6 +13,11 @@
 import assert from 'node:assert/strict';
 import { allocateKindSlugs, announcements, TEMPLATES } from './announcements.ts';
 import { bibliography, SOURCES } from './record.ts';
+
+assert.ok(
+  process.env.LEDGERPRESS_RECORD_ROOT,
+  'run this with LEDGERPRESS_RECORD_ROOT=src/lib/fixtures/record',
+);
 
 const feed = announcements();
 

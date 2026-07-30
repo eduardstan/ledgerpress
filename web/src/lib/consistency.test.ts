@@ -1,7 +1,12 @@
 /**
- * Self-check for the consistency gate, against the repository's real data.
+ * Self-check for the consistency gate, against `fixtures/record/`.
  *
  *   cd web && node --experimental-strip-types src/lib/consistency.test.ts
+ *
+ * The fixture is what proves the gate works: it carries the second hand-typed
+ * date the gate needs something to compare against, which an adopter's record
+ * may not. The gate over the REAL record runs in `live-record.test.ts` and in
+ * `astro build`.
  *
  * Three consumers read one verdict: the page renders it, `astro:build:done`
  * throws on it, and this asserts on it in ~200ms without a full build. The
@@ -11,8 +16,6 @@
  * and that it stays silent on a fresh copy of this template.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import {
   CHECKS,
   consistency,
@@ -21,11 +24,17 @@ import {
   report,
   restoreRejectedFindings,
 } from './consistency.ts';
-import { SOURCES } from './record.ts';
+import { readSource, SOURCES } from './record.ts';
+
+assert.ok(
+  process.env.LEDGERPRESS_RECORD_ROOT,
+  'run this with LEDGERPRESS_RECORD_ROOT=src/lib/fixtures/record',
+);
 
 const gate = consistency();
 
-// The branch is publishable. This is the assertion `astro build` also makes.
+// The fixture is publishable. `live-record.test.ts` makes the same assertion
+// about content/, which is what `astro build` refuses on.
 assert.deepEqual(gate.contradictions, [], report(gate));
 assert.deepEqual(gate.exceptionProblems, [], report(gate));
 
@@ -33,7 +42,7 @@ assert.deepEqual(gate.exceptionProblems, [], report(gate));
 assert.ok(gate.comparisons > 0, `only ${gate.comparisons} comparisons made`);
 assert.match(coverage(gate), /\d+ comparisons/);
 
-// The example record needs no exceptions; adopters start from a clean gate.
+// The fixture needs no exceptions; adopters start from a clean gate.
 assert.deepEqual(gate.excused, []);
 
 const ok = {
@@ -104,9 +113,7 @@ assert.ok(restored.every((finding) => finding.excused === undefined));
 // hand-typed records of one fact; a fresh copy has one — a date — and no second
 // one to disagree with it. This is a property of the design, not a threshold:
 // with no `announced:` anywhere there is nothing to compare, so nothing fires.
-const root = fileURLToPath(new URL('../../../', import.meta.url));
-const second = (path: string, pattern: RegExp) =>
-  (readFileSync(root + path, 'utf8').match(pattern) ?? []).length;
+const second = (path: string, pattern: RegExp) => (readSource(path).match(pattern) ?? []).length;
 assert.equal(
   gate.comparisons + gate.uncomparable.length,
   second(SOURCES.cv, /^\s*announced:/gm) + second(SOURCES.bibliography, /^\s*announced\s*=/gm),

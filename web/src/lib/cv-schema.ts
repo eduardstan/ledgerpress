@@ -248,6 +248,350 @@ export interface CV extends Record<string, Section | Profile | BibSections | und
   strands?: Section;
 }
 
+// ------------------------------------------------------------ the boundary --
+
+/**
+ * A record this file cannot accept, stated the way an adopter can act on it.
+ *
+ * Nothing but the message matters: a stack trace into a bundled Astro chunk is
+ * not an error message. Every one of these names the file, the field path and
+ * what was expected instead.
+ */
+export class RecordError extends Error {
+  override name = 'RecordError';
+}
+
+/** What a value is, in the words the record's author would use for it. */
+const describe = (value: unknown): string =>
+  value === null || value === undefined
+    ? 'nothing'
+    : Array.isArray(value)
+      ? 'a list'
+      : value instanceof Date
+        ? 'a date'
+        : typeof value === 'object'
+          ? 'a map'
+          : `${typeof value} ${JSON.stringify(value)}`;
+
+const isMap = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date);
+
+/**
+ * A scalar as text.
+ *
+ * `dates: 2021` is a year and a year is obviously a date, so YAML making it a
+ * number is not the author's mistake to fix — and a YAML parser configured for
+ * timestamps turns `announced: 2019-11-20` into a Date, which is the same
+ * accident one type further on. Both are coerced here.
+ *
+ * This is not date normalisation: the spelling an entry uses reaches the page
+ * exactly as written, which is what `content/README.md` promises. Only the
+ * JavaScript type changes.
+ */
+function text(value: unknown, where: string): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  throw new RecordError(`${where}: expected text, found ${describe(value)}`);
+}
+
+/** The same, for a field that may simply be absent. */
+const optionalText = (value: unknown, where: string): string | undefined =>
+  value === null || value === undefined ? undefined : text(value, where);
+
+function list(value: unknown, where: string): unknown[] {
+  if (!Array.isArray(value))
+    throw new RecordError(`${where}: expected a list, found ${describe(value)}`);
+  return value;
+}
+
+function map(value: unknown, where: string): Record<string, unknown> {
+  if (!isMap(value)) throw new RecordError(`${where}: expected a map, found ${describe(value)}`);
+  return value;
+}
+
+/** Every field one entry may carry — the fields `Entry` above declares. */
+const ENTRY_FIELDS = [
+  'title',
+  'org',
+  'place',
+  'dates',
+  'detail',
+  'url',
+  'items',
+  'announced',
+  'except',
+  'metric',
+  'rank_url',
+  'years',
+  'funding',
+  'count',
+  'rows',
+] as const;
+
+/** The entry fields the record writes as prose, and the page prints verbatim. */
+const ENTRY_TEXT = [
+  'org',
+  'place',
+  'dates',
+  'detail',
+  'url',
+  'announced',
+  'metric',
+  'rank_url',
+  'funding',
+  'count',
+] as const;
+
+const PROFILE_FIELDS = [
+  'name',
+  'site',
+  'headline',
+  'affiliation',
+  'place',
+  'address',
+  'email',
+  'website',
+  'links',
+  'portrait',
+  'favicon',
+  'bio',
+  'focus',
+  'footer',
+] as const;
+
+/** A field the record names that this file does not. Almost always a typo. */
+function known(value: Record<string, unknown>, fields: readonly string[], where: string): void {
+  for (const field of Object.keys(value)) {
+    if (!fields.includes(field)) {
+      throw new RecordError(
+        `${where}.${field}: unknown field. The fields here are: ${fields.join(', ')}.`,
+      );
+    }
+  }
+}
+
+function readEntry(value: unknown, where: string): void {
+  const entry = map(value, where);
+  known(entry, ENTRY_FIELDS, where);
+  entry.title = text(entry.title, `${where}.title`);
+  for (const field of ENTRY_TEXT) {
+    const coerced = optionalText(entry[field], `${where}.${field}`);
+    if (coerced !== undefined) entry[field] = coerced;
+  }
+  if (entry.items !== undefined) {
+    entry.items = list(entry.items, `${where}.items`).map((item, index) =>
+      text(item, `${where}.items[${index}]`),
+    );
+  }
+  if (entry.rows !== undefined) {
+    entry.rows = list(entry.rows, `${where}.rows`).map((row, index) => {
+      const columns = map(row, `${where}.rows[${index}]`);
+      for (const [column, cell] of Object.entries(columns)) {
+        columns[column] = text(cell, `${where}.rows[${index}].${column}`);
+      }
+      return columns;
+    });
+  }
+  if (entry.years !== undefined) {
+    entry.years = list(entry.years, `${where}.years`).map((edition, index) => {
+      const at = `${where}.years[${index}]`;
+      if (typeof edition === 'number') return edition;
+      const written = map(edition, at);
+      known(written, ['year', 'announced'], at);
+      if (typeof written.year !== 'number') {
+        throw new RecordError(`${at}.year: expected a year, found ${describe(written.year)}`);
+      }
+      const announced = optionalText(written.announced, `${at}.announced`);
+      if (announced !== undefined) written.announced = announced;
+      return written;
+    });
+  }
+  if (entry.except !== undefined) {
+    entry.except = list(entry.except, `${where}.except`).map((exception, index) => {
+      const at = `${where}.except[${index}]`;
+      const declared = map(exception, at);
+      known(declared, ['check', 'because', 'until'], at);
+      for (const field of ['check', 'because', 'until'] as const) {
+        declared[field] = text(declared[field], `${at}.${field}`);
+      }
+      return declared;
+    });
+  }
+}
+
+function readSection(value: unknown, where: string): void {
+  const entries = Array.isArray(value) ? value : map(value, where).entries;
+  if (!Array.isArray(value)) {
+    const written = value as Record<string, unknown>;
+    // `heading` and `printed` are the record's own controls over the printed CV,
+    // read by scripts/build-cv-data.mjs. They are section-level, not entry-level.
+    known(written, ['note', 'entries', 'heading', 'printed'], where);
+    if (written.heading !== undefined) {
+      written.heading = text(written.heading, `${where}.heading`);
+    }
+    if (written.printed !== undefined && typeof written.printed !== 'boolean') {
+      throw new RecordError(
+        `${where}.printed: expected true or false, found ${describe(written.printed)}`,
+      );
+    }
+    if (written.note !== undefined) {
+      written.note = Array.isArray(written.note)
+        ? written.note.map((line, index) => text(line, `${where}.note[${index}]`))
+        : text(written.note, `${where}.note`);
+    }
+  }
+  list(entries, `${where}.entries`).forEach((entry, index) =>
+    readEntry(entry, `${where}[${index}]`),
+  );
+}
+
+function readBibSections(value: unknown, where: string): void {
+  const declared = map(value, where);
+  known(declared, ['sections'], where);
+  list(declared.sections, `${where}.sections`).forEach((section, index) => {
+    const at = `${where}.sections[${index}]`;
+    const group = map(section, at);
+    known(
+      group,
+      ['title', 'short', 'types', 'keywords', 'exclude_keywords', 'prefix', 'printed'],
+      at,
+    );
+    group.title = text(group.title, `${at}.title`);
+    group.short = text(group.short, `${at}.short`);
+    for (const field of ['types', 'keywords', 'exclude_keywords'] as const) {
+      if (group[field] !== undefined) {
+        group[field] = list(group[field], `${at}.${field}`).map((keyword, position) =>
+          text(keyword, `${at}.${field}[${position}]`),
+        );
+      }
+    }
+    const prefix = optionalText(group.prefix, `${at}.prefix`);
+    if (prefix !== undefined) group.prefix = prefix;
+    if (group.printed !== undefined && typeof group.printed !== 'boolean') {
+      throw new RecordError(
+        `${at}.printed: expected true or false, found ${describe(group.printed)}`,
+      );
+    }
+  });
+}
+
+function readProfile(value: unknown, where: string): void {
+  const profile = map(value, where);
+  known(profile, PROFILE_FIELDS, where);
+  profile.name = text(profile.name, `${where}.name`);
+  for (const field of [
+    'site',
+    'headline',
+    'place',
+    'email',
+    'portrait',
+    'favicon',
+    'focus',
+    'footer',
+  ] as const) {
+    const coerced = optionalText(profile[field], `${where}.${field}`);
+    if (coerced !== undefined) profile[field] = coerced;
+  }
+  if (profile.site) {
+    let published: URL;
+    try {
+      published = new URL(profile.site as string);
+    } catch {
+      throw new RecordError(
+        `${where}.site: expected an absolute HTTP(S) URL without a query or fragment, found ${JSON.stringify(profile.site)}`,
+      );
+    }
+    if (
+      !['http:', 'https:'].includes(published.protocol) ||
+      published.search.length > 0 ||
+      published.hash.length > 0
+    ) {
+      throw new RecordError(
+        `${where}.site: expected an absolute HTTP(S) URL without a query or fragment, found ${JSON.stringify(profile.site)}`,
+      );
+    }
+  }
+  if (profile.address !== undefined) {
+    profile.address = list(profile.address, `${where}.address`).map((line, index) =>
+      text(line, `${where}.address[${index}]`),
+    );
+  }
+  if (profile.affiliation !== undefined) {
+    profile.affiliation = list(profile.affiliation, `${where}.affiliation`).map((entry, index) => {
+      const at = `${where}.affiliation[${index}]`;
+      const written = map(entry, at);
+      known(written, ['label', 'url'], at);
+      written.label = text(written.label, `${at}.label`);
+      const url = optionalText(written.url, `${at}.url`);
+      if (url !== undefined) written.url = url;
+      return written;
+    });
+  }
+  if (profile.website !== undefined) {
+    const site = map(profile.website, `${where}.website`);
+    known(site, ['label', 'url'], `${where}.website`);
+    site.label = text(site.label, `${where}.website.label`);
+    site.url = text(site.url, `${where}.website.url`);
+  }
+  if (profile.links !== undefined) {
+    const links = map(profile.links, `${where}.links`);
+    for (const [service, link] of Object.entries(links)) {
+      const at = `${where}.links.${service}`;
+      if (isMap(link)) {
+        known(link, ['label', 'url'], at);
+        link.label = text(link.label, `${at}.label`);
+        link.url = text(link.url, `${at}.url`);
+      } else {
+        links[service] = text(link, at);
+      }
+    }
+  }
+  if (profile.bio !== undefined) {
+    const bio = map(profile.bio, `${where}.bio`);
+    known(bio, ['short', 'long'], `${where}.bio`);
+    for (const field of ['short', 'long'] as const) {
+      const coerced = optionalText(bio[field], `${where}.bio.${field}`);
+      if (coerced !== undefined) bio[field] = coerced;
+    }
+  }
+}
+
+/**
+ * The parsed `content/cv.yaml`, checked and coerced once, at the one boundary
+ * every reader crosses.
+ *
+ * Five website readers use this file — `astro.config.mjs`, `cv.ts` through
+ * Vite, and `record.ts`, `announcements.ts` and `consistency.ts` under plain
+ * node — and all five call this, so a record that reaches any page has already
+ * been through it. The record is normalised in place and returned; nothing is
+ * reordered, renamed or reworded.
+ */
+export function readCv(parsed: unknown, path = 'content/cv.yaml'): CV {
+  if (!isMap(parsed)) {
+    throw new RecordError(
+      `${path}: expected a map of \`profile:\` and sections, found ${describe(parsed)}. ` +
+        'See content/README.md for the smallest file that builds.',
+    );
+  }
+  readProfile(parsed.profile, `${path}: profile`);
+  for (const [key, value] of Object.entries(parsed)) {
+    if (key === 'profile') continue;
+    const where = `${path}: ${key}`;
+    if (Array.isArray(value) || Array.isArray((value as { entries?: unknown } | null)?.entries)) {
+      readSection(value, where);
+    } else if (Array.isArray((value as { sections?: unknown } | null)?.sections)) {
+      readBibSections(value, where);
+    } else {
+      throw new RecordError(
+        `${where}: expected a list of entries, a map with \`entries:\`, or a bibliography ` +
+          `grouping with \`sections:\` — found ${describe(value)}.`,
+      );
+    }
+  }
+  return parsed as CV;
+}
+
 /** Every top-level section, in file order. `profile:` is not one. */
 export const sections = (source: CV): [string, Section][] =>
   Object.entries(source).filter(

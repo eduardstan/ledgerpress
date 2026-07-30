@@ -229,6 +229,11 @@ appointment (`Department of Geology`), the role held on a piece of fieldwork (`C
 the fluency of a language (`Native`), the explanation of a research strand. Read the section, not the
 field name, to know what to write.
 
+A bare year such as `dates: 2021` may be left unquoted: the record boundary coerces that scalar to
+the text `2021`, without normalising the date spelling. A list or map where text is expected, or an
+unknown field such as a misspelled `dates`, is refused with an error naming `content/cv.yaml` and
+the exact field path.
+
 A classification or grade is part of the title string: `M.Sc. in Earth Sciences (First Class
 Honours)`, `Ph.D. in Mathematics (Excellent cum laude)`.
 
@@ -459,19 +464,23 @@ numbering prefixes and key. The `/talks/` page deliberately does not relabel tal
 declaration: its badges and descriptions remain each entry's own `keywords` and `note`, so
 `printed: false` on a talk section only omits that section from the PDF.
 
-`talks.bib` entries look like this — the entry type and every field name matters:
+`talks.bib` entries look like this:
 
 ```bibtex
 @unpublished{talk_agu_2024,
   author     = {Lovelace, Ada},
   title      = {What the engine cannot do},
-  note       = {Invited talk},          % also the label in the register, and its filter
+  note       = {Invited talk},          % optional: the label in the register
   eventtitle = {AGU Fall Meeting},
   venue      = {Washington, D.C., United States},
   date       = {2024-12-11},            % ISO 8601, required
-  keywords   = {invited}                % invited | oral | poster
+  keywords   = {invited}                % optional: the badge and category count
 }
 ```
+
+`note` and `keywords` are optional. Without `note`, the register uses `Talk`; without `keywords`,
+the talks page shows no badge and counts the entry as having no keywords. The entry is still
+rendered and announced.
 
 ## `posts/`
 

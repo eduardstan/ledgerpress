@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { load } from "js-yaml";
+import { bibEntryCount } from "./build-cv-data.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const web = join(root, "web");
@@ -13,6 +15,16 @@ const stagedCv = join(web, "public/assets/cv.pdf");
 const site = "https://example.github.io/ledgerpress-proof/";
 const base = "/ledgerpress-proof/";
 const stagedFixture = !existsSync(stagedCv);
+const record = load(readFileSync(join(root, "content/cv.yaml"), "utf8"));
+const portrait = record?.profile?.portrait == null ? undefined : String(record.profile.portrait);
+const sectionEntries = (section) => (Array.isArray(section) ? section : Array.isArray(section?.entries) ? section.entries : []);
+const service = sectionEntries(record?.service);
+const publicationCount = bibEntryCount(readFileSync(join(root, "content/publications.bib"), "utf8"));
+const editorialCount = service.filter((entry) => /\beditor\b/i.test(String(entry?.title ?? ""))).length;
+const publicationLabel = publicationCount === 1 ? "publication" : "publications";
+const editorialLabel = editorialCount === 1 ? "editorial board" : "editorial boards";
+const homeCounts = `${publicationCount} ${publicationLabel} · ${editorialCount} ${editorialLabel}`;
+const htmlAttribute = (value) => String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 const snapshot = (directory) => {
   if (!existsSync(directory)) return null;
@@ -58,10 +70,11 @@ try {
   const text = (path) => readFileSync(join(proofDist, path), "utf8");
   const home = text("index.html");
   assert.match(home, /href="\/ledgerpress-proof\/publications\/"/);
-  assert.match(home, /src="\/ledgerpress-proof\/media\/portrait\.svg"/);
+  if (portrait) {
+    assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
+  }
   assert.match(home, /href="\/ledgerpress-proof\/fonts\/Archivo-Black\.woff2"/);
-  assert.match(home, />7 publications · 1 editorial board</);
-  assert.doesNotMatch(home, /1 editorial boards/);
+  assert.ok(home.includes(`>${homeCounts}<`), `home count is not "${homeCounts}"`);
 
   const styles = readdirSync(join(proofDist, "_astro"))
     .filter((path) => path.endsWith(".css"))
@@ -71,9 +84,6 @@ try {
     assert.ok(styles.includes(`${base}fonts/${font}.woff2`), `${font} lost the deployment base`);
   }
 
-  const post = text("blog/2026/reading-a-core/index.html");
-  assert.match(post, /src="\/ledgerpress-proof\/media\/core-layers\.svg"/);
-
   const search = text("search/index.html");
   assert.match(search, /href="\/ledgerpress-proof\/pagefind\/pagefind-component-ui\.css"/);
   assert.match(search, /src="\/ledgerpress-proof\/pagefind\/pagefind-component-ui\.js"/);
@@ -82,8 +92,46 @@ try {
 
   const feed = text("rss.xml");
   assert.ok(feed.includes(`${site}lately/`));
-  assert.ok(feed.includes(`${base}blog/2026/reading-a-core/`));
   assert.equal(text("feed.xml"), feed);
+
+  // The posts are the adopter's, so nothing here names one. Whichever posts the
+  // record holds, their routes reach the feed under the deployment base, and a
+  // record with none simply proves nothing about posts rather than failing.
+  const posts = existsSync(join(proofDist, "blog"))
+    ? readdirSync(join(proofDist, "blog"), { recursive: true })
+        .filter((path) => path.endsWith(`${sep}index.html`))
+        .map((path) => `blog/${path.split(sep).slice(0, -1).join("/")}/`)
+    : [];
+  for (const route of posts) {
+    assert.ok(feed.includes(`${base}${route}`), `${route} is missing from the feed under ${base}`);
+  }
+
+  // An internal URL that lost the base is a 404 on a project site, on whichever
+  // page it sits — including a media file embedded in an adopter's own post. The
+  // prefixes are every asset and route directory this template publishes, so a
+  // new route has to be added here to be covered; the base itself comes from the
+  // constant the build was given, so the two cannot disagree.
+  const pages = readdirSync(proofDist, { recursive: true }).filter((path) => path.endsWith(".html"));
+  const prefixes = [
+    "_astro",
+    "media",
+    "assets",
+    "fonts",
+    "pagefind",
+    "blog",
+    "lately",
+    "search",
+    "publications",
+    "talks",
+    "projects",
+    "professional_activities",
+    "cv",
+    "404",
+  ];
+  const unbased = new RegExp(`(?:src|href)="/(?!${base.slice(1)})(?:${prefixes.join("|")})(?:/|")`);
+  for (const page of pages) {
+    assert.doesNotMatch(text(page), unbased, `${page}: an internal URL lost the deployment base`);
+  }
 
   assert.match(text("robots.txt"), /Allow: \/ledgerpress-proof\//);
   assert.ok(text("robots.txt").includes(`${site}sitemap-index.xml`));

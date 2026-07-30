@@ -17,13 +17,13 @@
 import { parse } from 'yaml';
 import raw from '../../../content/cv.yaml?raw';
 import { SOURCES } from './record';
-import { entriesOf, groupByTitle, sections as sectionsOf, type CV } from './cv-schema';
+import { entriesOf, groupByTitle, readCv, sections as sectionsOf } from './cv-schema';
 
 export * from './cv-schema';
 
 export const CV_SOURCE = SOURCES.cv;
 
-export const cv = parse(raw) as CV;
+export const cv = readCv(parse(raw), CV_SOURCE);
 
 /** Every top-level section of this CV, in file order. `profile:` is not one. */
 export const sections = () => sectionsOf(cv);
