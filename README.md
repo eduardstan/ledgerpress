@@ -287,8 +287,9 @@ something else.
 
 - Edit `web/src/styles/global.css` to change Ledger's colours, type and layout.
 - Edit `cv/preamble.tex` to change how every printed document looks — spacing, fonts, the setting of
-  an entry. Edit `cv/cv.tex` for the curated heading and position of a section the full CV lays out
-  by hand.
+  an entry. Keep the upstream template header at the top of that file: it is the attribution
+  [`NOTICE`](NOTICE) relies on. Edit `cv/cv.tex` for the curated heading and position of a section
+  the full CV lays out by hand.
 - Add migration redirects in `web/src/lib/legacy-urls.ts`.
 - Change or add website routes in `web/src/pages/`.
 - Change announcement wording in the `TEMPLATES` table of `web/src/lib/announcements.ts`.
