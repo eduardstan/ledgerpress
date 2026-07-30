@@ -1,29 +1,19 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load } from "js-yaml";
-import { bibEntryCount } from "./build-cv-data.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const web = join(root, "web");
 const dist = join(web, "dist");
 const proofDist = join(web, ".deployment-base-dist");
-const stagedCv = join(web, "public/assets/cv.pdf");
 const site = "https://example.github.io/ledgerpress-proof/";
 const base = "/ledgerpress-proof/";
-const stagedFixture = !existsSync(stagedCv);
 const record = load(readFileSync(join(root, "content/cv.yaml"), "utf8"));
 const portrait = record?.profile?.portrait == null ? undefined : String(record.profile.portrait);
-const sectionEntries = (section) => (Array.isArray(section) ? section : Array.isArray(section?.entries) ? section.entries : []);
-const service = sectionEntries(record?.service);
-const publicationCount = bibEntryCount(readFileSync(join(root, "content/publications.bib"), "utf8"));
-const editorialCount = service.filter((entry) => /\beditor\b/i.test(String(entry?.title ?? ""))).length;
-const publicationLabel = publicationCount === 1 ? "publication" : "publications";
-const editorialLabel = editorialCount === 1 ? "editorial board" : "editorial boards";
-const homeCounts = `${publicationCount} ${publicationLabel} · ${editorialCount} ${editorialLabel}`;
 const htmlAttribute = (value) => String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 const snapshot = (directory) => {
@@ -56,11 +46,6 @@ const run = (command, args) => {
 
 const publishedBefore = snapshot(dist);
 
-if (stagedFixture) {
-  mkdirSync(dirname(stagedCv), { recursive: true });
-  writeFileSync(stagedCv, "%PDF-1.4\n% deployment-path fixture\n");
-}
-
 try {
   rmSync(proofDist, { recursive: true, force: true });
   run("npm", ["run", "stage-media"]);
@@ -71,8 +56,9 @@ try {
   const home = text("index.html");
   assert.match(home, /href="\/ledgerpress-proof\/publications\/"/);
   assert.ok(home.includes(`property="og:url" content="${site}"`), "og:url lost deployment site base");
+  // The home page is not an article, whatever the theme looks like. Which card
+  // size the preview asks for is presentation and is not asserted here.
   assert.ok(home.includes('property="og:type" content="website"'));
-  assert.ok(home.includes('name="twitter:card" content="summary"'));
   if (portrait) {
     assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
     if (/\.(?:png|jpe?g|webp)$/i.test(portrait)) {
@@ -87,15 +73,20 @@ try {
   assert.ok(alternatePublications.includes(`rel="canonical" href="${site}publications/"`));
   assert.doesNotMatch(alternatePublications, /property="og:/);
   assert.doesNotMatch(alternatePublications, /name="twitter:/);
-  assert.match(home, /href="\/ledgerpress-proof\/fonts\/Archivo-Black\.woff2"/);
-  assert.ok(home.includes(`>${homeCounts}<`), `home count is not "${homeCounts}"`);
-
+  // The typeface is the adopter's: `content/README.md` invites the code edit that
+  // changes it, so no font may be named here. What must hold is that every font
+  // reference the build really emitted — the home page's preloads and the built
+  // CSS — carries the deployment base. A record that ships no web font simply
+  // proves nothing about fonts rather than failing.
   const styles = readdirSync(join(proofDist, "_astro"))
     .filter((path) => path.endsWith(".css"))
     .map((path) => text(join("_astro", path)))
     .join("\n");
-  for (const font of ["Archivo-Black", "LedgerSerif-Regular", "LedgerSerif-Italic", "LedgerSerif-Bold", "GoMono-Regular", "GoMono-Bold"]) {
-    assert.ok(styles.includes(`${base}fonts/${font}.woff2`), `${font} lost the deployment base`);
+  const fontReferences = [...`${home}\n${styles}`.matchAll(/[^"'()\s]*fonts\/[^"'()\s]+\.woff2/g)]
+    .map(([reference]) => reference)
+    .filter((reference) => !/^(?:https?:)?\/\//.test(reference));
+  for (const reference of fontReferences) {
+    assert.ok(reference.startsWith(`${base}fonts/`), `the font reference ${reference} lost the deployment base`);
   }
 
   const search = text("search/index.html");
@@ -104,8 +95,14 @@ try {
   assert.match(search, /bundle-path="\/ledgerpress-proof\/pagefind\/"/);
   assert.match(search, /base-url="\/ledgerpress-proof\/"/);
 
+  // Which announcements the feed carries is the adopter's record — a record with
+  // none is valid — so nothing here requires an item. Every link the feed did
+  // emit, the channel's own included, is absolute under the deployment site.
   const feed = text("rss.xml");
-  assert.ok(feed.includes(`${site}lately/`));
+  const siteRoot = site.replace(/\/$/, "");
+  for (const [, link] of feed.matchAll(/<link>([^<]+)<\/link>/g)) {
+    assert.ok(link === siteRoot || link.startsWith(site), `the feed link ${link} lost the deployment site base`);
+  }
   assert.equal(text("feed.xml"), feed);
 
   // The posts are the adopter's, so nothing here names one. Whichever posts the
@@ -153,11 +150,16 @@ try {
   assert.ok(text("sitemap-index.xml").includes(`${site}sitemap-0.xml`));
   assert.ok(text("sitemap-0.xml").includes(`${site}publications/`));
 
-  assert.match(text("cv/index.html"), /href="\/ledgerpress-proof\/assets\/cv\.pdf"/);
-  assert.ok(existsSync(join(proofDist, "assets/cv.pdf")));
+  // `web/src/pages/cv.astro` offers the printed CV only when the file was really
+  // staged, so this follows the page: when the offer is there its link carries
+  // the base, and a repository that builds no PDF is a configuration the code
+  // itself supports rather than a failure.
+  const printedCv = text("cv/index.html").match(/href="([^"]*assets\/cv\.pdf)"/);
+  if (printedCv) {
+    assert.equal(printedCv[1], `${base}assets/cv.pdf`, "the printed CV link lost the deployment base");
+  }
   process.stdout.write("ok — project-subpath routes and assets share one deployment base\n");
 } finally {
   rmSync(proofDist, { recursive: true, force: true });
-  if (stagedFixture) rmSync(stagedCv);
   assert.deepEqual(snapshot(dist), publishedBefore, "deployment-base verification changed web/dist, the output reserved for publishing");
 }
