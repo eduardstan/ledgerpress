@@ -152,8 +152,8 @@ profile:
     bluesky:                    # every other service takes a label and URL;
       label: Bluesky            # the site and PDF both render it without a
       url: https://bsky.app/profile/ada.example # machinery edit.
-  portrait: portrait.jpg        # a raster file in content/media/. It is also
-                                # the Open Graph and Twitter card image.
+  portrait: portrait.jpg        # a file in content/media/. A raster one also
+                                # becomes the link-preview image; see `media/`.
   favicon: favicon.svg          # another file in content/media/. Optional: if it
                                 # is omitted or missing, no icon link is emitted.
   bio:
