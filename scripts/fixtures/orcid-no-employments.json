@@ -1,0 +1,49 @@
+{
+  "orcid-identifier": {
+    "uri": "https://orcid.org/0000-0000-0000-0002",
+    "path": "0000-0000-0000-0002",
+    "host": "orcid.org"
+  },
+  "activities-summary": {
+    "employments": {
+      "affiliation-group": []
+    },
+    "educations": {
+      "affiliation-group": [
+        {
+          "summaries": [
+            {
+              "education-summary": {
+                "put-code": 20,
+                "role-title": "B.Sc. in Physics",
+                "department-name": "Department of Physics",
+                "start-date": {
+                  "year": { "value": "2010" },
+                  "month": null,
+                  "day": null
+                },
+                "end-date": {
+                  "year": { "value": "2014" },
+                  "month": null,
+                  "day": null
+                },
+                "organization": {
+                  "name": "University of Physics",
+                  "address": {
+                    "city": "London",
+                    "region": null,
+                    "country": "GB"
+                  }
+                },
+                "url": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "qualifications": {
+      "affiliation-group": []
+    }
+  }
+}

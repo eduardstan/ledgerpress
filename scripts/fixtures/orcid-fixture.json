@@ -1,0 +1,136 @@
+{
+  "orcid-identifier": {
+    "uri": "https://orcid.org/0000-0000-0000-0001",
+    "path": "0000-0000-0000-0001",
+    "host": "orcid.org"
+  },
+  "activities-summary": {
+    "employments": {
+      "affiliation-group": [
+        {
+          "summaries": [
+            {
+              "employment-summary": {
+                "put-code": 1,
+                "role-title": "Senior Researcher",
+                "department-name": "Department of Computer Science",
+                "start-date": {
+                  "year": { "value": "2022" },
+                  "month": { "value": "01" },
+                  "day": null
+                },
+                "end-date": null,
+                "organization": {
+                  "name": "University of Science",
+                  "address": {
+                    "city": "Oxford",
+                    "region": "Oxfordshire",
+                    "country": "GB"
+                  }
+                },
+                "url": { "value": "https://example.org/senior-researcher" }
+              }
+            }
+          ]
+        },
+        {
+          "summaries": [
+            {
+              "employment-summary": {
+                "put-code": 2,
+                "role-title": "Postdoctoral Fellow",
+                "department-name": null,
+                "start-date": {
+                  "year": { "value": "2019" },
+                  "month": { "value": "06" },
+                  "day": null
+                },
+                "end-date": {
+                  "year": { "value": "2021" },
+                  "month": { "value": "12" },
+                  "day": null
+                },
+                "organization": {
+                  "name": "Research Institute",
+                  "address": {
+                    "city": "Cambridge",
+                    "region": null,
+                    "country": "US"
+                  }
+                },
+                "url": null
+              }
+            }
+          ]
+        },
+        {
+          "summaries": [
+            {
+              "employment-summary": {
+                "put-code": 3,
+                "role-title": null,
+                "department-name": "Faculty of Arts",
+                "start-date": {
+                  "year": { "value": "2018" },
+                  "month": null,
+                  "day": null
+                },
+                "end-date": {
+                  "year": { "value": "2019" },
+                  "month": null,
+                  "day": null
+                },
+                "organization": {
+                  "name": "Academy of Arts",
+                  "address": {
+                    "city": "Paris",
+                    "region": null,
+                    "country": "FR"
+                  }
+                },
+                "url": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "educations": {
+      "affiliation-group": [
+        {
+          "summaries": [
+            {
+              "education-summary": {
+                "put-code": 10,
+                "role-title": "Ph.D. in Computer Science",
+                "department-name": "School of Informatics",
+                "start-date": {
+                  "year": { "value": "2014" },
+                  "month": null,
+                  "day": null
+                },
+                "end-date": {
+                  "year": { "value": "2018" },
+                  "month": null,
+                  "day": null
+                },
+                "organization": {
+                  "name": "University of Informatics",
+                  "address": {
+                    "city": "Edinburgh",
+                    "region": null,
+                    "country": "GB"
+                  }
+                },
+                "url": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "qualifications": {
+      "affiliation-group": []
+    }
+  }
+}
