@@ -12,7 +12,8 @@ interface Props {
   /**
    * Where this page's content really lives, when it is an alternate view of
    * another page. One `<link rel="canonical">` is emitted either way: a second,
-   * conflicting one would make search engines ignore both.
+   * conflicting one would make search engines ignore both. Alternate views
+   * leave Open Graph and Twitter metadata to the canonical page.
    */
   canonical?: string;
   /** Keeps the page out of the Pagefind index — `<main>` is the indexed body. */
@@ -21,7 +22,7 @@ interface Props {
 
 const { name } = profile();
 const base = import.meta.env.BASE_URL;
-const { favicon } = identity(base);
+const { favicon, portrait } = identity(base);
 const {
   title,
   description = `Personal site of ${name}.`,
@@ -30,6 +31,13 @@ const {
 } = Astro.props;
 const canonical = canonicalPath ? absoluteInternalUrl(canonicalPath, Astro.site!, base) : Astro.url;
 const url = (path: string) => internalUrl(path, base);
+/** Anything below the blog index is one post; the index itself is not. */
+const blogIndex = url('/blog/');
+const isPost = canonical.pathname.startsWith(blogIndex) && canonical.pathname !== blogIndex;
+const socialImageUrl =
+  portrait && /\.(?:png|jpe?g|webp)$/i.test(portrait)
+    ? new URL(portrait, Astro.site!).href
+    : undefined;
 ---
 
 <html lang="en" data-theme="light">
@@ -39,6 +47,20 @@ const url = (path: string) => internalUrl(path, base);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {
+      canonicalPath === undefined && (
+        <>
+          <meta property="og:type" content={isPost ? 'article' : 'website'} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={description} />
+          <meta property="og:url" content={canonical.href} />
+          <meta property="og:site_name" content={name} />
+          <meta name="twitter:card" content="summary" />
+          {socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+          {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
+        </>
+      )
+    }
     {favicon && <link rel="icon" href={favicon} />}
     <link rel="alternate" type="application/rss+xml" title={name} href={url('/rss.xml')} />
     {

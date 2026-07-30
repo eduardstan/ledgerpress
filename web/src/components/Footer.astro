@@ -65,5 +65,10 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
       </Record>
     </div>
   </div>
-  <p class="label colophon">&copy; {year} {name}</p>
+  {/* Adopters may delete or edit the template credit line below. */}
+  <p class="label colophon">
+    &copy; {year}{' '}{name} &middot; Built with <a href="https://github.com/eduardstan/ledgerpress"
+      >ledgerpress</a
+    >
+  </p>
 </footer>

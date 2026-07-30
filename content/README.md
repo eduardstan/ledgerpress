@@ -152,7 +152,8 @@ profile:
     bluesky:                    # every other service takes a label and URL;
       label: Bluesky            # the site and PDF both render it without a
       url: https://bsky.app/profile/ada.example # machinery edit.
-  portrait: portrait.jpg        # a file in content/media/
+  portrait: portrait.jpg        # a file in content/media/. A raster one also
+                                # becomes the link-preview image; see `media/`.
   favicon: favicon.svg          # another file in content/media/. Optional: if it
                                 # is omitted or missing, no icon link is emitted.
   bio:
@@ -502,8 +503,10 @@ draft: false
 
 Images. `profile.portrait` and the optional `profile.favicon` name files here by bare filename;
 **inside a post or an item, refer to one as `/media/<file>`** — the directory is published at
-that address. The build prefixes the project path from `profile.site` when the site is deployed
-below an origin root.
+that address. The portrait also supplies the Open Graph and Twitter card image when it is a
+`.png`, `.jpg`, `.jpeg` or `.webp` file. Other formats, including SVG, still display on the site
+but emit no social image tag. The build prefixes the project path from `profile.site` when the
+site is deployed below an origin root.
 
 ## Announcements
 
@@ -544,7 +547,7 @@ Most fields reach both the website and the PDF. These land somewhere their names
 
 | Field | Website | Printed CV |
 | --- | --- | --- |
-| `profile.site` | the origin and base path of every canonical, feed and sitemap URL | never read |
+| `profile.site` | the origin and base path of every canonical, feed, sitemap and social-preview URL | never read |
 | `profile.website` | not rendered | printed in the header contact line |
 | `profile.bio.short` | shown on `/cv/` as "Short bio" | printed as "Short Bio" |
 | `profile.bio.long` | the home page, in full, first sentence quoted above the fold | never printed |

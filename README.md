@@ -85,7 +85,8 @@ authoritative record.
 - **The gaps stay visible.** Missing dates, unmatched publication types and populated sections
   omitted from a page appear in generated provenance instead of being silently invented.
 - **It is a real site, not a CV pasted into HTML.** Blog posts, RSS, sitemap, search, dark mode,
-  responsive layouts, accessible navigation and GitHub Pages deployment are included.
+  responsive layouts, accessible navigation, social link previews and GitHub Pages deployment are
+  included.
 
 The name is literal: a **ledger** is the record kept once and required to balance; the **press**
 publishes it. The product is **ledgerpress**. **Ledger** is the design system inside it—the
@@ -96,7 +97,7 @@ high-contrast editorial interface in `web/`, including the Ledger Serif type fam
 - **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional
   palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII
   names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via
-  `printed: false`, a post and an SVG portrait.
+  `printed: false`, a post and a PNG portrait.
 - **[eduardstan.github.io](https://eduardstan.github.io/)**: The real personal site and CV from
   which ledgerpress was extracted.
 
@@ -291,6 +292,7 @@ something else.
 - Add migration redirects in `web/src/lib/legacy-urls.ts`.
 - Change or add website routes in `web/src/pages/`.
 - Change announcement wording in the `TEMPLATES` table of `web/src/lib/announcements.ts`.
+- Edit or delete the "Built with ledgerpress" credit line in `web/src/components/Footer.astro`.
 
 None of them touches a fact about you, and taking a later ledgerpress update after one of them is a
 merge you resolve rather than a conflict with your record.
