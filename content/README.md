@@ -330,8 +330,11 @@ years: [2024, { year: 2025, announced: 2024-06-10 }, 2026]
 
 `rows:` turns an entry into a heading over a table. **Each row's keys, in the order you write
 them, are the columns, and the key name becomes the heading.** Write `points:` and the column says
-"Points". The build refuses rows whose columns or key order disagree, and generates equal-width
-columns for however many keys you use.
+"Points". Every word of the key is capitalised and whatever separates them is kept, so
+`programme / level` heads a column "Programme / Level": write the key in lower case, because the
+capitals are presentation and this key is a fact the site publishes verbatim where it says which
+columns a table has. The build refuses rows whose columns or key order disagree, and generates
+equal-width columns for however many keys you use.
 
 ```yaml
 teaching:
