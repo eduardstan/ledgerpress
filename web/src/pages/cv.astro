@@ -82,10 +82,8 @@ const description =
     {
       pdf && (
         <p class="blurb">
-          <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from {
-            CV_SOURCE
-          } by{' '}
-          <b>cv/cv.tex</b> when this page was built, so it states the same facts.
+          <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from{' '}
+          {CV_SOURCE} by <b>cv/cv.tex</b> when this page was built, so it states the same facts.
         </p>
       )
     }
@@ -95,9 +93,9 @@ const description =
   <p class="blurb" set:html={render(cv.profile.bio?.short)} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered
-      with the file's own inline grammar (<b>**bold**</b>, <b>_italic_</b>, <b>[text](url)</b>). The
-      same two strings are what <b>scripts/build-cv-data.mjs</b> turns into LaTeX for the PDF.
+      <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered with
+      the file's own inline grammar (<b>**bold**</b>, <b>_italic_</b>, <b>[text](url)</b>). The same
+      two strings are what <b>scripts/build-cv-data.mjs</b> turns into LaTeX for the PDF.
     </p>
   </Record>
 
@@ -149,28 +147,28 @@ const description =
             </span>
           </li>
         </ul>
-        {
-          (block.rows ?? []).length > 0 && (
-            <div class="record-table-wrap">
-              <table class="record-table">
-                <thead>
-                  <tr>
-                    {Object.keys(block.rows![0]).map((key) => <th scope="col">{label(key)}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {block.rows!.map((row) => (
-                    <tr>
-                      {Object.entries(row).map(([key, value]) => (
-                        <td data-label={label(key)} set:html={render(value)} />
-                      ))}
-                    </tr>
+        {(block.rows ?? []).length > 0 && (
+          <div class="record-table-wrap">
+            <table class="record-table">
+              <thead>
+                <tr>
+                  {Object.keys(block.rows![0]).map((key) => (
+                    <th scope="col">{label(key)}</th>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )
-        }
+                </tr>
+              </thead>
+              <tbody>
+                {block.rows!.map((row) => (
+                  <tr>
+                    {Object.entries(row).map(([key, value]) => (
+                      <td data-label={label(key)} set:html={render(value)} />
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </>
     ))
   }
@@ -187,14 +185,15 @@ const description =
       in the order the file writes them, are also the columns of the same table in the printed CV.
     </p>
     <p>
-      {teaching
-        .map((block) => {
-          const rows = (block.rows ?? []).length;
-          return `${block.org}: ${countPhrase(rows, 'row', 'rows').text}`;
-        })
-        .join(', ')}. Column names and order are read from each table's first row; the build refuses
-      later rows whose shape differs, so a local term such as <b>points</b> never needs a machinery
-      edit.
+      {
+        teaching
+          .map((block) => {
+            const rows = (block.rows ?? []).length;
+            return `${block.org}: ${countPhrase(rows, 'row', 'rows').text}`;
+          })
+          .join(', ')
+      }. Column names and order are read from each table's first row; the build refuses later rows
+      whose shape differs, so a local term such as <b>points</b> never needs a machinery edit.
     </p>
   </Record>
 
@@ -203,8 +202,8 @@ const description =
   <Entries entries={supervision} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above,
-      then <b>entries[]</b>, {countPhrase(supervision.length, 'row', 'rows').text} with keys {
+      <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above, then
+      <b>entries[]</b>, {countPhrase(supervision.length, 'row', 'rows').text} with keys {
         keysOf(supervision)
       }. The counts in the right-hand column are the <b>count</b> field verbatim, open-ended ({
         supervision.map((row) => row.count).join(', ')
@@ -234,9 +233,10 @@ const description =
     <p>
       <b>{CV_SOURCE}</b> — <b>leadership[]</b>, {
         countPhrase(leadership.length, 'entry with', 'entries with').text
-      } keys {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does
-      not print, which is the whole answer to keeping a section off the PDF and on the site: leave
-      its <code>\cvpart</code> line out.
+      } keys {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does not
+      print, which is the whole answer to keeping a section off the PDF and on the site: leave its <code
+        >\cvpart</code
+      > line out.
     </p>
     <p>
       These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {

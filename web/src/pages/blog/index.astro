@@ -28,8 +28,7 @@ const description = `${postCount.text} by ${profile().name}.`;
 <BaseLayout title="Blog" description={description}>
   <PageHead title="Blog">
     <p class="blurb">
-      <b>{postCount.text}</b>, newest first. Each is announced in the <a
-        href={url('/lately/')}
+      <b>{postCount.text}</b>, newest first. Each is announced in the <a href={url('/lately/')}
         >register</a
       > on the date its own front matter carries, and syndicated at <a href={url('/rss.xml')}
         >/rss.xml</a

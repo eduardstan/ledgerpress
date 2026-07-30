@@ -8,11 +8,12 @@
     "build:cv-data": "node scripts/build-cv-data.mjs",
     "check:adopter": "node scripts/check-adopter-build.mjs",
     "check:deployment-base": "node scripts/check-deployment-base.mjs",
-    "format": "prettier . --write",
+    "format": "prettier . --write --ignore-unknown",
     "test": "npm --prefix web test && node --test scripts/build-cv-data.test.mjs && node scripts/build-cv-data.mjs --check"
   },
   "devDependencies": {
     "js-yaml": "^5.2.2",
-    "prettier": "3.9.6"
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "0.14.1"
   }
 }

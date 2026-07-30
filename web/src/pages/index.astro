@@ -3,7 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { about, bibliography, identity, profile, SOURCES, yearSpan } from '../lib/record';
-import { countPhrase, CV_SOURCE, isEditorial, service, serviceGroups, serviceWhen } from '../lib/cv';
+import {
+  countPhrase,
+  CV_SOURCE,
+  isEditorial,
+  service,
+  serviceGroups,
+  serviceWhen,
+} from '../lib/cv';
 import { inline } from '../lib/inline';
 import { announcements, formatStamp } from '../lib/announcements';
 import { strands } from '../lib/strands';
@@ -36,13 +43,19 @@ const researchDescription = research
  */
 const roles = service();
 const groups = serviceGroups();
-const editorials = groups.filter((group) => isEditorial(group.role)).flatMap((group) => group.entries);
+const editorials = groups
+  .filter((group) => isEditorial(group.role))
+  .flatMap((group) => group.entries);
 const bibliographyEntries = countPhrase(bib.entries.length);
 const editorialBoards = countPhrase(editorials.length, 'editorial board', 'editorial boards');
 
 const counts = [
   {
-    ...countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
+    ...countPhrase(
+      bib.entries.length,
+      'entry in this bibliography',
+      'entries in this bibliography',
+    ),
     label: undefined,
   },
   ...bib.byKind.map((kind) => ({
@@ -64,11 +77,7 @@ const counts = [
 const LATELY = 6;
 const shown = feed.items.slice(0, LATELY);
 const withheld = feed.items.length - shown.length;
-const announcementCount = countPhrase(
-  feed.items.length,
-  'announcement',
-  'announcements',
-);
+const announcementCount = countPhrase(feed.items.length, 'announcement', 'announcements');
 const shownClause = countPhrase(
   shown.length,
   `of ${announcementCount.text} is shown here`,
@@ -105,16 +114,7 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
            written for the occasion. */
       }
       <figure class:list={['person', { 'no-portrait': !portrait }]}>
-        {
-          portrait && (
-            <img
-              src={portrait}
-              width="500"
-              height="500"
-              alt={`Portrait of ${name}`}
-            />
-          )
-        }
+        {portrait && <img src={portrait} width="500" height="500" alt={`Portrait of ${name}`} />}
         <div>
           <blockquote>{bio.firstPerson}</blockquote>
           <figcaption class="label">{name} · {affiliation[0]}</figcaption>
@@ -130,7 +130,8 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
         <p>
           <b>{bio.source}</b> — {
             countPhrase(bio.paragraphs.length, 'paragraph', 'paragraphs').text
-          }, rendered verbatim. The printed CV does not carry them: it prints <b>profile.bio.short</b
+          }, rendered verbatim. The printed CV does not carry them: it prints <b
+            >profile.bio.short</b
           >, the same person in the third person.
         </p>
       </Record>
@@ -171,7 +172,8 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
             <li>
               <span class="n">{count.count}</span>
               <span class="l label">
-                {count.words}{count.label && <> · {count.label}</>}
+                {count.words}
+                {count.label && <> · {count.label}</>}
               </span>
             </li>
           ))
@@ -183,10 +185,11 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
             yearSpan(bib.years) && `, ${yearSpan(bib.years)}`
           }, counted at build by parsing the file. The two service figures are counted from <b
             >{CV_SOURCE}</b
-          >: <b>{editorials.length}</b> {countPhrase(editorials.length).words} of <b>service[]</b>{' '}
-          whose <b>title</b> matches “editor” ({
-            editorials.map((entry) => entry.org).join(', ')
-          }), and <b>{roles.length}</b> {countPhrase(roles.length).words} in that list altogether.
+          >: <b>{editorials.length}</b>
+          {countPhrase(editorials.length).words} of <b>service[]</b>{' '}
+          whose <b>title</b> matches “editor” ({editorials.map((entry) => entry.org).join(', ')}),
+          and <b>{roles.length}</b>
+          {countPhrase(roles.length).words} in that list altogether.
         </p>
       </Record>
 
@@ -234,15 +237,15 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
             countPhrase(roles.length, 'entry grouped', 'entries grouped').text
           } into {countPhrase(groups.length, 'role', 'roles').text} by their own <b>title</b> field ({
             groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
-          }), in the order those roles first appear in the file. The meta on each row is the entry's{' '}
-          <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the
-          badges are the <b>metric</b> field, linked to the <b>rank_url</b> beside it.
+          }), in the order those roles first appear in the file. The meta on each row is the entry's{
+            ' '
+          }
+          <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the badges
+          are the <b>metric</b> field, linked to the <b>rank_url</b> beside it.
         </p>
         <p>
-          This column and <a href={url('/professional_activities/')}
-            >/professional_activities/</a
-          > read the
-          same list through the same grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot
+          This column and <a href={url('/professional_activities/')}>/professional_activities/</a> read
+          the same list through the same grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot
           disagree. They once came from two files that had drifted apart; there is one file now, and
           it is the one the printed CV is generated from.
         </p>
@@ -351,12 +354,12 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
                 <b>{file}</b>
               </>
             ))
-          }. Nothing is written twice: a fact is announced on the date it carries, and the feed shows
-          that date at the precision the source states it and no finer.
+          }. Nothing is written twice: a fact is announced on the date it carries, and the feed
+          shows that date at the precision the source states it and no finer.
         </p>
         <p>
-          This column is capped at {LATELY}, so {shownClause.text} and {withheldClause.text}; the full
-          feed is at{' '}
+          This column is capped at {LATELY}, so {shownClause.text} and {withheldClause.text}; the
+          full feed is at{' '}
           <a href={url('/lately/')}>/lately/</a>.
         </p>
       </Record>

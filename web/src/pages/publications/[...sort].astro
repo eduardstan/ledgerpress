@@ -88,9 +88,9 @@ const columns = [
   { column: 'ty', label: 'Type', href: 'type' },
   { column: 't', label: 'Title / authors / venue', href: 'title' },
 ] as const;
-const href = (sort: string) =>
-  url(sort === 'year' ? '/publications/' : `/publications/${sort}/`);
-const marker = (column: string) => (SORTS[active].column === column ? ` ${SORTS[active].marker}` : '');
+const href = (sort: string) => url(sort === 'year' ? '/publications/' : `/publications/${sort}/`);
+const marker = (column: string) =>
+  SORTS[active].column === column ? ` ${SORTS[active].marker}` : '';
 
 const owner = profile().bibliographyName;
 const isOwner = (author: string) => author === owner;
@@ -116,11 +116,11 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
     <h1>Index</h1>
     <p class="blurb">
       <b>{entryCount.text}{span && `, ${span}`}</b>, read from <b>{SOURCES.bibliography}</b> when this
-      page was built, and nothing is left out — manuscripts under review and released software are
-      entries here like any other. Open a row for its abstract, its record and its BibTeX. Order the
-      index by year, type or title, <a href={url('/search/')}>search the site</a> to find a paper by
-      title, author or a word in its abstract, and turn <b>inspect sources</b> on, in the bar above,
-      to see where each part of this page comes from.
+      page was built, and nothing is left out — manuscripts under review and released software are entries
+      here like any other. Open a row for its abstract, its record and its BibTeX. Order the index by
+      year, type or title, <a href={url('/search/')}>search the site</a> to find a paper by title, author
+      or a word in its abstract, and turn <b>inspect sources</b> on, in the bar above, to see where each
+      part of this page comes from.
     </p>
   </section>
 
@@ -171,13 +171,11 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
                   ))}
                 </p>
                 <p class="vn">{entry.citation}</p>
-                {
-                  /* The citation above is a rendered claim like any other, so it
+                {/* The citation above is a rendered claim like any other, so it
                      opens to the record it was assembled from: the entry it came
                      from and the fields that were present in it. Both are read
                      from the .bib at build time — the list of fields is the list
-                     the assembler actually used. */
-                }
+                     the assembler actually used. */}
                 <Record>
                   <p>
                     <b>{SOURCES.bibliography}</b> — @{entry.type}
@@ -191,7 +189,8 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
                       </>
                     ) : (
                       'no doi, url, html or pdf field, so no link'
-                    )}.
+                    )}
+                    .
                   </p>
                 </Record>
               </div>
@@ -249,21 +248,17 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
               )}
             </div>
           </details>
-        {
-          /* Outside the <details>, not inside <summary>: a link inside the
+          {/* Outside the <details>, not inside <summary>: a link inside the
              summary is an interactive descendant of the row's own control, and
              anything inside the details but outside the summary is in
              `::details-content` and so is not painted while the row is closed.
              A sibling is the only place it is both reachable and visible
-             collapsed; it is positioned over the row's right edge. */
-        }
-        {
-          entry.link && (
+             collapsed; it is positioned over the row's right edge. */}
+          {entry.link && (
             <a class="go" href={entry.link.href}>
               {entry.link.label} ↗
             </a>
-          )
-        }
+          )}
         </div>
       ))
     }
@@ -278,20 +273,17 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
       row is that entry's own text. Nothing on this page is transcribed by hand.
     </p>
     <p>
-      {bib.byKind
-        .map((kind) => (kind.kind ? `${kind.kind}: ${kind.count}` : countPhrase(kind.count).text))
-        .join(', ')}. {
-        countPhrase(
-          abstracted,
-          `of ${entryCount.text} carries`,
-          `of ${entryCount.text} carry`,
-        ).text
-      } an abstract; the rest show their record only. The four orders are four static pages —
-      /publications/, /publications/year-asc/, /publications/type/ and /publications/title/ — so
-      ordering the index needs no JavaScript.
+      {
+        bib.byKind
+          .map((kind) => (kind.kind ? `${kind.kind}: ${kind.count}` : countPhrase(kind.count).text))
+          .join(', ')
+      }. {
+        countPhrase(abstracted, `of ${entryCount.text} carries`, `of ${entryCount.text} carry`).text
+      } an abstract; the rest show their record only. The four orders are four static pages — /publications/,
+      /publications/year-asc/, /publications/type/ and /publications/title/ — so ordering the index needs
+      no JavaScript.
     </p>
   </Record>
-
 </BaseLayout>
 
 <script>

@@ -35,7 +35,8 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
       {
         post.data.updated && (
           <>
-            {' '}· updated{' '}
+            {' '}
+            · updated{' '}
             <time datetime={post.data.updated.toISOString()}>
               {dateFormat.format(post.data.updated)}
             </time>
@@ -46,7 +47,8 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
     <p class="blurb">{post.data.description}</p>
     <Record>
       <p>
-        <b>{source}</b> — front matter: <b>date</b> {post.data.date.toISOString().slice(0, 10)}
+        <b>{source}</b> — front matter: <b>date</b>
+        {post.data.date.toISOString().slice(0, 10)}
         {
           post.data.updated && (
             <>
@@ -58,9 +60,8 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
         collection's own Markdown pipeline; {headings.length} headings.
       </p>
       <p>
-        The <a href={url('/lately/')}>register</a> reads this same file: a post is announced on the
-        date its
-        own front matter carries, so the announcement cannot drift from the post.
+        The <a href={url('/lately/')}>register</a> reads this same file: a post is announced on the date
+        its own front matter carries, so the announcement cannot drift from the post.
       </p>
     </Record>
     <div class="prose"><Content /></div>

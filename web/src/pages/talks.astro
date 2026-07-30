@@ -20,28 +20,25 @@ import { internalUrl } from '../lib/urls';
 const { source, entries, byCategory, years, undated } = talks();
 const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
 const span = yearSpan(years);
-const talkCount = countPhrase(
-  entries.length,
-  'talk or presentation',
-  'talks and presentations',
-);
+const talkCount = countPhrase(entries.length, 'talk or presentation', 'talks and presentations');
 
 /** The ISO date rendered as a date. Every entry states a full day. */
 const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' });
 const shown = (date: string) =>
-  /^\d{4}-\d{2}-\d{2}/.test(date) ? dateFormat.format(new Date(`${date.slice(0, 10)}T00:00:00Z`)) : date;
+  /^\d{4}-\d{2}-\d{2}/.test(date)
+    ? dateFormat.format(new Date(`${date.slice(0, 10)}T00:00:00Z`))
+    : date;
 
 const description =
-  `${talkCount.text}${span && `, ${span}`}, ` +
-  `read from ${source} at build time.`;
+  `${talkCount.text}${span && `, ${span}`}, ` + `read from ${source} at build time.`;
 ---
 
 <BaseLayout title="Talks" description={description}>
   <PageHead title="Talks">
     <p class="blurb">
       <b>{talkCount.text}</b>{span && `, ${span}`}, newest first, read from <b>{source}</b> when this
-      page was built — the same file the printed CV's presentations are generated from. The badge
-      on each row is that entry's own <b>keywords</b> field ({
+      page was built — the same file the printed CV's presentations are generated from. The badge on each
+      row is that entry's own <b>keywords</b> field ({
         byCategory.map((category) => `${category.count} ${category.category}`).join(', ')
       }); nothing is relabelled here and nothing is left out.
     </p>
@@ -70,9 +67,14 @@ const description =
   </ul>
   <Record>
     <p>
-      <b>{source}</b> — {entries.length} <code>@unpublished</code> {countPhrase(entries.length).words},
-      parsed by the same BibTeX reader as <b>content/publications.bib</b> and sorted by their own{' '}
-      <b>date</b> field, newest first. Each row is one entry: <b>title</b>, then <b>note</b> and{' '}
+      <b>{source}</b> — {entries.length}
+      <code>@unpublished</code>
+      {countPhrase(entries.length).words}, parsed by the same BibTeX reader as <b
+        >content/publications.bib</b
+      > and sorted by their own{' '}
+      <b>date</b> field, newest first. Each row is one entry: <b>title</b>, then <b>note</b> and{
+        ' '
+      }
       <b>keywords</b>, then <b>eventtitle</b> and <b>venue</b>, then <b>date</b>.
     </p>
     <p>
@@ -81,18 +83,19 @@ const description =
       }. {
         undated.length === 0
           ? 'Every entry states a full ISO 8601 day, so every date below is shown as a day rather than widened or narrowed.'
-          : `${countPhrase(
-              undated.length,
-              'entry states no ISO 8601 date and shows its date field',
-              'entries state no ISO 8601 date and show their date field',
-            ).text} as written: ${undated.join(', ')}.`
+          : `${
+              countPhrase(
+                undated.length,
+                'entry states no ISO 8601 date and shows its date field',
+                'entries state no ISO 8601 date and show their date field',
+              ).text
+            } as written: ${undated.join(', ')}.`
       }
     </p>
     <p>
       The same file feeds the <a href={url('/lately/')}>register</a>, where each of these talks is
       announced on the date it carries. Published work is separate and lives in the <a
-        href={url('/publications/')}
-        >publications index</a
+        href={url('/publications/')}>publications index</a
       >.
     </p>
   </Record>

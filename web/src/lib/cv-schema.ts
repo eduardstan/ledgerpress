@@ -236,11 +236,7 @@ export interface CountPhrase {
 
 export function countPhrase(count: number): CountPhrase;
 export function countPhrase(count: number, singular: string, plural: string): CountPhrase;
-export function countPhrase(
-  count: number,
-  singular = 'entry',
-  plural = 'entries',
-): CountPhrase {
+export function countPhrase(count: number, singular = 'entry', plural = 'entries'): CountPhrase {
   const words = count === 1 ? singular : plural;
   return { count, words, text: `${count} ${words}` };
 }

@@ -38,11 +38,11 @@ const description =
 <BaseLayout title="Research projects" description={description}>
   <PageHead title="Research projects">
     <p class="blurb">
-      <b>{countPhrase(projects.length, 'funded project', 'funded projects').text}</b>, newest first as
-      the file writes them, read from <b>{CV_SOURCE}</b> when this page was built. The amounts are
-      the file's own <b>funding</b> field: the printed CV does not carry them, and that file keeps
-      them so this page can. Turn <b>inspect sources</b> on, in the bar above, to see what each row is
-      built from.
+      <b>{countPhrase(projects.length, 'funded project', 'funded projects').text}</b>, newest first
+      as the file writes them, read from <b>{CV_SOURCE}</b> when this page was built. The amounts are
+      the file's own <b>funding</b> field: the printed CV does not carry them, and that file keeps them
+      so this page can. Turn <b>inspect sources</b> on, in the bar above, to see what each row is built
+      from.
     </p>
   </PageHead>
 
@@ -81,12 +81,10 @@ const description =
       <b>{CV_SOURCE}</b> — <b>projects[]</b>, {
         countPhrase(projects.length, 'entry in file order', 'entries in file order').text
       }. Keys read: {keysOf(projects)}. {
-        countPhrase(
-          running.length,
-          `of ${projectCount.text} has`,
-          `of ${projectCount.text} have`,
-        ).text
-      } <b>dates</b> running to Present.
+        countPhrase(running.length, `of ${projectCount.text} has`, `of ${projectCount.text} have`)
+          .text
+      }
+      <b>dates</b> running to Present.
     </p>
     <p>
       {

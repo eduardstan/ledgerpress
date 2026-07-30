@@ -114,7 +114,7 @@ npm run check:deployment-base
 npm run check:adopter
 latexmk -xelatex -cd cv/cv.tex
 bash scripts/check-cv-baseline.sh
-npx prettier . --check
+npx prettier . --check --ignore-unknown
 ```
 
 `npm run check:adopter` is the decisive test. It creates a clean tracked-file-only copy, replaces

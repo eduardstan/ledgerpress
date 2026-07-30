@@ -146,21 +146,21 @@ const filterCss = filters
             <b>{file}</b>
           </>
         ))
-      }. A fact is announced on the date it carries; an <code>announced</code> key is written onto a
-      fact only where the announcement happened on a date the fact does not otherwise state. Dates
-      are shown at the precision the source states and no finer, so an item shown as a year is one
-      whose source records only a year.
+      }. A fact is announced on the date it carries; an <code>announced</code> key is written onto a fact
+      only where the announcement happened on a date the fact does not otherwise state. Dates are shown
+      at the precision the source states and no finer, so an item shown as a year is one whose source
+      records only a year.
     </p>
     <p>
       {feed.kinds.map((kind) => `${kind.count} ${kind.name.toLowerCase()}`).join(', ')}. The filter
-      above is one radio input per kind and one generated CSS rule per kind; the kinds themselves are
-      the ones the records state — a CV section's own name, a talk's <b>note</b> field, a
-      bibliography section's <b>short</b> name.
+      above is one radio input per kind and one generated CSS rule per kind; the kinds themselves
+      are the ones the records state — a CV section's own name, a talk's <b>note</b> field, a bibliography
+      section's <b>short</b> name.
     </p>
     <p>
-      <b>{feed.undated.length}</b> announceable facts carry no defensible date and are listed below
-      rather than given an invented one. They are not missing from the site: a manuscript under
-      review is on <a href={url('/publications/')}>/publications/</a> like any other entry.
+      <b>{feed.undated.length}</b> announceable facts carry no defensible date and are listed below rather
+      than given an invented one. They are not missing from the site: a manuscript under review is on
+      <a href={url('/publications/')}>/publications/</a> like any other entry.
     </p>
     {
       feed.undated.map((fact) => (
@@ -171,5 +171,5 @@ const filterCss = filters
     }
   </Record>
 
-  <style is:inline set:html={filterCss} />
+  <style is:inline set:html={filterCss}></style>
 </BaseLayout>

@@ -61,9 +61,9 @@ const description =
   <PageHead title="Professional activities">
     <p class="blurb">
       <b>{countPhrase(roles.length, 'service role', 'service roles').text}</b>, grouped by role and
-      read from <b>{CV_SOURCE}</b> when this page was built — the same file the printed CV is
-      generated from. Where the file records a ranking it also records where that ranking is
-      published, so every badge below links to the CORE portal or SCImago entry behind it. Turn{' '}
+      read from <b>{CV_SOURCE}</b> when this page was built — the same file the printed CV is generated
+      from. Where the file records a ranking it also records where that ranking is published, so every
+      badge below links to the CORE portal or SCImago entry behind it. Turn{' '}
       <b>inspect sources</b> on, in the bar above, to see what each section is built from.
     </p>
   </PageHead>
@@ -85,11 +85,7 @@ const description =
                 )}
                 {entry.metric &&
                   (entry.rank_url ? (
-                    <a
-                      class="rank"
-                      href={url(entry.rank_url)}
-                      set:html={render(entry.metric)}
-                    />
+                    <a class="rank" href={url(entry.rank_url)} set:html={render(entry.metric)} />
                   ) : (
                     <span class="rank" set:html={render(entry.metric)} />
                   ))}
@@ -113,13 +109,14 @@ const description =
         <Record>
           <p>
             <b>{CV_SOURCE}</b> — the {group.entries.length} <b>service[]</b>{' '}
-            {countPhrase(group.entries.length).words} whose <b>title</b> is “{group.role}”,
-            in file order. Keys read: {keysOf(group.entries)}.
+            {countPhrase(group.entries.length).words} whose <b>title</b> is “{group.role}”, in file
+            order. Keys read: {keysOf(group.entries)}.
             {group.entries.some((entry) => entry.years?.length) && (
               <>
                 {' '}
                 The right-hand column is <b>dates</b> where the entry states a term and the years of{' '}
-                <b>years[]</b> where it states editions ({group.entries
+                <b>years[]</b> where it states editions (
+                {group.entries
                   .filter((entry) => entry.years?.length)
                   .map((entry) => editions(entry))
                   .join('; ')}
@@ -138,30 +135,28 @@ const description =
         countPhrase(roles.length, 'entry grouped', 'entries grouped').text
       } into {roleGroups.text} ({
         groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
-      }). The grouping is by the <b>title</b> field and the order is the order those roles first
-      appear in the file; no entry is filtered out and none is relabelled.
+      }). The grouping is by the <b>title</b> field and the order is the order those roles first appear
+      in the file; no entry is filtered out and none is relabelled.
     </p>
     <p>
       {
-        countPhrase(
-          ranked.length,
-          `of ${roleEntries.text} carries`,
-          `of ${roleEntries.text} carry`,
-        ).text
-      } a <b>metric</b>, and {
-        countPhrase(linkedRanks.length, 'carries', 'carry').text
-      } the <b>rank_url</b> the badge links to. The badge text is the <b>metric</b> field verbatim — “{
+        countPhrase(ranked.length, `of ${roleEntries.text} carries`, `of ${roleEntries.text} carry`)
+          .text
+      } a <b>metric</b>, and {countPhrase(linkedRanks.length, 'carries', 'carry').text} the <b
+        >rank_url</b
+      > the badge links to. The badge text is the <b>metric</b> field verbatim — “{
         [...new Set(ranked.map((entry) => entry.metric))].join('”, “')
       }” — not a rank computed here.
     </p>
     <p>
-      {countPhrase(noTerm.length, 'entry states', 'entries state').text} neither <b>dates</b> nor{' '}
+      {countPhrase(noTerm.length, 'entry states', 'entries state').text} neither <b>dates</b> nor{
+        ' '
+      }
       <b>years[]</b>, so the column on the right is empty for them. {
         countPhrase(announcedOnly.length, 'of those carries', 'of those carry').text
-      } an <b>announced</b> day ({
-        announcedOnly.map((entry) => entry.org).join('; ')
-      }), which is the date the <a href={url('/lately/')}>register</a> announces the invitation on —
-      the day it was accepted, not a term of service, so it is not printed here as one. The remaining
+      } an <b>announced</b> day ({announcedOnly.map((entry) => entry.org).join('; ')}), which is the
+      date the <a href={url('/lately/')}>register</a> announces the invitation on — the day it was accepted,
+      not a term of service, so it is not printed here as one. The remaining
       {
         countPhrase(
           dateless.length,

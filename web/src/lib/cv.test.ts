@@ -229,10 +229,7 @@ assert.deepEqual(countPhrase(0, 'editorial board', 'editorial boards'), {
   words: 'editorial boards',
   text: '0 editorial boards',
 });
-assert.equal(
-  countPhrase(1, 'editorial board', 'editorial boards').text,
-  '1 editorial board',
-);
+assert.equal(countPhrase(1, 'editorial board', 'editorial boards').text, '1 editorial board');
 assert.equal(countPhrase(2).text, '2 entries');
 assert.equal(
   countPhrase(
@@ -271,10 +268,7 @@ assert.equal(
 assert.equal(countPhrase(1, 'is not', 'are not').text, '1 is not');
 assert.equal(countPhrase(2, 'is not', 'are not').text, '2 are not');
 assert.equal(`${countPhrase(2).text} · Journal`, '2 entries · Journal');
-assert.equal(
-  `${countPhrase(1).text} · Books & chapters`,
-  '1 entry · Books & chapters',
-);
+assert.equal(`${countPhrase(1).text} · Books & chapters`, '1 entry · Books & chapters');
 
 const countSensitivePages = [
   '../pages/index.astro',
@@ -308,7 +302,11 @@ assert.match(publicationsSource, /`\$\{kind\.kind\}: \$\{kind\.count\}`/);
 assert.doesNotMatch(publicationsSource, /kind\.kind\.toLowerCase|category:/);
 for (const page of countSensitivePages) {
   const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
-  assert.match(source, /\bcountPhrase\(/, `${page}: generated count labels do not use countPhrase()`);
+  assert.match(
+    source,
+    /\bcountPhrase\(/,
+    `${page}: generated count labels do not use countPhrase()`,
+  );
   assert.doesNotMatch(source, /\bplural\(/, `${page}: bypasses whole-phrase agreement`);
   assert.doesNotMatch(source, /\blength\s*===\s*1\s*\?/, `${page}: duplicates countPhrase()`);
   assert.doesNotMatch(
