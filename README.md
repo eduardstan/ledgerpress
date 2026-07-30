@@ -297,6 +297,41 @@ something else.
 None of them touches a fact about you, and taking a later ledgerpress update after one of them is a
 merge you resolve rather than a conflict with your record.
 
+### Three printed-CV settings a document carries itself
+
+Editing `cv/preamble.tex` is fine, but three things change often enough that a document can set them
+without touching the shared layout at all — which keeps `cv/preamble.tex` identical to ledgerpress's
+and every later update an unconflicted merge. Define any of them **before** that document's
+`\input{preamble.tex}`; each is unset by default and the template's own look is the default.
+
+| Setting         | What it takes                                                            |
+| --------------- | ------------------------------------------------------------------------ |
+| `\cvtypeface`   | the whole font setup — the default loads `fontspec` and TeX Gyre Pagella |
+| `\cvcoursecols` | the column widths of a `rows:` table, given the generated ones as `#1`   |
+| `\cvsourcemaps` | extra biblatex `\map` blocks, run after the template's two               |
+
+```tex
+% An NFSS font package instead of a system Unicode face. \headerfontiii is what
+% each document body selects, so renew it after \input{preamble.tex} to match.
+\newcommand{\cvtypeface}{\usepackage{cfr-lm}\usepackage[T1]{fontenc}}
+
+% Hand-tune the course tables to your own course names. They are numbered in
+% printing order by the `cvcoursetable` counter, so widths may differ per table.
+% Write them with column TYPES (`P`, `Y`) — see cv/preamble.tex for why.
+\newcommand{\cvcoursecols}[1]{%
+  \ifnum\value{cvcoursetable}=1 P{3.1cm} P{3.8cm} Y P{1.2cm}%
+  \else P{3.1cm} P{3.5cm} Y P{1.2cm}\fi}
+
+% Tidy how your own entries print. biblatex takes exactly one \DeclareSourcemap,
+% so adding a second of your own would silently lose the template's.
+\newcommand{\cvsourcemaps}{%
+  \map{\step[fieldsource=doi, final]\step[fieldset=url, null]}}
+```
+
+The template sets none of them, no check asserts any of them, and a repository that sets none builds
+exactly as it does today. What one bibliography needs tidying, and which widths suit one set of
+course names, are particular to one person — so they are offered, never defaulted.
+
 ### CV variants
 
 Three documents ship, all built from the one record:
