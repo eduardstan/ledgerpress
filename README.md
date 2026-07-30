@@ -525,5 +525,6 @@ The important contracts are kept executable:
 
 ## Licence
 
-The machinery is MIT licensed; see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Bundled web fonts retain their own licences
+The machinery is MIT licensed; see [`LICENSE`](LICENSE), with third-party attributions in
+[`NOTICE`](NOTICE). Bundled web fonts retain their own licences
 in [`web/public/fonts/LICENSES.md`](web/public/fonts/LICENSES.md).
