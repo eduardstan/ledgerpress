@@ -5,9 +5,12 @@
  *
  *   cd web && node --experimental-strip-types src/lib/record.test.ts
  *
- * It asserts against the repository's real data files, not fixtures, because the
- * failure this is protecting against is exactly "the parser stopped agreeing
- * with the data".
+ * It asserts against `fixtures/record/`, not against `content/`. The shapes
+ * below — a parenthesis-delimited `@dataset`, a citation with nothing but a
+ * venue, a `Last, First` name, a manuscript under review — are what the readers
+ * have to survive, and an adopter who replaces `content/` must not be able to
+ * take any of them away. `LEDGERPRESS_RECORD_ROOT` points the readers at that
+ * fixture; `live-record.test.ts` holds what must be true of the real record.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -19,20 +22,26 @@ import {
   parseBib,
   publicationKind,
   publicationSections,
+  readSource,
   stripMarkdown,
   talks,
   SOURCES,
 } from './record.ts';
-import { keywordList } from './cv-schema.ts';
 import { announcements, formatStamp, say, shortVenue, TEMPLATES } from './announcements.ts';
 import { bibEntryCount } from '../../../scripts/build-cv-data.mjs';
 
-const root = fileURLToPath(new URL('../../../', import.meta.url));
+// Reading `content/` here would make every assertion below a claim about whose
+// facts are in it, which is exactly what this file no longer does.
+assert.ok(
+  process.env.LEDGERPRESS_RECORD_ROOT,
+  "run this with LEDGERPRESS_RECORD_ROOT=src/lib/fixtures/record — see that directory's README",
+);
+
 const bib = bibliography();
 const owner = profile();
 
 // The count the page shows must be the count in the file.
-const grepped = readFileSync(root + SOURCES.bibliography, 'utf8').match(/^@/gm)!.length;
+const grepped = readSource(SOURCES.bibliography).match(/^@/gm)!.length;
 assert.equal(bib.entries.length, grepped, 'entry count disagrees with `grep -c "^@"`');
 
 // Fields the index columns depend on. Nothing is filtered: every entry in the
@@ -52,7 +61,7 @@ for (const entry of bib.entries) {
 }
 
 const dataset = bib.entries.find((entry) => entry.key === 'kowhai2025cores');
-assert.ok(dataset, 'the example @dataset entry was not parsed');
+assert.ok(dataset, 'the fixture @dataset entry was not parsed');
 assert.equal(dataset.kind, 'Data');
 assert.equal(dataset.venue, 'Aotearoa Polar Data Commons');
 
@@ -78,9 +87,9 @@ for (const entry of bib.entries) {
   );
 }
 
-// A property of THIS repository's example data as it stands, not an invariant of
-// the reader: every entry is claimed by a declared section,
-// so a group quietly dropped from the declaration still fails loudly here.
+// A property of the fixture as it stands, not an invariant of the reader: every
+// fixture entry is claimed by a declared section, so a group quietly dropped
+// from the fixture's declaration still fails loudly here.
 const unlabelled = bib.entries.filter((entry) => entry.kind === 'Other');
 assert.deepEqual(
   unlabelled.map((entry) => `${entry.key} (@${entry.type})`),
@@ -88,15 +97,6 @@ assert.deepEqual(
   `${SOURCES.cv}: these entries match no declared publication section`,
 );
 
-const generated = readFileSync(root + 'cv/generated/cv-data.tex', 'utf8');
-const generatedPublicationCount = Number(
-  /\\newcommand\{\\cvPublicationsCount\}\{(\d+)\}/.exec(generated)?.[1],
-);
-assert.equal(
-  generatedPublicationCount,
-  bib.entries.length,
-  'the generated PDF count and website bibliography count disagree',
-);
 const parenthesized = String.raw`
 @article(parenthesized,
   author = {Lovelace, Ada},
@@ -117,105 +117,6 @@ assert.ok(
   bib.entries.find((entry) => entry.key === 'kowhai2025cores')?.raw.endsWith(')'),
   'the real cross-publication proof is no longer parenthesis-delimited',
 );
-const printedHeadings = [
-  ...generated.matchAll(
-    /\\printbibliography\[heading=bibsubheading, title=\{(.+?)\}, filter=Publications/g,
-  ),
-].map((match) => match[1].replace(/\\&/g, '&'));
-assert.deepEqual(
-  printedHeadings,
-  declared.filter((section) => section.printed !== false).map((section) => section.title),
-  'the printed CV and this file disagree about the publication sections',
-);
-
-// -----------------------------------------------------------------------------
-// The two matchers, proved equal over the real bibliography.
-//
-// One declaration, two engines: biblatex/Biber selects the printed sections and
-// `matchesBibSection` labels the site's. Similar-looking code is not evidence
-// they agree, so this evaluates the GENERATED `\defbibfilter` expressions —
-// the ones biber will actually run — against every entry in the file and
-// checks each entry lands in the same section on both sides.
-// -----------------------------------------------------------------------------
-
-/**
- * A biblatex filter expression, evaluated the way biber does: `type=` and
- * `keyword=` tests joined by `and` / `or` / `not`, with parentheses. Keyword
- * lists are comma-separated and every comparison is case-sensitive.
- */
-function evaluateFilter(expression: string, type: string, keywords: string): boolean {
-  const tokens = expression.match(/\(|\)|[^\s()]+/g) ?? [];
-  let at = 0;
-  const peek = () => tokens[at];
-  const eat = (token: string) => (peek() === token ? (at++, true) : false);
-  const atom = (): boolean => {
-    if (eat('not')) return !atom();
-    if (eat('(')) {
-      const value = or();
-      assert.ok(eat(')'), `unbalanced parentheses in filter: ${expression}`);
-      return value;
-    }
-    const token = tokens[at++];
-    const [field, wanted] = token.split('=');
-    if (field === 'type') return type === wanted;
-    if (field === 'keyword') return keywordList(keywords).includes(wanted);
-    throw new Error(`unsupported filter test "${token}" in: ${expression}`);
-  };
-  const and = (): boolean => {
-    let value = atom();
-    while (eat('and')) value = atom() && value;
-    return value;
-  };
-  const or = (): boolean => {
-    let value = and();
-    while (eat('or')) value = and() || value;
-    return value;
-  };
-  const result = or();
-  assert.equal(at, tokens.length, `filter not fully consumed: ${expression}`);
-  return result;
-}
-
-// Filter N belongs to the Nth declared section: the generator numbers them by
-// declaration order so an unprinted section cannot shift the ones below it.
-const compiled = [
-  ...generated.matchAll(/\\defbibfilter\{Publications(\d+)\}\{([\s\S]*?)\}\n/g),
-].map((match) => ({
-  section: declared[Number(match[1]) - 1],
-  expression: match[2],
-}));
-assert.equal(
-  compiled.length,
-  declared.filter((section) => section.printed !== false).length,
-  'the generated filters and the declared printed sections do not correspond',
-);
-
-for (const entry of bib.entries) {
-  const type = entry.type.toLowerCase();
-  const keywords = entry.fields.keywords ?? '';
-  const printed = compiled.filter((filter) => evaluateFilter(filter.expression, type, keywords));
-  assert.ok(
-    printed.length <= 1,
-    `${entry.key}: printed under ${printed.length} sections but labelled once — ` +
-      `${printed.map((f) => f.section.title).join(', ')}`,
-  );
-  const site = declared.find((section) => section.short === entry.kind);
-  const inPdf = printed[0]?.section;
-  if (site && site.printed !== false) {
-    assert.equal(
-      inPdf,
-      site,
-      `${entry.key}: the site files it under "${site.title}" and the PDF does not`,
-    );
-  } else {
-    assert.equal(
-      inPdf,
-      undefined,
-      `${entry.key}: the site prints it nowhere and the PDF prints it under "${inPdf?.title}"`,
-    );
-  }
-}
-
 // The citation assembled for the collapsed row. The cases that matter are the
 // sparse ones: everything below volume, pages and publisher is optional in this
 // file, so the assembler is only ever one missing field away from printing a
@@ -465,7 +366,7 @@ assert.equal(talkItems.length, 3, `expected 3 talks in the feed, got ${talkItems
 // bibliography applies: nothing filtered, nothing relabelled, nothing left
 // carrying LaTeX.
 const pres = talks();
-const presGrepped = readFileSync(root + SOURCES.talks, 'utf8').match(/^@/gm)!.length;
+const presGrepped = readSource(SOURCES.talks).match(/^@/gm)!.length;
 assert.equal(pres.entries.length, presGrepped, 'talk count disagrees with `grep -c "^@"`');
 assert.equal(pres.entries.length, 3, `expected 3 talks, got ${pres.entries.length}`);
 assert.deepEqual(pres.undated, [], 'a talk reached the page without an ISO 8601 date');

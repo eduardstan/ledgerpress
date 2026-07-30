@@ -15,7 +15,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { bibSectionFor, keywordList, type BibSection, type CV } from './cv-schema.ts';
+import { bibSectionFor, keywordList, readCv, type BibSection, type CV } from './cv-schema.ts';
 import { internalUrl } from './urls.ts';
 
 /**
@@ -32,6 +32,11 @@ import { internalUrl } from './urls.ts';
  * started from `web/` or from the repository root.
  */
 function repositoryRoot(): string {
+  // The self-checks point every reader at `src/lib/fixtures/record/` so they
+  // prove the readers work rather than asserting whose record is in `content/`.
+  // Nothing in a build sets this; `content/` is still the only record a site has.
+  const fixture = process.env.LEDGERPRESS_RECORD_ROOT;
+  if (fixture) return resolve(fixture);
   let directory = resolve(process.cwd());
   for (;;) {
     if (existsSync(join(directory, 'content', 'cv.yaml'))) return directory;
@@ -201,7 +206,7 @@ export interface Publication {
 let cvCache: CV | undefined;
 
 /** `content/cv.yaml`, parsed once. `cv.ts` reads the same file through `?raw`. */
-const cvRecord = (): CV => (cvCache ??= (parseYaml(read(SOURCES.cv)) as CV) ?? ({} as CV));
+const cvRecord = (): CV => (cvCache ??= readCv(parseYaml(read(SOURCES.cv)), SOURCES.cv));
 
 /**
  * The declared groups of `content/publications.bib`, in print order.

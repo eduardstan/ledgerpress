@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -71,9 +71,6 @@ try {
     assert.ok(styles.includes(`${base}fonts/${font}.woff2`), `${font} lost the deployment base`);
   }
 
-  const post = text("blog/2026/reading-a-core/index.html");
-  assert.match(post, /src="\/ledgerpress-proof\/media\/core-layers\.svg"/);
-
   const search = text("search/index.html");
   assert.match(search, /href="\/ledgerpress-proof\/pagefind\/pagefind-component-ui\.css"/);
   assert.match(search, /src="\/ledgerpress-proof\/pagefind\/pagefind-component-ui\.js"/);
@@ -82,8 +79,46 @@ try {
 
   const feed = text("rss.xml");
   assert.ok(feed.includes(`${site}lately/`));
-  assert.ok(feed.includes(`${base}blog/2026/reading-a-core/`));
   assert.equal(text("feed.xml"), feed);
+
+  // The posts are the adopter's, so nothing here names one. Whichever posts the
+  // record holds, their routes reach the feed under the deployment base, and a
+  // record with none simply proves nothing about posts rather than failing.
+  const posts = existsSync(join(proofDist, "blog"))
+    ? readdirSync(join(proofDist, "blog"), { recursive: true })
+        .filter((path) => path.endsWith(`${sep}index.html`))
+        .map((path) => `blog/${path.split(sep).slice(0, -1).join("/")}/`)
+    : [];
+  for (const route of posts) {
+    assert.ok(feed.includes(`${base}${route}`), `${route} is missing from the feed under ${base}`);
+  }
+
+  // An internal URL that lost the base is a 404 on a project site, on whichever
+  // page it sits — including a media file embedded in an adopter's own post. The
+  // prefixes are every asset and route directory this template publishes, so a
+  // new route has to be added here to be covered; the base itself comes from the
+  // constant the build was given, so the two cannot disagree.
+  const pages = readdirSync(proofDist, { recursive: true }).filter((path) => path.endsWith(".html"));
+  const prefixes = [
+    "_astro",
+    "media",
+    "assets",
+    "fonts",
+    "pagefind",
+    "blog",
+    "lately",
+    "search",
+    "publications",
+    "talks",
+    "projects",
+    "professional_activities",
+    "cv",
+    "404",
+  ];
+  const unbased = new RegExp(`(?:src|href)="/(?!${base.slice(1)})(?:${prefixes.join("|")})(?:/|")`);
+  for (const page of pages) {
+    assert.doesNotMatch(text(page), unbased, `${page}: an internal URL lost the deployment base`);
+  }
 
   assert.match(text("robots.txt"), /Allow: \/ledgerpress-proof\//);
   assert.ok(text("robots.txt").includes(`${site}sitemap-index.xml`));

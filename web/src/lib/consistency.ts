@@ -37,8 +37,8 @@ import {
   editionAnnounced,
   editionYear,
   entriesOf,
+  readCv,
   sections,
-  type CV,
   type Entry,
   type Exception,
 } from './cv-schema.ts';
@@ -53,7 +53,7 @@ import { bibliography, readSource, SOURCES } from './record.ts';
  * shape.
  */
 const cvRaw = readSource(SOURCES.cv);
-const cv = parse(cvRaw) as CV;
+const cv = readCv(parse(cvRaw), SOURCES.cv);
 
 /**
  * Every entry of every section, labelled by where it sits in the file.
