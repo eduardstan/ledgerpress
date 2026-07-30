@@ -28,7 +28,7 @@ fi
 # Whose record this baseline was taken from, recorded beside the page count
 # rather than inferred from the PDF's layout: a change to cv.tex's header must
 # not be able to decide whether this check runs. A different name means this is
-# not a maintainer run at all, and saying so is more use than 110 lines of diff.
+# not a maintainer run at all, and saying so is more useful than a full baseline diff.
 # Either name unreadable means nothing can be decided, and that fails.
 if [[ ! -r $metadata ]]; then
   printf '%s\n' "$metadata cannot be read, so this check cannot tell whose record $baseline was taken from." >&2

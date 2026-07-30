@@ -23,6 +23,8 @@ profile:
   links:
     orcid: 0000-0000-0000-0000
     scholar: sahana-kowhai-example
+    github: sahana-kowhai
+    linkedin: sahana-kowhai
     bluesky:
       label: Bluesky
       url: https://bsky.app/profile/sahana-kowhai.example
@@ -153,6 +155,15 @@ service:
     dates: 2023 – Present
     detail: Marine palaeoclimate
     announced: 2023-03-10
+  - title: Associate Editor
+    org: Example Journal of Palaeoclimate Studies
+    years:
+      - 2022
+      - 2023
+      - year: 2024
+        announced: 2023-11-15
+    metric: "IF: 3.4, Q1"
+    rank_url: https://example.org/journals/palaeoclimate-studies
   - title: Scientific Steering Committee
     org: Southern Ocean Observing System
     years: [2022, 2023, 2024, 2025, 2026]
@@ -171,7 +182,10 @@ projects:
     url: https://research.example.edu/tide
     announced: 2024-06-03
     items:
-      - Multiproxy reconstruction of Southern Ocean fronts across Termination II.
+      - >-
+        Multiproxy reconstruction of Southern Ocean fronts across Termination
+        II, with voyage support from the [Southern Archive Voyage
+        Consortium](https://voyages.example.edu).
   - title: Open Core Chronologies
     org: Australian Antarctic Program Partnership
     dates: 2022 – 2025
@@ -198,6 +212,26 @@ fieldwork:
       dates: Nov 2022
       detail: Visiting scientist
 
+outreach:
+  heading: Public engagement
+  entries:
+    - title: "Sediment stories: reading climate from ocean cores"
+      org: Kōwhai Coast Learning Collective
+      place: Ōamaru, Aotearoa New Zealand
+      dates: Sep 2025
+      detail: Community workshop for secondary-school science teachers
+      url: https://learning.example.edu/sediment-stories
+    - title: Core archive open day
+      org: Aotearoa Marine Memory Trust
+      place: Porirua, Aotearoa New Zealand
+      dates: Mar 2024
+      detail: Public demonstration of core scanning and age-model uncertainty
+    - title: Antarctic archives teacher residency
+      org: Polar Evidence Studio
+      place: Ōtepoti Dunedin, Aotearoa New Zealand
+      dates: Jul 2023
+      detail: Short course on proxy evidence for secondary-school teachers
+
 awards:
   - title: Early Career Research Excellence Award
     org: Geoscience Society of New Zealand
@@ -206,7 +240,7 @@ awards:
   - title: SCAR Visiting Fellowship
     org: Scientific Committee on Antarctic Research
     place: Cambridge, United Kingdom
-    dates: "2017"
+    dates: 2017
 
 leadership:
   # Website-only: /cv/ renders these, the printed CV leaves them out.
@@ -216,7 +250,7 @@ leadership:
       org: Southern Ocean Knowledge and Information community
       dates: 2024 – Present
       announced: 2024-02-01
-    - title: Faculty representative
+    - title: Faculty representative — [field note](/blog/2026/reading-a-core/)
       org: Pacific research partnerships committee
       dates: 2022 – 2024
 
@@ -232,16 +266,29 @@ publications:
   sections:
     - title: Journal articles (peer-reviewed)
       short: Journal
+      prefix: J
       types: [article]
       exclude_keywords: [underreview]
+    - title: Conference papers (peer-reviewed)
+      short: Conference
+      prefix: C
+      types: [inproceedings]
     - title: Books and chapters
       short: Books
-      types: [incollection, book]
-    - title: Data and software
+      prefix: B
+      types: [incollection, inbook, book]
+    - title: Data archives
       short: Data
-      types: [dataset, misc]
+      prefix: D
+      types: [dataset]
+    - title: Software & code
+      short: Software
+      prefix: S
+      types: [misc]
+      printed: false
     - title: Manuscripts under review
-      short: Review
+      short: Under review
+      prefix: R
       types: [article]
       keywords: [underreview]
 
@@ -249,9 +296,11 @@ talks:
   sections:
     - title: Invited and keynote talks
       short: Invited
+      prefix: I
       types: [unpublished]
       keywords: [invited]
     - title: Conference presentations
       short: Conference
+      prefix: C
       types: [unpublished]
       exclude_keywords: [invited]
