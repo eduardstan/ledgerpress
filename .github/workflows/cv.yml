@@ -28,6 +28,7 @@ on:
       - "package-lock.json"
       - "web/**"
       - ".github/workflows/cv.yml"
+      - ".github/workflows/deploy.yml"
   pull_request:
     paths:
       - "cv/**"
@@ -43,6 +44,7 @@ on:
       - "package-lock.json"
       - "web/**"
       - ".github/workflows/cv.yml"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 jobs:
