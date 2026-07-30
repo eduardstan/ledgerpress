@@ -290,7 +290,7 @@ top-level `README.md`.
 | Key | Where it appears on the site |
 | --- | --- |
 | `appointments`, `education`, `teaching`, `supervision`, `awards`, `languages`, `leadership` | `/cv/` |
-| `service` | `/professional_activities/` and the home page |
+| `service` | `/service/` and the home page |
 | `projects` | `/projects/` |
 
 A section you invent — `fieldwork:`, `outreach:` — reaches the **printed CV** and the **register**
