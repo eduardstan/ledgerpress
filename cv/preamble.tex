@@ -62,8 +62,22 @@
 \usepackage{fancyhdr}
 \usepackage{multicol}
 \usepackage{graphicx}
-\usepackage{fontspec}
-\setmainfont{TeX Gyre Pagella}
+% THE TYPEFACE. A document that wants another one defines \cvtypeface BEFORE its
+% \input{preamble.tex}; this \providecommand then leaves that definition alone.
+%
+% It carries the whole font setup, not a font name, because there is no one
+% mechanism to name it through: this template selects a system Unicode face with
+% fontspec, while an NFSS font package - cfr-lm, newtx, kpfonts - is loaded
+% instead and takes no such argument. One macro holding either is the smallest
+% thing that accepts both.
+%
+% \headerfontiii below is what every document body selects, and it follows the
+% main font. A document setting an NFSS typeface usually renews that too.
+\providecommand{\cvtypeface}{%
+  \usepackage{fontspec}%
+  \setmainfont{TeX Gyre Pagella}%
+}
+\cvtypeface
 \usepackage{fontawesome5}
 \usepackage{academicons} % <-- NEW (Scholar, ORCID, etc.)
 \usepackage{eurosym} % <-- NEW (€)
@@ -289,8 +303,36 @@
 % equal-width column specification, #2 the generated headings and #3 the rows.
 % Any number of consistently shaped columns therefore works without editing
 % this layout. The generator refuses rows whose key order disagrees.
+%
+% THE COLUMN GEOMETRY. Equal widths suit no particular set of course names, so a
+% document may hand-tune them by defining \cvcoursecols BEFORE its
+% \input{preamble.tex}: it takes the generated specification as #1 and returns
+% the one to use, and the default returns it unchanged. The tables are numbered
+% in printing order by the `cvcoursetable` counter, so widths may differ per
+% table:
+%
+%   \newcommand{\cvcoursecols}[1]{%
+%     \ifnum\value{cvcoursetable}=1 P{3.1cm} P{3.8cm} Y P{1.2cm}%
+%     \else P{3.1cm} P{3.5cm} Y P{1.2cm}\fi}
+%
+% The counter is stepped here rather than left to the document because tabularx
+% reads its body more than once, so a counter stepped inside the table would
+% count wrong.
+%
+% The result is expanded before the table sees it: `array` reads a column
+% specification token by token and rejects a macro it finds there, so a
+% \cvcoursecols left unexpanded would stop the build with "Illegal pream-token".
+% Column TYPES survive that expansion - they are letters, as `P` and `Y` are -
+% so write the widths with those, not with a bare `>{\raggedright...}p{3cm}`.
+\newcounter{cvcoursetable}
+\providecommand{\cvcoursecols}[1]{#1}
 \newcommand{\cvcourses}[3]{%
 \par
+\stepcounter{cvcoursetable}%
+\edef\cvcoursespec{\cvcoursecols{#1}}%
+\expandafter\cvcoursesprint\expandafter{\cvcoursespec}{#2}{#3}%
+}
+\newcommand{\cvcoursesprint}[3]{%
 \begin{cvtable}{#1}
 \toprule
 #2
@@ -371,6 +413,7 @@
 % The shared bibliography may carry rendering fields used only by the website. They are not part of the CV, and abstracts can contain raw % and &
 % that would break the LaTeX pass, so drop them during biber processing instead
 % of altering the .bib the website reads.
+\providecommand{\cvsourcemaps}{}
 \DeclareSourcemap{
   \maps[datatype=bibtex]{
     \map{
@@ -395,6 +438,19 @@
       \step[fieldsource=note, match=\regexp{\AAccessed\son\sYYYY-MM-DD\.?\Z}, final]
       \step[fieldset=note, null]
     }
+    % THE BIBLIOGRAPHY TIDYING. biblatex takes exactly one \DeclareSourcemap, so
+    % a document cannot add its own without losing the two above. It defines
+    % \cvsourcemaps BEFORE its \input{preamble.tex} instead, holding \map blocks
+    % that then run after these:
+    %
+    %   \newcommand{\cvsourcemaps}{%
+    %     \map{\step[fieldsource=doi, final]\step[fieldset=url, null]}}
+    %
+    % Nothing goes here by default. What one bibliography needs tidying is a
+    % fact about that bibliography - which fields its export tool fills, and
+    % which of them its owner would rather not print - so it belongs to the
+    % document that prints it, not to everyone.
+    \cvsourcemaps
   }
 }
 
