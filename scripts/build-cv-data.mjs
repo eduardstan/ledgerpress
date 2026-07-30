@@ -18,6 +18,12 @@
 // \cvFieldworkInline and \cvFieldworkCount without touching this file. See
 // cv/cv.tex for the contract.
 //
+// It also emits \cvAutoSections: one \cvautopart line per section, in the order
+// content/cv.yaml writes them, so which sections the PDF prints is a record fact
+// rather than a list of \cvpart lines in cv/cv.tex, which skips the ones it lays
+// out by hand. `printed: false` on a section emits \cv<Key>Printed as 0 instead
+// of a second sequence rule, so the opt-out holds for a hand-laid-out section too.
+//
 // A top-level key holding `sections:` instead of entries is a bibliography
 // grouping (`publications:`, `talks:`): each becomes \defbibfilter definitions
 // plus \cv<Key>Key, \cv<Key>Sections and \cv<Key>Count. It knows no BibTeX entry
@@ -215,13 +221,24 @@ function entry(item) {
   return [head, itemList(item.items), table].filter(Boolean).join("\n");
 }
 
-/** `field_work` -> `FieldWork`, so a section key becomes a legal macro name. */
-const macroName = (key) =>
+/** The words of a section key, each capitalised: `field_work` -> [Field, Work]. */
+const keyWords = (key) =>
   key
     .split(/[^A-Za-z0-9]+/)
     .filter(Boolean)
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join("");
+    .map((w) => w[0].toUpperCase() + w.slice(1));
+
+/** `field_work` -> `FieldWork`, so a section key becomes a legal macro name. */
+const macroName = (key) => keyWords(key).join("");
+
+/**
+ * The heading a section prints under: the one it states, or its own key.
+ *
+ * `fieldwork:` prints as "Fieldwork" with nothing declared, which is what makes a
+ * new section print without a LaTeX edit. A section whose heading is not its key
+ * spelt out - "Awards & Scholarships" - says so with `heading:`.
+ */
+const sectionHeading = (key, value) => arg((Array.isArray(value) ? undefined : value.heading) ?? keyWords(key).join(" "));
 
 function macro(name, body) {
   return `\\newcommand{\\${name}}{%\n${body}%\n}`;
@@ -500,8 +517,10 @@ function render(cv) {
     macro("cvFocus", renderInline(p.focus)),
     macro("cvFooter", renderInline(p.footer)),
   ];
-  // Every other top-level list is a section. Six macros each, all mechanical:
-  // the generator has no idea what any of them mean.
+  // Every other top-level list is a section. Six macros each, plus its line of
+  // the printed section sequence and, where the record opts out, one more macro.
+  // All mechanical: the generator has no idea what any of them mean.
+  const printed = [];
   for (const [key, value] of Object.entries(cv)) {
     if (key === "profile") continue;
     if (Array.isArray(value?.sections)) {
@@ -520,7 +539,17 @@ function render(cv) {
       macro(`cv${name}Inline`, rows.map((r) => arg(r.detail ? `${r.title} (${r.detail})` : r.title)).join(", ")),
       `\\newcommand{\\cv${name}Count}{${rows.length}}`
     );
+    // `printed: false` is the record's own opt-out, so it holds wherever the
+    // section is set: cv.tex defaults \cv<Key>Printed to 1 and guards on it.
+    if (!Array.isArray(value) && value.printed === false) {
+      blocks.push(`\\newcommand{\\cv${name}Printed}{0}`);
+    }
+    printed.push(`\\cvautopart{${sectionHeading(key, value)}}{${name}}`);
   }
+  // The printed CV's section sequence, in the order content/cv.yaml writes it.
+  // cv.tex prints this list and skips every key it has already laid out by hand,
+  // so a section added to the record needs no LaTeX edit to appear.
+  blocks.push(macro("cvAutoSections", printed.join("%\n")));
   return `${BANNER.join("\n")}\n${blocks.join("\n\n")}\n`;
 }
 
@@ -564,6 +593,7 @@ export {
   affiliationBlock,
   profilesLine,
   macroName,
+  sectionHeading,
   tableHeader,
   entry,
   bibFilter,

@@ -5,10 +5,17 @@ load-bearing constraints that should travel with the template.
 
 ## One record, two publications
 
-`content/` is the whole adopter-owned interface. `content/README.md` documents it. The website in
-`web/` and the PDF layout in `cv/cv.tex` both consume the same `content/cv.yaml`,
-`content/publications.bib`, and `content/talks.bib`; posts and media live beside them. Adopting the
-template must not require editing outside `content/`.
+`content/` owns the record: every fact about the adopter, and which sections the CV prints.
+`content/README.md` documents it. The website in `web/` and the PDF layout in `cv/cv.tex` both consume
+the same `content/cv.yaml`, `content/publications.bib`, and `content/talks.bib`; posts and media live
+beside them. Replacing the record must not require editing outside `content/` — that is what
+`npm run check:adopter` proves.
+
+Design is code, deliberately: the theme, the printed layout and its curated section headings, routes,
+redirects and announcement wording are all edited outside `content/`, and `README.md`'s "Make it
+yours" lists where. Do not move any of them into `content/`: that was considered and rejected,
+because layout and routes cannot follow and the boundary would blur again. The boundary is facts
+versus design — keep every document saying the same thing about it.
 
 `web/src/lib/record.ts` owns the complete list of source paths. It locates the repository by walking
 up for `content/cv.yaml`, the file no build can work without. `web/src/lib/record.test.ts` fails if a
@@ -16,7 +23,10 @@ record source points outside `content/`.
 
 `scripts/build-cv-data.mjs` turns `content/cv.yaml` into the committed
 `cv/generated/cv-data.tex`. Never hand-edit generated data. Every top-level list becomes a macro
-family without the generator naming the section. Publication and talk grouping is declared under
+family without the generator naming the section, and `\cvAutoSections` carries the printed section
+sequence, so a section added to the record reaches the PDF with no `.tex` edit: `cv/cv.tex` prints
+that sequence and skips the keys it lays out by hand, which `\cvdeclare` records.
+Publication and talk grouping is declared under
 `publications.sections` and `talks.sections`; no BibTeX type or grouping policy belongs in
 `cv/cv.tex` or the website publication reader.
 

@@ -50,24 +50,27 @@ profile:
     is supplied only to demonstrate the template.
 
 strands:
-  - title: Ocean archives
-    detail: >-
-      Reading marine sediments as layered records of temperature, circulation
-      and sea-ice change.
-    items:
-      - Evidence lives in content/publications.bib and the fieldwork section.
-  - title: Chronology and uncertainty
-    detail: >-
-      Making age models, proxy calibration and uncertainty legible from sample
-      to published claim.
-    items:
-      - Evidence lives in content/publications.bib and the teaching record.
-  - title: Open polar practice
-    detail: >-
-      Designing reusable datasets and reciprocal field partnerships for
-      Southern Ocean research.
-    items:
-      - Evidence lives in the projects and service sections.
+  # Website-only: the home page renders these, the printed CV has no strands section.
+  printed: false
+  entries:
+    - title: Ocean archives
+      detail: >-
+        Reading marine sediments as layered records of temperature, circulation
+        and sea-ice change.
+      items:
+        - Evidence lives in content/publications.bib and the fieldwork section.
+    - title: Chronology and uncertainty
+      detail: >-
+        Making age models, proxy calibration and uncertainty legible from sample
+        to published claim.
+      items:
+        - Evidence lives in content/publications.bib and the teaching record.
+    - title: Open polar practice
+      detail: >-
+        Designing reusable datasets and reciprocal field partnerships for
+        Southern Ocean research.
+      items:
+        - Evidence lives in the projects and service sections.
 
 appointments:
   - title: Associate Professor of Palaeoclimatology
@@ -166,17 +169,22 @@ projects:
       - Reusable age-depth models and provenance for legacy sediment cores.
 
 fieldwork:
-  - title: Pukaki Rise sediment coring voyage
-    org: RV Tangaroa
-    place: Southern Ocean
-    dates: Jan – Feb 2025
-    detail: Co-chief scientist
-    announced: 2025-01-12
-  - title: East Antarctic margin core curation
-    org: National Marine Geoscience Collection
-    place: Te Whanganui-a-Tara Wellington
-    dates: Nov 2022
-    detail: Visiting scientist
+  # The opt-out, demonstrated on an ordinary section: the register announces these
+  # and the printed CV leaves them out. Delete the next line and the section
+  # prints, under the heading its key spells out.
+  printed: false
+  entries:
+    - title: Pukaki Rise sediment coring voyage
+      org: RV Tangaroa
+      place: Southern Ocean
+      dates: Jan – Feb 2025
+      detail: Co-chief scientist
+      announced: 2025-01-12
+    - title: East Antarctic margin core curation
+      org: National Marine Geoscience Collection
+      place: Te Whanganui-a-Tara Wellington
+      dates: Nov 2022
+      detail: Visiting scientist
 
 awards:
   - title: Early Career Research Excellence Award
@@ -189,13 +197,16 @@ awards:
     dates: "2017"
 
 leadership:
-  - title: Co-chair, Open Polar Data Working Group
-    org: Southern Ocean Knowledge and Information community
-    dates: 2024 – Present
-    announced: 2024-02-01
-  - title: Faculty representative
-    org: Pacific research partnerships committee
-    dates: 2022 – 2024
+  # Website-only: /cv/ renders these, the printed CV leaves them out.
+  printed: false
+  entries:
+    - title: Co-chair, Open Polar Data Working Group
+      org: Southern Ocean Knowledge and Information community
+      dates: 2024 – Present
+      announced: 2024-02-01
+    - title: Faculty representative
+      org: Pacific research partnerships committee
+      dates: 2022 – 2024
 
 languages:
   - title: Tamil

@@ -18,6 +18,7 @@ import {
   macroName,
   profilesLine,
   renderInline,
+  sectionHeading,
   tableHeader,
   where,
 } from "./build-cv-data.mjs";
@@ -170,6 +171,110 @@ test("an empty or absent rows list emits no course table", () => {
   const withEmptyRows = entry({ title: "Lecturer", rows: [] });
   assert.equal(withEmptyRows, withoutRows);
   assert.doesNotMatch(withEmptyRows, /\\cvcourses/);
+});
+
+// -----------------------------------------------------------------------------
+// Which sections print, and in what order. Both are record facts: the generator
+// emits the sequence and cv/cv.tex prints it. A section added to content/cv.yaml
+// must reach the PDF with no .tex edit at all - the defect this replaced was a
+// content operation that required one.
+// -----------------------------------------------------------------------------
+
+/** The `\cvautopart` lines of the generated section sequence, in order. */
+function sequence(tex) {
+  const macro = tex.match(/\\newcommand\{\\cvAutoSections\}\{%\n([\s\S]*?)%\n\}/);
+  assert.ok(macro, "the generator must emit \\cvAutoSections for cv.tex to print");
+  return macro[1] ? macro[1].split("%\n") : [];
+}
+
+test("a section invented in the record joins the printed sequence, in file order", () => {
+  const tex = render(
+    load(`
+profile:
+  name: Alex Newcomer
+appointments:
+  - title: Postdoctoral Researcher
+outreach:
+  - title: Sediment cores for schools
+`)
+  );
+  assert.deepEqual(sequence(tex), ["\\cvautopart{Appointments}{Appointments}", "\\cvautopart{Outreach}{Outreach}"]);
+});
+
+test("a record with no sections still emits the sequence, so cv.tex always has one to print", () => {
+  assert.deepEqual(sequence(render({ profile: { name: "Alex Newcomer" } })), []);
+});
+
+test("printed: false is an opt-out every section setting honours", () => {
+  const tex = render(
+    load(`
+profile:
+  name: Alex Newcomer
+leadership:
+  printed: false
+  entries:
+    - title: Co-chair, working group
+`)
+  );
+  // The opt-out is one macro, not a hole in the sequence: cv.tex guards every
+  // section on it, so it holds for the ones that file lays out by hand as well.
+  assert.match(tex, /\\newcommand\{\\cvLeadershipPrinted\}\{0\}/);
+  assert.deepEqual(sequence(tex), ["\\cvautopart{Leadership}{Leadership}"]);
+  // And the section is still generated, for the website and for the counts.
+  assert.match(tex, /\\newcommand\{\\cvLeadership\}/);
+  assert.match(tex, /\\newcommand\{\\cvLeadershipCount\}\{1\}/);
+});
+
+test("a section the record does not opt out of defines no Printed macro, so 1 is the default", () => {
+  const tex = render(load("profile:\n  name: Alex Newcomer\nawards:\n  - title: Prize\n"));
+  assert.doesNotMatch(tex, /cvAwardsPrinted/);
+});
+
+test("a section prints under its key spelt out unless the record names its heading", () => {
+  assert.equal(sectionHeading("fieldwork", []), "Fieldwork");
+  assert.equal(sectionHeading("open_science", { entries: [] }), "Open Science");
+  assert.equal(sectionHeading("awards", { heading: "Awards & Scholarships", entries: [] }), "Awards \\& Scholarships");
+});
+
+test("cv.tex prints the record's section sequence and names no section inside it", () => {
+  const root = dirname(dirname(fileURLToPath(import.meta.url)));
+  const tex = readFileSync(join(root, "cv/cv.tex"), "utf8").replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+
+  assert.match(tex, /^\\cvAutoSections$/m, "the document body must print the generated section sequence");
+
+  // The skip below is order-dependent: \cvautopart passes over a key only once
+  // \cvdeclare has marked it laid out, so every hand-placed section must appear
+  // above \cvAutoSections or it prints twice, once under each heading.
+  const body = tex.slice(tex.indexOf("\\begin{document}"));
+  const lastLaidOut = Math.max(body.lastIndexOf("\\cvdeclare{"), body.lastIndexOf("\\cvpart{"), body.lastIndexOf("\\cvpartflush{"));
+  assert.ok(
+    body.search(/^\\cvAutoSections$/m) > lastLaidOut,
+    "\\cvAutoSections must come after every \\cvpart, \\cvpartflush and \\cvdeclare in the body, " + "or the section below it prints twice"
+  );
+
+  // \cvautopart is what makes the sequence safe to print in full: a key this
+  // layout already set by hand is skipped rather than printed twice.
+  const autopart = tex.match(/\\newcommand\{\\cvautopart\}\[2\]\{([\s\S]*?)\n\}/);
+  assert.ok(autopart, "\\cvautopart must remain defined");
+  assert.match(autopart[1], /\\csname cvlaidout@#2\\endcsname\\relax\\cvpart\{#1\}\{#2\}/);
+  // `printed: false` is a record fact, so every section setting honours it: the
+  // \cvpart family and each hand-written block guard on \cv<Key>Printed, which
+  // \cvdeclare defaults to 1 - and records the key as laid out by hand while it is
+  // there. A block that guards only on the count would print a section the record
+  // asked to keep off the PDF.
+  const cvdeclare = tex.match(/\\newcommand\{\\cvdeclare\}\[1\]\{([\s\S]*?)\n\}/)[1];
+  assert.match(cvdeclare, /\\cvlaidout\{#1\}/);
+  assert.match(cvdeclare, /\\providecommand\\csname cv#1Printed\\endcsname\{1\}/);
+  // Bibliographies are excluded: `publications:` and `talks:` opt out per declared
+  // group, and their count guard exists for biber's empty-data-source trap.
+  const bibliographies = [...tex.matchAll(/\\cvdeclarebib\{([A-Za-z]+)\}/g)].map((m) => m[1]);
+  const guarded = [...tex.matchAll(/\\ifnum\\(?:csname )?cv([A-Za-z]+?|#2)(?:Count\\endcsname|Count)>0/g)]
+    .map((m) => m[1])
+    .filter((key) => !bibliographies.includes(key));
+  for (const key of guarded) {
+    const printed = key === "#2" ? String.raw`\\ifnum\\csname cv#2Printed\\endcsname>0` : String.raw`\\ifnum\\cv${key}Printed>0`;
+    assert.match(tex, new RegExp(printed), `the ${key} section must also guard on its Printed macro`);
+  }
 });
 
 // -----------------------------------------------------------------------------
@@ -367,7 +472,7 @@ test("cv.tex defines every generated macro it names, for README's smallest file 
   for (const [, name] of render(load(minimal[1])).matchAll(/\\newcommand\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
   for (const [, name] of tex.matchAll(/\\(?:new|provide)command\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
   // cv.tex's own guards, which build their macro names with \csname.
-  const section = (name) => ["Count", "", "Note", "Rows", "Inline"].map((suffix) => `cv${name}${suffix}`);
+  const section = (name) => ["Count", "Printed", "", "Note", "Rows", "Inline"].map((suffix) => `cv${name}${suffix}`);
   for (const [, name] of tex.matchAll(/\\cvdeclare\{([A-Za-z]+)\}/g)) add(section(name));
   for (const [, name] of tex.matchAll(/\\cvpart(?:flush)?\{[^{}]*\}\{([A-Za-z]+)\}/g)) add(section(name));
   for (const [, name] of tex.matchAll(/\\cvdeclarebib\{([A-Za-z]+)\}/g)) add([`cv${name}Count`, `cv${name}Key`, `cv${name}Sections`]);

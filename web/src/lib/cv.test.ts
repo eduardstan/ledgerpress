@@ -25,6 +25,8 @@ import {
   kindTally,
   labelledCount,
   noteOf,
+  optsOutOfCv,
+  printsInCv,
   sections,
   type CV,
   type Entry,
@@ -151,6 +153,19 @@ assert.ok(
   teaching.some((block) => /present\s*$/i.test(block.dates ?? '')),
   'no teaching post dates run to Present',
 );
+
+// `printed: false` is the record's own opt-out, and only the section that states
+// it opts out: an absent key and an empty list say nothing either way, so /cv/
+// cannot describe one of those three states as another.
+assert.equal(optsOutOfCv({ printed: false, entries: [] }), true);
+assert.equal(optsOutOfCv({ entries: [{ title: 'Co-chair' }] }), false);
+assert.equal(optsOutOfCv([]), false);
+assert.equal(optsOutOfCv(undefined), false);
+// Reaching the PDF also needs entries, which is the rule cv/cv.tex applies.
+assert.equal(printsInCv({ printed: false, entries: [{ title: 'Co-chair' }] }), false);
+assert.equal(printsInCv([{ title: 'Co-chair' }]), true);
+assert.equal(printsInCv([]), false);
+assert.equal(printsInCv(undefined), false);
 
 // A section written as a map: a `note` above its `entries`.
 assert.equal(noteOf(cv.supervision).length, 1, 'supervision lost its note paragraph');
