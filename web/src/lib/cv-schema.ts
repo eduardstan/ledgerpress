@@ -607,6 +607,22 @@ export const sections = (source: CV): [string, Section][] =>
 export const keysOf = (rows: object[]) =>
   [...new Set(rows.flatMap((row) => Object.keys(row)))].join(', ');
 
+/**
+ * A record key as a heading: every word capitalised, separators untouched, so
+ * `programme / level` reads "Programme / Level" without the key itself carrying
+ * the capitals — the key is a fact, and `keysOf` above publishes it verbatim on
+ * this site's provenance lines. A word is any run of letters or digits in any
+ * script, so `kōwhai level` is two words and not three.
+ *
+ * The printed CV applies this same rule to these same keys: `headingCase` in
+ * `scripts/build-cv-data.mjs`. Nothing crosses that build boundary — that is
+ * plain node, this is a Vite module — so they are two copies of one rule and
+ * they must agree. A column that reads one way in the PDF and another here is
+ * the contradiction this repository exists to make impossible.
+ */
+export const headingCase = (key: string) =>
+  key.replace(/[\p{L}\p{N}]+/gu, (word) => word[0].toUpperCase() + word.slice(1));
+
 export interface CountPhrase {
   count: number;
   words: string;

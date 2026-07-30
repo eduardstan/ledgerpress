@@ -26,6 +26,7 @@ import {
   editionYear,
   entriesOf,
   groupByTitle,
+  headingCase,
   isEditorial,
   kindTally,
   labelledCount,
@@ -194,6 +195,16 @@ assert.ok(
   teaching.some((block) => /present\s*$/i.test(block.dates ?? '')),
   'no teaching post dates run to Present',
 );
+
+// The column headings of that table, here and in the printed CV, are one rule
+// held in two copies across the build boundary. These are the same cases
+// `scripts/build-cv-data.test.mjs` asserts of `tableHeader`: if one copy is
+// edited and the other is not, one of the two files fails.
+assert.equal(headingCase('programme / level'), 'Programme / Level');
+assert.equal(headingCase('key topics'), 'Key Topics');
+assert.equal(headingCase('kōwhai level'), 'Kōwhai Level');
+assert.equal(headingCase('français niveau'), 'Français Niveau');
+assert.equal(headingCase('course'), 'Course');
 
 // `printed: false` is the record's own opt-out, and only the section that states
 // it opts out: an absent key and an empty list say nothing either way, so /cv/

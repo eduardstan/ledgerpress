@@ -251,7 +251,7 @@ const md = (value: string | undefined) =>
  * names no section: an adopter's `fieldwork:` announces as `Fieldwork`.
  */
 const singular = (key: string) => {
-  const word = key.replace(/[^A-Za-z0-9]+/g, ' ').trim();
+  const word = key.replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const stem = /(?:ss|is|us)$/.test(word) ? word : word.replace(/s$/, '');
   return stem.charAt(0).toUpperCase() + stem.slice(1);
 };

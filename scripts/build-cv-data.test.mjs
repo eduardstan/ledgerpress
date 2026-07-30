@@ -159,6 +159,12 @@ test("a multi-word key capitalises every word, so no key carries its own capital
   assert.equal(tableHeader([{ "programme / level": "B.Sc.", "key topics": "proxies" }]), "\\textbf{Programme / Level} & \\textbf{Key Topics} \\\\");
 });
 
+test("a word is a run of letters in any script, so an accent does not start a new one", () => {
+  // A record is not written in English. "kōwhai" is one word, and capitalising
+  // its "whai" would misspell the adopter's own key back at them.
+  assert.equal(tableHeader([{ "kōwhai level": "3", "français niveau": "B2" }]), "\\textbf{Kōwhai Level} & \\textbf{Français Niveau} \\\\");
+});
+
 test("a table refuses rows whose columns or key order disagree", () => {
   assert.throws(
     () =>
