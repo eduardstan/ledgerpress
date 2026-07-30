@@ -113,7 +113,11 @@ try {
     short: ${syntheticName} is a postdoctoral researcher.
     long: I study reliable knowledge systems.
 
-appointments: []
+# A date written as an unquoted YAML number, which is a reasonable thing for an
+# adopter to write and used to reach the renderers as a number and crash them.
+appointments:
+  - title: Research fellow
+    dates: 2021
 
 # A section cv/cv.tex does not lay out by hand: it must reach the PDF, under the
 # heading its own key spells out, with no LaTeX edit at all.
@@ -163,6 +167,9 @@ outreach:
         "\\cvAutoSections sequence: adding a section to content/ must need no LaTeX edit."
     );
   }
+  if (!pdfText.stdout.includes("2021")) {
+    throw new Error("the unquoted numeric appointment year was not derived into the synthetic PDF");
+  }
   if (pdfText.stdout.toLocaleLowerCase().includes(exampleSurname.toLocaleLowerCase())) {
     throw new Error(`${JSON.stringify(exampleSurname)} leaked into the synthetic PDF`);
   }
@@ -190,6 +197,7 @@ outreach:
 
   grep(syntheticName, true);
   grep(syntheticDomain, true);
+  grep("2021", true);
   grep(exampleSurname, false, { ignoreCase: true, word: true });
   grep(exampleDomain, false);
   succeeded = true;

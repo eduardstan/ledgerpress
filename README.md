@@ -176,7 +176,9 @@ The PDF is written to `cv/cv.pdf`. The website is written to `web/dist/`.
 - Use a portrait you own or have permission to publish. Record its licence.
 - Decide whether a street address, room number, personal email or phone number should be public.
 - Search the repository and the built output for the previous person's name and domain.
-- Open the PDF and every website route before pushing.
+  `web/src/lib/fixtures/record/` is the self-checks' own record and is never published; the rest
+  should be yours.
+- Open all three printed documents and every website route before pushing.
 - Run the cold-start proof below.
 
 Do not solve a missing fact by guessing it. Omit the field; ledgerpress is designed to show honest
@@ -184,25 +186,60 @@ gaps.
 
 ## Validation
 
+These are the checks for **your** record. Every one of them passes on any valid record, so a
+failure here is something to fix in `content/`:
+
 ```sh
-npm test
-npm --prefix web run check
-npm --prefix web run build
-npm run check:deployment-base
-npm run check:adopter
-latexmk -xelatex -cd cv/cv.tex && bash scripts/check-cv-baseline.sh
-latexmk -xelatex -cd cv/short.tex && bash scripts/check-cv-baseline.sh cv/short.pdf
-latexmk -xelatex -cd cv/teaching.tex && bash scripts/check-cv-baseline.sh cv/teaching.pdf
-npm run check:format
+npm run check
 ```
 
-`npm run check:adopter` is the decisive test. It creates a clean tracked-file-only copy, replaces
+It starts by regenerating `cv/generated/cv-data.tex` from your `content/cv.yaml`, because the
+checks that follow compare that committed file against your record. So `npm run check` **writes**
+that one tracked file, and it says so when it runs — if you see it modified afterwards, that is
+why, and the change belongs in your next commit.
+
+That runs, in order:
+
+```sh
+npm run build:cv-data          # your record, regenerated into cv/generated/cv-data.tex
+npm test                       # the readers, the generators, and your record
+npm --prefix web run check     # types
+npm --prefix web run build     # the site, including the consistency gate
+npm run check:deployment-base  # internal URLs under a project-site base
+npm run check:adopter          # the cold-start proof
+npm run check:format           # Prettier
+```
+
+Build the printed documents alongside it, which nothing above does for you. All three are
+generated from the same record:
+
+```sh
+latexmk -xelatex -cd cv/cv.tex
+latexmk -xelatex -cd cv/short.tex
+latexmk -xelatex -cd cv/teaching.tex
+```
+
+`npm run check:adopter` is the decisive one. It creates a clean tracked-file-only copy, replaces
 only `content/` with a second synthetic scholar, and builds both the website and PDF. If that
 requires an edit anywhere else, the check fails.
 
-One baseline per printed document lives in `data/cv-baseline/`. When a deliberate content or layout
-change moves text or pages, rebuild the affected baselines and explain why in that directory's
-README.
+### Maintainer checks
+
+```sh
+npm run check:maintainer
+```
+
+This compares each built PDF against the baseline recorded for it — one per printed document, all
+taken from the **bundled example record** in `data/cv-baseline/`. It exists to catch layout
+regressions in `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex` while that example is still in
+`content/`. Once you have replaced the record there is nothing for it to compare against, so it says
+so in one line and verifies nothing — it never reports your record as a regression. **Adopters do
+not need to run it**; the deploy workflow runs it and it stays quiet after adoption.
+
+To check one document on its own, pass it: `bash scripts/check-cv-baseline.sh cv/short.pdf`.
+
+If you are changing the template itself and the change deliberately moves text or pages, rebuild the
+affected baselines and explain why in `data/cv-baseline/README.md`.
 
 ## Deploy on GitHub Pages
 
@@ -319,8 +356,7 @@ git diff --stat HEAD
 git commit -m "chore: connect ledgerpress updates"
 npm ci
 npm ci --prefix web
-npm test
-npm run check:adopter
+npm run check
 ```
 
 `-X theirs` is deliberate only for this first unrelated merge: it takes ledgerpress's current
@@ -384,8 +420,7 @@ git diff --stat HEAD
 git commit -m "chore: take ledgerpress improvements"
 npm ci
 npm ci --prefix web
-npm test
-npm run check:adopter
+npm run check
 ```
 
 The `git restore` line deliberately puts your current `content/` back before the merge commit. Read

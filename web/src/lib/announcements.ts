@@ -26,8 +26,8 @@ import {
   editionYear,
   entriesOf,
   isEditorial,
+  readCv,
   sections,
-  type CV,
   type Entry,
 } from './cv-schema.ts';
 import {
@@ -49,7 +49,7 @@ import {
  * and the feed's self-check, unrunnable under plain node. The types are
  * imported, so the two readers cannot disagree about the shape.
  */
-const cv = parse(readSource(SOURCES.cv)) as CV;
+const cv = readCv(parse(readSource(SOURCES.cv)), SOURCES.cv);
 
 export type Precision = 'year' | 'month' | 'day' | 'minute';
 

@@ -24,6 +24,15 @@ Baseline facts:
 | `cv/short.pdf`    | `short-baseline`    | 1     | 43 lines       | `90b3827b78b1314b880b6f36366f4495597aa796f38f7cba12585f693266dc8c` |
 | `cv/teaching.pdf` | `teaching-baseline` | 1     | 56 lines       | `571d061a9c42424822e587d7553b5e53d2e857790e95618bd04fef19106e1f20` |
 
+Every `*-baseline-meta.txt` also records `Owner:`, the `profile.name` its baseline was built from.
+The gate runs only while `content/cv.yaml` still states that name; a different name is an adopted
+record and skips with one line, and a name that cannot be read on either side fails rather than
+skipping, so no layout change and no parsing defect can silently disable it.
+
+Owner for all three baselines: Sahana Aster KŌWHAI, Ph.D.
+
+`cv-baseline.pdf` is retained for visual review.
+
 `cv-baseline.pdf` is retained for visual review of the full CV. The variants keep text and page
 count only: the gate reads nothing else, and they share `cv/preamble.tex` with the full CV, so a
 change to the printed design already shows up in a retained PDF.

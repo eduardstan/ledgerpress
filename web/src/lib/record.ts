@@ -15,7 +15,14 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import { bibSectionFor, keywordList, type BibSection, type CV } from './cv-schema.ts';
+import {
+  bibSectionFor,
+  keywordList,
+  readCv,
+  type BibSection,
+  type CV,
+  type Profile as CvProfile,
+} from './cv-schema.ts';
 import { internalUrl } from './urls.ts';
 
 /**
@@ -32,6 +39,11 @@ import { internalUrl } from './urls.ts';
  * started from `web/` or from the repository root.
  */
 function repositoryRoot(): string {
+  // The self-checks point every reader at `src/lib/fixtures/record/` so they
+  // prove the readers work rather than asserting whose record is in `content/`.
+  // Nothing in a build sets this; `content/` is still the only record a site has.
+  const fixture = process.env.LEDGERPRESS_RECORD_ROOT;
+  if (fixture) return resolve(fixture);
   let directory = resolve(process.cwd());
   for (;;) {
     if (existsSync(join(directory, 'content', 'cv.yaml'))) return directory;
@@ -201,7 +213,7 @@ export interface Publication {
 let cvCache: CV | undefined;
 
 /** `content/cv.yaml`, parsed once. `cv.ts` reads the same file through `?raw`. */
-const cvRecord = (): CV => (cvCache ??= (parseYaml(read(SOURCES.cv)) as CV) ?? ({} as CV));
+const cvRecord = (): CV => (cvCache ??= readCv(parseYaml(read(SOURCES.cv)), SOURCES.cv));
 
 /**
  * The declared groups of `content/publications.bib`, in print order.
@@ -720,37 +732,13 @@ export function stripMarkdown(markdown: string): string {
 // ------------------------------------------------------- who, and the work --
 
 /**
- * `profile:` from `content/cv.yaml`, parsed here rather than through
- * `src/lib/cv.ts`.
+ * `profile:` from `content/cv.yaml`, out of the one parse `cvRecord()` memoises.
  *
- * `cv.ts` reads the same file through Vite's `?raw`, which only exists inside an
- * Astro build; this module runs under plain `node` in the self-checks too. The
- * two readers see one file, so they cannot disagree.
+ * Its shape is `cv-schema.ts`'s, because that is the file that validated it:
+ * every field here has crossed `readCv` and been coerced there, so nothing in
+ * this module restates the shape or reads the record a second time.
  */
-interface ProfileBlock {
-  name?: string;
-  site?: string;
-  headline?: string;
-  affiliation?: { label: string; url?: string }[];
-  place?: string;
-  /** Street-level postal lines. Website only; the printed CV never carries them. */
-  address?: string[];
-  email?: string;
-  website?: { label: string; url: string };
-  links?: Record<string, string | { label: string; url: string } | undefined>;
-  portrait?: string;
-  favicon?: string;
-  bio?: { short?: string; long?: string };
-  focus?: string;
-  footer?: string;
-}
-
-let profileCache: ProfileBlock | undefined;
-
-const profileBlock = (): ProfileBlock => {
-  profileCache ??= (parseYaml(read(SOURCES.cv)) as { profile?: ProfileBlock })?.profile ?? {};
-  return profileCache;
-};
+const profileBlock = (): CvProfile => cvRecord().profile;
 
 export interface About {
   source: string;

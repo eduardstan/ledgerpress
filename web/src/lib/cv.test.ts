@@ -5,11 +5,16 @@
  *
  * `src/lib/cv.ts` itself cannot be imported here: it reads the YAML through
  * Vite's `?raw`, which only exists inside a Vite/Astro build. So the shape it
- * declares is asserted against the real `content/cv.yaml` instead — which is the
- * failure being guarded against anyway ("the file changed and the page now
- * renders blanks"), and the reader's own two-line body is checked as text. The
- * pure half of the module lives in `cv-schema.ts` and IS imported, because
- * everything that reads the file under plain node shares it.
+ * declares is asserted against `fixtures/record/content/cv.yaml`, and the
+ * reader's own two-line body is checked as text. The pure half of the module
+ * lives in `cv-schema.ts` and IS imported, because everything that reads the
+ * file under plain node shares it.
+ *
+ * The fixture, not `content/`: a record with one appointment and nothing else is
+ * a valid record, so "the supervision section is present with a note above it"
+ * is a claim about the fixture. What must be true of the adopter's own record is
+ * enforced at the schema boundary in `cv-schema.ts` and asserted in
+ * `live-record.test.ts`.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -27,13 +32,13 @@ import {
   noteOf,
   optsOutOfCv,
   printsInCv,
+  readCv,
   sections,
-  type CV,
   type Entry,
 } from './cv-schema.ts';
 import { SOURCES } from './record.ts';
 
-const root = fileURLToPath(new URL('../../../', import.meta.url));
+const fixture = fileURLToPath(new URL('./fixtures/record/content/cv.yaml', import.meta.url));
 
 // ------------------------------------------------------------- the reader ---
 
@@ -52,7 +57,43 @@ assert.equal(SOURCES.cv, 'content/cv.yaml', 'the CV source is registered in SOUR
 
 // --------------------------------------------------------------- the data ---
 
-const cv = parse(readFileSync(root + SOURCES.cv, 'utf8')) as CV;
+// Through the schema boundary, exactly as every page reads it: the coercions it
+// performs are part of the shape asserted below.
+const cv = readCv(parse(readFileSync(fixture, 'utf8')), SOURCES.cv);
+
+const numericDate = readCv(
+  { profile: { name: 'Researcher' }, appointments: [{ title: 'Fellow', dates: 2021 }] },
+  SOURCES.cv,
+);
+assert.equal(
+  entriesOf(numericDate.appointments)[0].dates,
+  '2021',
+  'an unquoted numeric year was not coerced to text at the record boundary',
+);
+
+assert.throws(
+  () => readCv({ profile: { name: 'Researcher', site: 2021 } }, SOURCES.cv),
+  /content\/cv\.yaml: profile\.site: expected an absolute HTTP\(S\) URL/,
+);
+assert.throws(
+  () =>
+    readCv(
+      { profile: { name: 'Researcher' }, appointments: [{ title: 'Fellow', datse: '2021' }] },
+      SOURCES.cv,
+    ),
+  /content\/cv\.yaml: appointments\[0\]\.datse: unknown field/,
+);
+assert.throws(
+  () =>
+    readCv(
+      {
+        profile: { name: 'Researcher' },
+        appointments: [{ title: 'Fellow', dates: { from: 2021 } }],
+      },
+      SOURCES.cv,
+    ),
+  /content\/cv\.yaml: appointments\[0\]\.dates: expected text, found a map/,
+);
 
 const text = (value: unknown, what: string) =>
   assert.ok(
@@ -109,7 +150,7 @@ for (const key of [
   'languages',
   'leadership',
 ])
-  assert.ok(named.includes(key), `content/cv.yaml lost the ${key} section`);
+  assert.ok(named.includes(key), `the fixture record lost the ${key} section`);
 
 // One entry shape, one required field, everywhere.
 for (const [key, section] of sections(cv)) {
@@ -137,7 +178,7 @@ for (const entry of [...appointments, ...education]) {
 // that order IS the column order of the same table in the printed CV. Reordering
 // two keys reorders two columns, silently, so the key set is asserted here.
 const courses = teaching.flatMap((block) => block.rows ?? []);
-assert.ok(teaching.length >= 1, 'teaching lost its example entry');
+assert.ok(teaching.length >= 1, 'the fixture lost its teaching entry');
 for (const block of teaching) {
   text(block.org, 'teaching[].org');
   text(block.dates, 'teaching[].dates');
@@ -181,7 +222,7 @@ for (const row of supervision) {
   );
 }
 
-assert.ok(awards.length > 0, 'awards lost the example entries');
+assert.ok(awards.length > 0, 'the fixture lost its award entries');
 
 // `service[]` feeds /professional_activities/, which groups by `title` and hangs
 // a linked rank badge off `metric`. A `metric` with no `rank_url` is a badge that
@@ -356,7 +397,7 @@ for (const project of projects) {
 }
 
 for (const language of languages) text(language.detail, 'languages[].detail');
-assert.ok(leadership.length > 0, 'leadership lost its example entries');
+assert.ok(leadership.length > 0, 'the fixture lost its leadership entries');
 
 // --------------------------------------------------------------- the markup ---
 
