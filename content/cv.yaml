@@ -49,6 +49,18 @@ profile:
     **Example record.** This curriculum vitae describes a fictional scholar and
     is supplied only to demonstrate the template.
 
+# Prose the teaching CV prints in place of `profile.focus`. `profile:` is a
+# fixed set of fields, but every other top-level key is a section, and a
+# section's `note:` is free prose - so a variant gets its own statement without
+# the generator learning a new field name. A section with no entries prints
+# nothing on the website; cv/teaching.tex prints the note.
+teaching_statement:
+  note:
+    - >-
+      I teach palaeoclimate reasoning as **evidence work**: students leave able
+      to defend an age model, not only to run one.
+  entries: []
+
 strands:
   # Website-only: the home page renders these, the printed CV has no strands section.
   printed: false

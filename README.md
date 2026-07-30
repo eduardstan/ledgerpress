@@ -20,9 +20,9 @@ publish.
 - **Import wins adoption.** Replace `content/publications.bib` with a Zotero, Mendeley, DBLP or
   Google Scholar export. Journal articles, chapters, books, datasets and other BibTeX types render
   without transcription.
-- **CV variants win the argument.** Facts and layout are separate. Keep one record, then make a
-  teaching, grant or short CV by copying the LaTeX layout and choosing different generated section
-  macros—without copying a single appointment or publication.
+- **CV variants win the argument.** Facts and layout are separate. A short CV and a teaching CV ship
+  alongside the full one, built from the same record—without copying a single appointment or
+  publication. Each is one small `.tex` that names sections, orders them and says how many to print.
 - **The record balances.** Publication groups are declared once and drive both the website's type
   column and the PDF's headings and numbering.
 - **The gaps stay visible.** Missing dates, unmatched publication types and omitted sections appear
@@ -147,8 +147,9 @@ npm --prefix web run check
 npm --prefix web run build
 npm run check:deployment-base
 npm run check:adopter
-latexmk -xelatex -cd cv/cv.tex
-bash scripts/check-cv-baseline.sh
+latexmk -xelatex -cd cv/cv.tex && bash scripts/check-cv-baseline.sh
+latexmk -xelatex -cd cv/short.tex && bash scripts/check-cv-baseline.sh cv/short.pdf
+latexmk -xelatex -cd cv/teaching.tex && bash scripts/check-cv-baseline.sh cv/teaching.pdf
 npm run check:format
 ```
 
@@ -156,8 +157,9 @@ npm run check:format
 only `content/` with a second synthetic scholar, and builds both the website and PDF. If that
 requires an edit anywhere else, the check fails.
 
-The PDF baseline lives in `data/cv-baseline/`. When a deliberate content or layout change moves
-text or pages, rebuild the baseline and explain why in that directory's README.
+One baseline per printed document lives in `data/cv-baseline/`. When a deliberate content or layout
+change moves text or pages, rebuild the affected baselines and explain why in that directory's
+README.
 
 ## Deploy on GitHub Pages
 
@@ -187,8 +189,9 @@ something else.
 `content/`, not a leak in the boundary:
 
 - Edit `web/src/styles/global.css` to change Ledger's colours, type and layout.
-- Edit `cv/cv.tex` to change how the printed CV looks — spacing, fonts, the setting of an entry, and
-  the curated heading and position of a section it lays out by hand.
+- Edit `cv/preamble.tex` to change how every printed document looks — spacing, fonts, the setting of
+  an entry. Edit `cv/cv.tex` for the curated heading and position of a section the full CV lays out
+  by hand.
 - Add migration redirects in `web/src/lib/legacy-urls.ts`.
 - Change or add website routes in `web/src/pages/`.
 - Change announcement wording in the `TEMPLATES` table of `web/src/lib/announcements.ts`.
@@ -196,16 +199,58 @@ something else.
 None of them touches a fact about you, and taking a later ledgerpress update after one of them is a
 merge you resolve rather than a conflict with your record.
 
-To make a CV variant, copy the layout—not the record:
+### CV variants
+
+Three documents ship, all built from the one record:
+
+| File              | Builds to         | What it is                                                       |
+| ----------------- | ----------------- | ---------------------------------------------------------------- |
+| `cv/cv.tex`       | `cv/cv.pdf`       | the full CV, and the one the website links                       |
+| `cv/short.tex`    | `cv/short.pdf`    | one page: appointments, education, awards, selected publications |
+| `cv/teaching.tex` | `cv/teaching.pdf` | teaching and supervision first, appointments truncated           |
 
 ```sh
-cp cv/cv.tex cv/teaching.tex
-# In cv/teaching.tex, keep the sections this version prints: reorder the \cvpart
-# lines, and drop \cvAutoSections if it should print only the ones named there.
-latexmk -xelatex -cd cv/teaching.tex
+latexmk -xelatex -cd cv/short.tex
 ```
 
-Both layouts still input `cv/generated/cv-data.tex`, so a later fact edit reaches every variant.
+`cv/short.tex` is under a hundred lines, most of them comments, and it repeats no fact. Start a variant of your
+own by copying whichever is closer:
+
+```sh
+cp cv/short.tex cv/grant.tex
+```
+
+Every document opens with `\input{preamble.tex}` and `\input{header.tex}`, so the printed design and
+the contact block are written once and shared. A variant differs only in layout, four ways:
+
+- **Drop a section** by not writing its `\cvpart` line.
+- **Reorder sections** by reordering those lines.
+- **Print only the first few** with `\cvpart`'s optional count: `\cvpart[3]{Appointments}{Appointments}`.
+  The count is a page budget belonging to that document, so it lives in the `.tex` and never in
+  `content/cv.yaml`.
+- **Print a narrower slice of the bibliography** with a `\defbibfilter` in the variant's own preamble,
+  matching a keyword you set on the entries in `content/publications.bib`. `cv/short.tex` filters on
+  `selected` this way.
+
+That last one is deliberate and worth knowing: do **not** add a "Selected publications" section under
+`publications:` in `content/cv.yaml` to get it. That list is one ordering shared by the full CV and the
+website, and each section subtracts the ones before it so an entry prints under exactly one heading —
+so a `selected` section there would take those papers _out_ of "Journal articles" in `cv.pdf` and out
+of their type on the website. A filter only one document uses belongs to that document.
+
+One difference is not a layout choice but a definition: only `cv/cv.tex` ends with
+`\cvAutoSections`, the record's own section sequence. That is what makes a new section in
+`content/cv.yaml` appear in the full CV with no LaTeX edit. A variant is a curated subset, so
+printing every section it did not name is the one thing it exists not to do — add the section's
+`\cvpart` line when you want it there. `printed: false` still wins everywhere: a variant reaches
+every section through `\cvpart`, which honours it.
+
+For prose a variant needs and the full CV does not — a teaching statement in place of the research
+focus — add a top-level section with a `note:` and no entries; see `teaching_statement:` in
+`content/cv.yaml`. `profile:` itself is a fixed set of fields.
+
+Add a variant to CI by adding its file to `root_file:` in `.github/workflows/cv.yml` and recording a
+baseline for it; `data/cv-baseline/README.md` has the two commands.
 
 ## Take later ledgerpress improvements
 
@@ -331,8 +376,8 @@ The important contracts are kept executable:
   `content/README.md` to an assistant, then reviewing every resulting fact. That is not a supported
   import route yet: a generative step sits between source facts and a public claim, so ledgerpress
   ships no official prompt or verification checklist and promises no automatic accuracy.
-- First-class named variant configuration can make the layout-copy workflow above more convenient
-  while preserving one factual record.
+- A variant that prints a filtered bibliography has no count of what its filter matched, only of what
+  the `.bib` holds, so it prints its heading over nothing when the filter matches no entry.
 
 ## Licence
 

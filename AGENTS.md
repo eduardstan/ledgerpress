@@ -3,10 +3,10 @@
 This file is the committed map of ledgerpress: the build, data boundary, release path, and
 load-bearing constraints that should travel with the template.
 
-## One record, two publications
+## One record, several publications
 
 `content/` owns the record: every fact about the adopter, and which sections the CV prints.
-`content/README.md` documents it. The website in `web/` and the PDF layout in `cv/cv.tex` both consume
+`content/README.md` documents it. The website in `web/` and every printed document in `cv/` consume
 the same `content/cv.yaml`, `content/publications.bib`, and `content/talks.bib`; posts and media live
 beside them. Replacing the record must not require editing outside `content/` — that is what
 `npm run check:adopter` proves.
@@ -16,6 +16,26 @@ redirects and announcement wording are all edited outside `content/`, and `READM
 yours" lists where. Do not move any of them into `content/`: that was considered and rejected,
 because layout and routes cannot follow and the boundary would blur again. The boundary is facts
 versus design — keep every document saying the same thing about it.
+
+Three documents are printed: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. `cv/preamble.tex`
+holds every package, style and macro they share, `cv/header.tex` the contact block and
+`cv/supervision.tex` that hand-set section, so the printed design is written once. A document body
+is only which sections it curates, in what order, and how many entries of each. No fact is repeated
+per variant, and none may be. Only `cv/cv.tex` prints `\cvAutoSections`: a variant is a curated
+subset, so printing every section the body did not name is what it exists not to do — it still
+honours `printed: false`, because it reaches every section through `\cvpart`. An entry count on
+`\cvpart` and a `\defbibfilter` only one document prints are layout; curation is marked on the fact,
+as `selected` is in `content/publications.bib`.
+
+Three documents are printed: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. `cv/preamble.tex`
+holds every package, style and macro they share and `cv/header.tex` the contact block, so the
+printed design is written once; a document body is only which sections it prints, in what order,
+and how many of each. No fact is repeated per variant, and none may be: a variant carrying its own
+copy of an appointment breaks the premise. What belongs to a variant is layout — including the
+entry count on `\cvpart` and any `\defbibfilter` only that document prints. What belongs to the
+record is curation, marked on the fact itself, as `selected` is in `content/publications.bib`. A
+section declared under `publications.sections` for one document's sake changes the full CV and the
+website, because each section subtracts the ones declared before it.
 
 `web/src/lib/record.ts` owns the complete list of source paths. It locates the repository by walking
 up for `content/cv.yaml`, the file no build can work without. `web/src/lib/record.test.ts` fails if a
@@ -36,8 +56,10 @@ Publication and talk grouping is declared under
 - `npm run build` regenerates CV data and builds the production website.
 - `npm run dev` runs the local site; it forwards to the `web` package.
 - `npm run check:format` is the Prettier gate; `npm test` does not cover formatting.
-- `latexmk -xelatex -cd cv/cv.tex` builds the PDF. XeLaTeX is required.
-- `bash scripts/check-cv-baseline.sh` compares the built PDF with `data/cv-baseline/`.
+- `latexmk -xelatex -cd cv/cv.tex` builds a PDF; the same for `cv/short.tex` and `cv/teaching.tex`.
+  XeLaTeX is required.
+- `bash scripts/check-cv-baseline.sh [pdf]` compares a built PDF with the `data/cv-baseline/`
+  entry named after it. `data/cv-baseline/README.md` lists all three and how to re-record one.
 - `npm run check:adopter` creates a tracked-file-only copy, replaces only `content/`, and proves
   both the site and PDF cold start.
 
@@ -54,7 +76,8 @@ Publication and talk grouping is declared under
 - Counts, provenance, omissions, sorting views, announcements, and gaps are derived at build time.
   Do not replace them with hand-written numbers or copy.
 - A zero-entry bibliography must skip its entire `refsection`; biber otherwise silently emits `[0]`
-  labels. `\cvdeclare` and `\cvdeclarebib` keep missing sections safe for a minimal record.
+  labels. `\cvdeclare` and `\cvdeclarebib` keep missing sections safe for a minimal record, and
+  `scripts/build-cv-data.test.mjs` proves every document names only macros they define.
 - `scripts/check-deployment-base.mjs` builds its fixture-base proof into its own ignored throwaway
   directory and asserts the generated distribution is byte-identical afterwards. That distribution is
   what the deploy publishes, so a verification build must be structurally incapable of becoming it.
@@ -69,10 +92,12 @@ and the bundled `LedgerSerif` faces. Keep those names distinct and intentional.
 
 ## Delivery
 
-`.github/workflows/deploy.yml` builds the CV, runs its baseline, stages the PDF, builds the website,
-and publishes the generated distribution to `gh-pages`. `.github/workflows/cv.yml` exposes the PDF
-as a review artifact and runs the whole adopter cold start inside its pinned TeX environment. The
-deploy workflow has no path filters because almost any tracked file can affect a build.
+`.github/workflows/deploy.yml` builds `cv/cv.tex` alone, runs its baseline, stages that PDF, builds
+the website, and publishes the generated distribution to `gh-pages`: the site links one canonical CV,
+and whether it should offer the variants is unanswered. `.github/workflows/cv.yml` builds all three,
+checks each baseline, exposes them as review artifacts, and runs the whole adopter cold start inside
+its pinned TeX environment. The deploy workflow has no path filters because almost any tracked file
+can affect a build.
 
 ## Maintaining this file
 

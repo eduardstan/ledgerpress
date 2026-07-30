@@ -2,9 +2,14 @@
 
 set -uo pipefail
 
+# Each printed document has its own baseline, named after it: cv/cv.pdf against
+# cv-baseline.txt, cv/short.pdf against short-baseline.txt. The variants are
+# built from the same record as the full CV, so a fact edit that breaks one
+# breaks all of them, and each needs its own recorded text and page count.
 pdf=${1:-cv/cv.pdf}
-baseline=data/cv-baseline/cv-baseline.txt
-metadata=data/cv-baseline/cv-baseline-meta.txt
+name=$(basename "$pdf" .pdf)
+baseline=data/cv-baseline/$name-baseline.txt
+metadata=data/cv-baseline/$name-baseline-meta.txt
 failed=0
 
 if ! pdftotext -layout "$pdf" - | diff -u "$baseline" -; then

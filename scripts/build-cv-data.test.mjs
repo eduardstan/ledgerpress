@@ -238,18 +238,33 @@ test("a section prints under its key spelt out unless the record names its headi
 
 test("cv.tex prints the record's section sequence and names no section inside it", () => {
   const root = dirname(dirname(fileURLToPath(import.meta.url)));
-  const tex = readFileSync(join(root, "cv/cv.tex"), "utf8").replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+  const strip = (text) => text.replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+  const read = (name) => strip(readFileSync(join(root, "cv", name), "utf8"));
+  // The macros live in the shared preamble since the split; the body that must
+  // print the sequence is cv/cv.tex, and cv/supervision.tex is a body fragment it
+  // inputs, so the definitions and the usages are read from different files now.
+  const tex = [read("preamble.tex"), read("supervision.tex"), read("cv.tex")].join("\n");
+  const cv = read("cv.tex");
 
-  assert.match(tex, /^\\cvAutoSections$/m, "the document body must print the generated section sequence");
+  assert.match(cv, /^\\cvAutoSections$/m, "the document body must print the generated section sequence");
 
   // The skip below is order-dependent: \cvautopart passes over a key only once
   // \cvdeclare has marked it laid out, so every hand-placed section must appear
-  // above \cvAutoSections or it prints twice, once under each heading.
-  const body = tex.slice(tex.indexOf("\\begin{document}"));
-  const lastLaidOut = Math.max(body.lastIndexOf("\\cvdeclare{"), body.lastIndexOf("\\cvpart{"), body.lastIndexOf("\\cvpartflush{"));
+  // above \cvAutoSections or it prints twice, once under each heading. An
+  // \input of a fragment that declares a key counts as laying it out.
+  const body = cv.slice(cv.indexOf("\\begin{document}"));
+  const lastLaidOut = Math.max(
+    body.lastIndexOf("\\cvdeclare{"),
+    body.lastIndexOf("\\cvpart{"),
+    body.lastIndexOf("\\cvpart["),
+    body.lastIndexOf("\\cvpartflush{"),
+    body.lastIndexOf("\\cvpartflush["),
+    body.lastIndexOf("\\input{supervision.tex}")
+  );
   assert.ok(
     body.search(/^\\cvAutoSections$/m) > lastLaidOut,
-    "\\cvAutoSections must come after every \\cvpart, \\cvpartflush and \\cvdeclare in the body, " + "or the section below it prints twice"
+    "\\cvAutoSections must come after every \\cvpart, \\cvpartflush, \\cvdeclare and declaring " +
+      "\\input in the body, or the section below it prints twice"
   );
 
   // \cvautopart is what makes the sequence safe to print in full: a key this
@@ -268,14 +283,29 @@ test("cv.tex prints the record's section sequence and names no section inside it
   // Bibliographies are excluded: `publications:` and `talks:` opt out per declared
   // group, and their count guard exists for biber's empty-data-source trap.
   const bibliographies = [...tex.matchAll(/\\cvdeclarebib\{([A-Za-z]+)\}/g)].map((m) => m[1]);
-  const guarded = [...tex.matchAll(/\\ifnum\\(?:csname )?cv([A-Za-z]+?|#2)(?:Count\\endcsname|Count)>0/g)]
+  const guarded = [...tex.matchAll(/\\ifnum\\(?:csname )?cv([A-Za-z]+?|#3)(?:Count\\endcsname|Count)>0/g)]
     .map((m) => m[1])
     .filter((key) => !bibliographies.includes(key));
   for (const key of guarded) {
-    const printed = key === "#2" ? String.raw`\\ifnum\\csname cv#2Printed\\endcsname>0` : String.raw`\\ifnum\\cv${key}Printed>0`;
+    const printed = key === "#3" ? String.raw`\\ifnum\\csname cv#3Printed\\endcsname>0` : String.raw`\\ifnum\\cv${key}Printed>0`;
     assert.match(tex, new RegExp(printed), `the ${key} section must also guard on its Printed macro`);
   }
 });
+
+// A variant is a curated subset, so it deliberately does NOT print the record's
+// section sequence - printing every section the layout did not name is the one
+// thing it exists not to do. It still honours `printed: false`, because it
+// reaches every section through \cvpart, which guards on \cv<Key>Printed.
+// Without this the two mechanisms silently cancel: a variant that grew a
+// \cvAutoSections line would print the whole record under a "short CV" title.
+for (const document of ["short.tex", "teaching.tex"]) {
+  test(`cv/${document} curates its own sections rather than printing the record's sequence`, () => {
+    const root = dirname(dirname(fileURLToPath(import.meta.url)));
+    const tex = readFileSync(join(root, "cv", document), "utf8").replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+    assert.doesNotMatch(tex, /\\cvAutoSections/, `${document} is a curated subset and must not print every remaining section`);
+    assert.match(tex, /\\cvpart(?:flush)?[[{]/, `${document} must place its sections with \\cvpart, which honours printed: false`);
+  });
+}
 
 // -----------------------------------------------------------------------------
 // Bibliography sections. A section is a title plus a filter: which BibTeX entry
@@ -435,17 +465,16 @@ test("a directive-only BibTeX file has no entries", () => {
   assert.equal(bibEntryCount(quoted), 1);
 });
 
-// The cold-start trap: cv.tex names a macro the generator only emits when
-// cv.yaml declares the section it comes from, so an adopter's first
-// `latexmk -xelatex -cd cv/cv.tex` stops at TeX's interactive `?` prompt with
-// an undefined control sequence. This checks the whole class at once, against
-// the very file content/README.md tells a newcomer to start from.
-test("cv.tex defines every generated macro it names, for README's smallest file that works", () => {
-  const root = dirname(dirname(fileURLToPath(import.meta.url)));
-  const readme = readFileSync(join(root, "content/README.md"), "utf8");
-  const minimal = readme.match(/## The smallest file that works\s*```yaml\n([\s\S]*?)```/);
-  assert.ok(minimal, "content/README.md no longer carries a `The smallest file that works` example");
-  const tex = readFileSync(join(root, "cv/cv.tex"), "utf8").replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
+
+/** A layout file with its TeX comments removed, so a commented-out macro name does not count. */
+const layout = (name) => readFileSync(join(root, "cv", name), "utf8").replace(/(^|[^\\])((?:\\\\)*)%.*$/gm, "$1$2");
+
+// The macro contract between the generator and the layout, asserted where it is
+// defined. Every document under cv/ inputs this file, so a variant inherits the
+// contract rather than restating it.
+test("cv/preamble.tex keeps the declaration macros the generated file relies on", () => {
+  const tex = layout("preamble.tex");
 
   const cvdeclare = tex.match(/\\newcommand\{\\cvdeclare\}\[1\]\{([\s\S]*?)\n\}/);
   assert.ok(cvdeclare, "\\cvdeclare must remain defined");
@@ -459,24 +488,52 @@ test("cv.tex defines every generated macro it names, for README's smallest file 
     assert.match(cvdeclarebib[1], new RegExp(String.raw`\\providecommand\\csname cv#1${suffix}\\endcsname`));
   }
 
-  const cvpart = tex.match(/\\newcommand\{\\cvpart\}\[2\]\{([\s\S]*?)\n\}/);
-  assert.ok(cvpart, "\\cvpart must remain defined");
-  assert.match(cvpart[1], /\\cvdeclare\{#2\}/);
+  // The optional argument is the entry count, and it must reach \cvmax: the
+  // generator guards every entry with \ifnum<n>>\cvmax, so a layout that stops
+  // setting it would print whole sections where a variant asked for three.
+  const cvpart = tex.match(/\\newcommand\{\\cvpart\}\[3\]\[\d+\]\{\{([\s\S]*?)\n\}\}/);
+  assert.ok(cvpart, "\\cvpart must remain defined, taking an optional entry count");
+  assert.match(cvpart[1], /\\renewcommand\{\\cvmax\}\{#1\}/);
+  assert.match(cvpart[1], /\\cvdeclare\{#3\}/);
 
-  const cvpartflush = tex.match(/\\newcommand\{\\cvpartflush\}\[2\]\{\{([\s\S]*?)\n\n/);
+  const cvpartflush = tex.match(/\\newcommand\{\\cvpartflush\}\[3\]\[\d+\]\{\{([\s\S]*?)\n\n/);
   assert.ok(cvpartflush, "\\cvpartflush must remain defined");
-  assert.match(cvpartflush[1], /\\cvpart\{#1\}\{#2\}/);
+  assert.match(cvpartflush[1], /\\cvpart\[#1\]\{#2\}\{#3\}/);
 
-  const defined = new Set();
-  const add = (names) => names.forEach((name) => defined.add(name));
-  for (const [, name] of render(load(minimal[1])).matchAll(/\\newcommand\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
-  for (const [, name] of tex.matchAll(/\\(?:new|provide)command\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
-  // cv.tex's own guards, which build their macro names with \csname.
-  const section = (name) => ["Count", "Printed", "", "Note", "Rows", "Inline"].map((suffix) => `cv${name}${suffix}`);
-  for (const [, name] of tex.matchAll(/\\cvdeclare\{([A-Za-z]+)\}/g)) add(section(name));
-  for (const [, name] of tex.matchAll(/\\cvpart(?:flush)?\{[^{}]*\}\{([A-Za-z]+)\}/g)) add(section(name));
-  for (const [, name] of tex.matchAll(/\\cvdeclarebib\{([A-Za-z]+)\}/g)) add([`cv${name}Count`, `cv${name}Key`, `cv${name}Sections`]);
-
-  const referenced = [...tex.matchAll(/\\(cv[A-Z][A-Za-z]*)/g)].map((m) => m[1]);
-  assert.deepEqual([...new Set(referenced.filter((name) => !defined.has(name)))], []);
+  // \cvmax must have a default, or the guard around the first entry of the
+  // first section is an undefined control sequence in every document.
+  assert.match(tex, /\\newcommand\{\\cvmax\}\{\d+\}/);
 });
+
+// The cold-start trap: a document names a macro the generator only emits when
+// cv.yaml declares the section it comes from, so an adopter's first
+// `latexmk -xelatex -cd cv/cv.tex` stops at TeX's interactive `?` prompt with
+// an undefined control sequence. This checks the whole class at once, against
+// the very file content/README.md tells a newcomer to start from.
+//
+// The bundled variants are checked too. They are the documentation for how a
+// variant is written, so one that only builds against the example record would
+// teach the trap rather than avoid it.
+for (const document of ["cv.tex", "short.tex", "teaching.tex"]) {
+  test(`cv/${document} defines every generated macro it names, for README's smallest file that works`, () => {
+    const readme = readFileSync(join(root, "content/README.md"), "utf8");
+    const minimal = readme.match(/## The smallest file that works\s*```yaml\n([\s\S]*?)```/);
+    assert.ok(minimal, "content/README.md no longer carries a `The smallest file that works` example");
+    // Every document inputs the shared fragments, so their macros are in scope.
+    const shared = ["preamble.tex", "header.tex", "supervision.tex"].map(layout);
+    const tex = [...shared, layout(document)].join("\n");
+
+    const defined = new Set();
+    const add = (names) => names.forEach((name) => defined.add(name));
+    for (const [, name] of render(load(minimal[1])).matchAll(/\\newcommand\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
+    for (const [, name] of tex.matchAll(/\\(?:new|provide)command\{\\(cv[A-Za-z]+)\}/g)) defined.add(name);
+    // The layout's own guards, which build their macro names with \csname.
+    const section = (name) => ["Count", "Printed", "", "Note", "Rows", "Inline"].map((suffix) => `cv${name}${suffix}`);
+    for (const [, name] of tex.matchAll(/\\cvdeclare\{([A-Za-z]+)\}/g)) add(section(name));
+    for (const [, name] of tex.matchAll(/\\cvpart(?:flush)?(?:\[\d+\])?\{[^{}]*\}\{([A-Za-z]+)\}/g)) add(section(name));
+    for (const [, name] of tex.matchAll(/\\cvdeclarebib\{([A-Za-z]+)\}/g)) add([`cv${name}Count`, `cv${name}Key`, `cv${name}Sections`]);
+
+    const referenced = [...tex.matchAll(/\\(cv[A-Z][A-Za-z]*)/g)].map((m) => m[1]);
+    assert.deepEqual([...new Set(referenced.filter((name) => !defined.has(name)))], []);
+  });
+}

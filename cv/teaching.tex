@@ -1,0 +1,70 @@
+% -----------------------------------------------------------------------------
+% THE TEACHING CV: the same record, led by the teaching and supervision it
+% otherwise reports halfway down.
+%
+% This file is a VARIANT. It repeats no fact: every line below either shares
+% cv/preamble.tex and cv/header.tex with the full CV, or names a generated macro
+% that content/cv.yaml already fills.
+%
+% It shows the other two things a variant does that cv/short.tex does not:
+% reorder sections, by writing their \cvpart lines in a different order, and
+% print variant-specific prose - here `teaching_statement:` in content/cv.yaml,
+% whose `note:` is a section's free text.
+%
+%
+% It does NOT print \cvAutoSections, and that is the deliberate difference from
+% cv/cv.tex. There, the record's own section sequence prints everything the
+% layout did not curate, so a new section in content/cv.yaml appears with no
+% LaTeX edit. A variant is a curated subset by definition: printing every
+% remaining section is exactly what it exists not to do. So a section added to
+% the record reaches cv/cv.tex automatically and reaches this file when you add
+% its \cvpart line. The record's `printed: false` still holds here either way -
+% \cvpart guards on \cv<Key>Printed, so a section the record withdraws cannot
+% reappear through a variant.
+% Build:  latexmk -xelatex -cd cv/teaching.tex
+% -----------------------------------------------------------------------------
+\input{preamble.tex}
+
+\begin{document}
+\headerfontiii
+
+\input{header.tex}
+
+% \cvdeclare keeps this safe for a record with no `teaching_statement:` key, and
+% the \ifx guard keeps the heading from printing over nothing.
+\small
+\cvdeclare{TeachingStatement}
+\ifx\cvTeachingStatementNote\cvempty\else
+\section{\textbf{Teaching Statement}}
+\vspace{1mm}
+\cvTeachingStatementNote
+\vspace{-2mm}
+\fi
+
+\cvpart{Teaching}{Teaching}
+
+% The same fragment cv/cv.tex inputs, so the table is designed in one place and
+% a variant cannot drift from it. See cv/supervision.tex.
+\input{supervision.tex}
+
+\cvpart[3]{Academic Appointments}{Appointments}
+
+\cvpart{Education}{Education}
+
+\cvpartflush{Awards \& Scholarships}{Awards}
+
+\cvdeclare{Languages}
+\ifnum\cvLanguagesCount>0
+\section{\textbf{Additional Information}}
+\vspace{-0.4mm}
+\small{
+\textbf{Languages:} \cvLanguagesInline
+}
+\fi
+
+\vspace{5mm}
+{\footnotesize
+\cvFooter
+}
+
+\end{document}

@@ -8,7 +8,7 @@
 // Outputs
 //   cv/generated/cv-data.tex  COMMITTED, checked for staleness
 //
-// cv.tex owns layout; this script owns nothing but the mapping from facts to
+// cv/preamble.tex owns layout; this script owns nothing but the mapping from facts to
 // content macros. It never invents, reorders or rewords anything in cv.yaml.
 //
 // It knows the field names of `profile:` and NOTHING about which sections exist:
@@ -16,7 +16,7 @@
 // the same six macros. Adding `fieldwork:` to content/cv.yaml gives you
 // \cvFieldworkNote, \cvFieldwork, \cvFieldworkRows, \cvFieldworkHeader,
 // \cvFieldworkInline and \cvFieldworkCount without touching this file. See
-// cv/cv.tex for the contract.
+// cv/preamble.tex for the contract.
 //
 // It also emits \cvAutoSections: one \cvautopart line per section, in the order
 // content/cv.yaml writes them, so which sections the PDF prints is a record fact
@@ -501,7 +501,7 @@ const BANNER = [
   "% Edit cv.yaml and regenerate; hand edits here are overwritten and CI rejects",
   "% them (the workflow fails if this file is stale relative to cv.yaml).",
   "%",
-  "% This file holds CONTENT ONLY. Layout, spacing and styling live in cv/cv.tex.",
+  "% This file holds CONTENT ONLY. Layout, spacing and styling live in cv/preamble.tex.",
   "% =============================================================================",
   "",
 ];
@@ -520,6 +520,17 @@ function render(cv) {
   // Every other top-level list is a section. Six macros each, plus its line of
   // the printed section sequence and, where the record opts out, one more macro.
   // All mechanical: the generator has no idea what any of them mean.
+  //
+  // Each entry of \cv<Name> is wrapped in `\ifnum<n>>\cvmax`, which is how a
+  // variant prints only the first few of a section. How many is a page-budget
+  // decision belonging to one document, so the number lives in the layout
+  // (`\cvpart`'s optional argument, cv/preamble.tex) and never in cv.yaml. The
+  // guard is expansion-level and opens no group, so at the default \cvmax the
+  // typeset result is unchanged.
+  //
+  // WHICH sections print is the record's call (`printed:`), HOW MANY of one a
+  // given document prints is that document's (`\cvpart`'s optional count). The
+  // two are independent and both are honoured.
   const printed = [];
   for (const [key, value] of Object.entries(cv)) {
     if (key === "profile") continue;
@@ -533,7 +544,7 @@ function render(cv) {
     const name = macroName(key);
     blocks.push(
       macro(`cv${name}Note`, note.map(renderInline).join("\n\\cvnotesep\n")),
-      macro(`cv${name}`, rows.map(entry).join("\n\n")),
+      macro(`cv${name}`, rows.map((r, i) => `\\ifnum${i + 1}>\\cvmax\\else\n${entry(r)}\n\\fi`).join("\n\n")),
       macro(`cv${name}Rows`, rows.length ? tableRows(rows, false) : ""),
       macro(`cv${name}Header`, rows.length ? tableHeader(rows, false) : ""),
       macro(`cv${name}Inline`, rows.map((r) => arg(r.detail ? `${r.title} (${r.detail})` : r.title)).join(", ")),
