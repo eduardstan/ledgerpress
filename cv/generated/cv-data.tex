@@ -352,7 +352,7 @@ Associate Editor (Marine palaeoclimate), Scientific Steering Committee, Panel re
   {2024 -- 2027}
   {}
 \resumeItemListStart
-  \item Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from \href{https://niwa.co.nz}{NIWA}.
+  \item Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from the \href{https://voyages.example.edu}{Southern Archive Voyage Consortium} and sampling decisions recorded in a \href{/blog/2026/reading-a-core/}{field note}.
 \resumeItemListEnd
 \fi
 
@@ -369,7 +369,7 @@ Associate Editor (Marine palaeoclimate), Scientific Steering Committee, Panel re
 }
 
 \newcommand{\cvProjectsRows}{%
-TIDE --- Termination Ice Dynamics and Ecosystems & Royal Society Te Apārangi & 2024 -- 2027 & Principal investigator & NZ\$960,000 & https://research.example.edu/tide & 2024-06-03 & Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from \href{https://niwa.co.nz}{NIWA}. \\
+TIDE --- Termination Ice Dynamics and Ecosystems & Royal Society Te Apārangi & 2024 -- 2027 & Principal investigator & NZ\$960,000 & https://research.example.edu/tide & 2024-06-03 & Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from the \href{https://voyages.example.edu}{Southern Archive Voyage Consortium} and sampling decisions recorded in a \href{/blog/2026/reading-a-core/}{field note}. \\
 Open Core Chronologies & Australian Antarctic Program Partnership & 2022 -- 2025 & Co-investigator & A\$420,000 & Reusable age-depth models and provenance for legacy sediment cores. \\%
 }
 
@@ -421,6 +421,52 @@ Pukaki Rise sediment coring voyage (Co-chief scientist), East Antarctic margin c
 \newcommand{\cvFieldworkCount}{2}
 
 \newcommand{\cvFieldworkPrinted}{0}
+
+\newcommand{\cvOutreachNote}{%
+%
+}
+
+\newcommand{\cvOutreach}{%
+\ifnum1>\cvmax\else
+\cventry
+  {Sediment stories: reading climate from ocean cores}
+  {Kōwhai Coast Learning Collective, Community workshop for secondary-school science teachers}
+  {Sep 2025}
+  {Ōamaru, Aotearoa New Zealand}
+\fi
+
+\ifnum2>\cvmax\else
+\cventry
+  {Core archive open day}
+  {Aotearoa Marine Memory Trust, Public demonstration of core scanning and age-model uncertainty}
+  {Mar 2024}
+  {Porirua, Aotearoa New Zealand}
+\fi
+
+\ifnum3>\cvmax\else
+\cventry
+  {Antarctic archives teacher residency}
+  {Polar Evidence Studio, Short course on proxy evidence for secondary-school teachers}
+  {Jul 2023}
+  {Ōtepoti Dunedin, Aotearoa New Zealand}
+\fi%
+}
+
+\newcommand{\cvOutreachRows}{%
+Sediment stories: reading climate from ocean cores & Kōwhai Coast Learning Collective & Ōamaru, Aotearoa New Zealand & Sep 2025 & Community workshop for secondary-school science teachers & https://learning.example.edu/sediment-stories \\
+Core archive open day & Aotearoa Marine Memory Trust & Porirua, Aotearoa New Zealand & Mar 2024 & Public demonstration of core scanning and age-model uncertainty \\
+Antarctic archives teacher residency & Polar Evidence Studio & Ōtepoti Dunedin, Aotearoa New Zealand & Jul 2023 & Short course on proxy evidence for secondary-school teachers \\%
+}
+
+\newcommand{\cvOutreachHeader}{%
+\textbf{Title} & \textbf{Org} & \textbf{Place} & \textbf{Dates} & \textbf{Detail} & \textbf{Url} \\%
+}
+
+\newcommand{\cvOutreachInline}{%
+Sediment stories: reading climate from ocean cores (Community workshop for secondary-school science teachers), Core archive open day (Public demonstration of core scanning and age-model uncertainty), Antarctic archives teacher residency (Short course on proxy evidence for secondary-school teachers)%
+}
+
+\newcommand{\cvOutreachCount}{3}
 
 \newcommand{\cvAwardsNote}{%
 %
@@ -578,7 +624,7 @@ J=Journal, C=Conference, B=Books, D=Data, R=Under review%
 \end{refcontext}%
 }
 
-\newcommand{\cvTalksCount}{3}
+\newcommand{\cvTalksCount}{4}
 
 \defbibfilter{Talks1}{type=unpublished and keyword=invited}
 \defbibfilter{Talks2}{type=unpublished and not keyword=invited and not ( type=unpublished and keyword=invited )}
@@ -607,6 +653,7 @@ I=Invited, C=Conference%
 \cvautopart{Service}{Service}%
 \cvautopart{Projects}{Projects}%
 \cvautopart{Fieldwork}{Fieldwork}%
+\cvautopart{Public engagement}{Outreach}%
 \cvautopart{Awards}{Awards}%
 \cvautopart{Leadership}{Leadership}%
 \cvautopart{Languages}{Languages}%

@@ -183,7 +183,9 @@ projects:
     items:
       - >-
         Multiproxy reconstruction of Southern Ocean fronts across Termination
-        II, with voyage support from [NIWA](https://niwa.co.nz).
+        II, with voyage support from the [Southern Archive Voyage
+        Consortium](https://voyages.example.edu) and sampling decisions recorded
+        in a [field note](/blog/2026/reading-a-core/).
   - title: Open Core Chronologies
     org: Australian Antarctic Program Partnership
     dates: 2022 – 2025
@@ -210,6 +212,26 @@ fieldwork:
       dates: Nov 2022
       detail: Visiting scientist
 
+outreach:
+  heading: Public engagement
+  entries:
+    - title: "Sediment stories: reading climate from ocean cores"
+      org: Kōwhai Coast Learning Collective
+      place: Ōamaru, Aotearoa New Zealand
+      dates: Sep 2025
+      detail: Community workshop for secondary-school science teachers
+      url: https://learning.example.edu/sediment-stories
+    - title: Core archive open day
+      org: Aotearoa Marine Memory Trust
+      place: Porirua, Aotearoa New Zealand
+      dates: Mar 2024
+      detail: Public demonstration of core scanning and age-model uncertainty
+    - title: Antarctic archives teacher residency
+      org: Polar Evidence Studio
+      place: Ōtepoti Dunedin, Aotearoa New Zealand
+      dates: Jul 2023
+      detail: Short course on proxy evidence for secondary-school teachers
+
 awards:
   - title: Early Career Research Excellence Award
     org: Geoscience Society of New Zealand
@@ -218,7 +240,7 @@ awards:
   - title: SCAR Visiting Fellowship
     org: Scientific Committee on Antarctic Research
     place: Cambridge, United Kingdom
-    dates: "2017"
+    dates: 2017
 
 leadership:
   # Website-only: /cv/ renders these, the printed CV leaves them out.

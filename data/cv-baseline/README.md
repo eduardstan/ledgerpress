@@ -20,9 +20,9 @@ Baseline facts:
 
 | Document          | Baseline            | Pages | Extracted text | Text SHA-256                                                       |
 | ----------------- | ------------------- | ----- | -------------- | ------------------------------------------------------------------ |
-| `cv/cv.pdf`       | `cv-baseline`       | 2     | 110 lines      | `59e3b1a3078a62e0c6c7e6b9fc4a079a6e90eeab25ca0c5cba189a9ae89c5716` |
-| `cv/short.pdf`    | `short-baseline`    | 1     | 43 lines       | `90b3827b78b1314b880b6f36366f4495597aa796f38f7cba12585f693266dc8c` |
-| `cv/teaching.pdf` | `teaching-baseline` | 1     | 56 lines       | `571d061a9c42424822e587d7553b5e53d2e857790e95618bd04fef19106e1f20` |
+| `cv/cv.pdf`       | `cv-baseline`       | 3     | 127 lines      | `dbc6c9a3e0644ffe4bb00c69e2247476a54d203be81e1d663fe0251a41721962` |
+| `cv/short.pdf`    | `short-baseline`    | 1     | 43 lines       | `540cb6227a34266f2e5450facb4028a4a8230c3c1e76828899f94d63ee5cb353` |
+| `cv/teaching.pdf` | `teaching-baseline` | 1     | 56 lines       | `933a5594d5c927068ba081cbc5d1652882fddba4c1aaea6fa26e28e2f40d5d0a` |
 
 Every `*-baseline-meta.txt` also records `Owner:`, the `profile.name` its baseline was built from.
 The gate runs only while `content/cv.yaml` still states that name; a different name is an adopted
