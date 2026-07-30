@@ -237,7 +237,9 @@ heading, no gap, nothing printed, no error.
 a single continuous span (`Mar 2024 – Present`), set in the right-hand column. `years` is a list of
 the separate editions of a recurring role, printed after `org` and folded to `2024–2026` when they
 run consecutively. A role that recurs in some years and not others keeps them visible as a list; use
-both fields on one entry only when it genuinely has a span and named editions.
+one or the other on a single entry. `web/src/lib/cv.test.ts` checks that no `service[]` entry carries
+both, because the website's Entries component renders `dates` (falling back to `count`) and never
+`years` in that column, while the PDF generator would print both.
 
 `years` is a plain list. Only an edition that carries an announcement date grows into a map:
 
