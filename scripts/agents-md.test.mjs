@@ -6,17 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const agentsPath = path.join(repositoryRoot, "AGENTS.md");
-const siteRoutes = new Set([
-  "/cv/",
-  "/feed.xml",
-  "/lately/",
-  "/news/",
-  "/professional_activities/",
-  "/projects/",
-  "/publications/",
-  "/rss.xml",
-  "/talks/",
-]);
+const siteRoutes = new Set(["/cv/", "/feed.xml", "/lately/", "/news/", "/service/", "/projects/", "/publications/", "/rss.xml", "/talks/"]);
 
 function repositoryPaths(markdown) {
   const codeSpans = [...markdown.matchAll(/`([^`\n]+)`/g)].map((match) => match[1]);

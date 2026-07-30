@@ -36,7 +36,7 @@ const researchDescription = research
 
 /**
  * Service, read from `content/cv.yaml` — the file the printed CV is generated
- * from — through the grouping `/professional_activities/` uses.
+ * from — through the grouping `/service/` uses.
  *
  * It used to be read from a hand-written third copy of the same list while that
  * page read the YAML. The two pages therefore stated the same facts from two
@@ -231,10 +231,10 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
           are the <b>metric</b> field, linked to the <b>rank_url</b> beside it.
         </p>
         <p>
-          This column and <a href={url('/professional_activities/')}>/professional_activities/</a> read
-          the same list through the same grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot
-          disagree. They once came from two files that had drifted apart; there is one file now, and
-          it is the one the printed CV is generated from.
+          This column and <a href={url('/service/')}>/service/</a> read the same list through the same
+          grouping in <b>web/src/lib/cv-schema.ts</b>, so they cannot disagree. They once came from
+          two files that had drifted apart; there is one file now, and it is the one the printed CV
+          is generated from.
         </p>
       </Record>
 

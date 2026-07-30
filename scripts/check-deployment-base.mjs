@@ -124,6 +124,7 @@ try {
     "publications",
     "talks",
     "projects",
+    "service",
     "professional_activities",
     "cv",
     "404",
