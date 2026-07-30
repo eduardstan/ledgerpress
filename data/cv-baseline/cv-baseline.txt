@@ -43,7 +43,7 @@ TEACHING
 
 EDITORIAL, REVIEWING & CONFERENCE SERVICE
 •   Associate Editor                                                                                                    2023 – Present
-    Paleoceanography and Paleoclimatology, Marine palaeoclimate [IF: 3.4, Q1]
+    Paleoceanography and Paleoclimatology, Marine palaeoclimate
 •   Scientific Steering Committee
     Southern Ocean Observing System, 2022–2026
 •   Panel reviewer                                                                                                      2021 – Present
@@ -54,7 +54,7 @@ RESEARCH PROJECTS
 •   TIDE — Termination Ice Dynamics and Ecosystems                                                                        2024 – 2027
     Royal Society Te Apārangi, Principal investigator
     ◦   Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from the Southern
-        Archive Voyage Consortium and sampling decisions recorded in a field note.
+        Archive Voyage Consortium.
 •   Open Core Chronologies                                                                                                2022 – 2025
     Australian Antarctic Program Partnership, Co-investigator
     ◦   Reusable age-depth models and provenance for legacy sediment cores.

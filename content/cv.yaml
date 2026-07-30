@@ -42,7 +42,8 @@ profile:
 
       My group works across oceanography, geology and _mātauranga-informed_
       environmental practice. We build open records that make uncertainty,
-      provenance and field decisions visible.
+      provenance and field decisions visible. Sampling decisions from the latest
+      voyage are recorded in a [field note](/blog/2026/reading-a-core/).
   focus: >-
     Southern Ocean palaeoceanography across glacial terminations, with an
     emphasis on multiproxy reconstructions, reproducible chronology and
@@ -154,18 +155,10 @@ service:
     org: Paleoceanography and Paleoclimatology
     dates: 2023 – Present
     detail: Marine palaeoclimate
-    metric: "IF: 3.4, Q1"
-    rank_url: https://www.scimagojr.com/journalrank.php
     announced: 2023-03-10
   - title: Scientific Steering Committee
     org: Southern Ocean Observing System
-    years:
-      - 2022
-      - 2023
-      - 2024
-      - year: 2025
-        announced: 2024-11-15
-      - 2026
+    years: [2022, 2023, 2024, 2025, 2026]
   - title: Panel reviewer
     org: Royal Society Te Apārangi
     dates: 2021 – Present
@@ -184,8 +177,7 @@ projects:
       - >-
         Multiproxy reconstruction of Southern Ocean fronts across Termination
         II, with voyage support from the [Southern Archive Voyage
-        Consortium](https://voyages.example.edu) and sampling decisions recorded
-        in a [field note](/blog/2026/reading-a-core/).
+        Consortium](https://voyages.example.edu).
   - title: Open Core Chronologies
     org: Australian Antarctic Program Partnership
     dates: 2022 – 2025
@@ -253,6 +245,15 @@ leadership:
     - title: Faculty representative
       org: Pacific research partnerships committee
       dates: 2022 – 2024
+    - title: Associate Editor
+      org: Example Journal of Palaeoclimate Studies
+      years:
+        - 2022
+        - 2023
+        - year: 2024
+          announced: 2023-11-15
+      metric: "IF: 3.4, Q1"
+      rank_url: https://example.org/journals/palaeoclimate-studies
 
 languages:
   - title: Tamil
