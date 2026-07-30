@@ -106,6 +106,13 @@ Publication and talk grouping is declared under
   directory and asserts the generated distribution is byte-identical afterwards. That distribution is
   what the deploy publishes, so a verification build must be structurally incapable of becoming it.
   It once rebuilt in place and the deploy published the fixture base with every check green.
+- No adopter-facing check may assert something an adopter is invited to change, and no build may
+  fail over branding, credit, typography or presentation. Checks are for correctness: a lost
+  deployment base, a broken link, a contradictory fact, an artifact the code itself promises. Where
+  a property depends on the record or on an optional artifact, derive the subjects from the build
+  output or guard the assertion behind the thing it checks — never add a flag, manifest or config
+  surface to describe what is optional. `scripts/check-deployment-base.mjs` is the worked example:
+  it names no font and requires no printed CV.
 - `web/public/fonts/LICENSES.md` travels unchanged with the bundled Ledger fonts.
 - Root Prettier checks the whole repository with `.prettierrc`; keep nested configuration compatible.
 
