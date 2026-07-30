@@ -220,31 +220,30 @@ const tableRows = (rows, strict = true) => {
   return rows.map((r) => `${Object.values(r).map(cell).join(" & ")} \\\\`).join("\n");
 };
 
-/** One word, capitalised. The generator's only casing rule; every heading uses it. */
+/** One word, capitalised. The generator's only casing rule. */
 const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
 
 /**
- * A record key as a heading: every word capitalised, separators untouched.
+ * A section key as a heading: every word capitalised, separators untouched.
  *
- * Per word, not first character only, so `programme / level` prints as
- * "Programme / Level" without the record key carrying the capitals. Separators
- * survive untouched: casing is presentation, the key stays the fact it is - and
- * that key is what the website's provenance line publishes. A word is any run of
- * letters or digits in any script, so `kōwhai level` is two words and not three.
+ * Section keys derive from identifiers (e.g. `field_work` -> "Field Work")
+ * when a section does not declare an explicit `heading:`, and the generated
+ * per-section table header names those schema fields. Course-table column
+ * headers, by contrast, are printed verbatim as written in the record: a row
+ * key is a fact the website publishes on its provenance line, so it prints as
+ * the adopter wrote it, here and there.
  *
- * The website applies this same rule to these same keys: `headingCase` in
- * `web/src/lib/cv-schema.ts`. Nothing crosses that build boundary - this is
- * plain node, that is a Vite module - so they are two copies of one rule and
- * they must agree. A column that reads "Programme / Level" in the PDF and
- * "Programme / level" on /cv/ is the contradiction this repository exists to
- * make impossible.
+ * The website has its own copy of this rule (`headingCase` in
+ * `web/src/lib/cv-schema.ts`) for the announcement kind chips on /lately/. No
+ * heading passes through both, so the two are independent, not a pair to keep
+ * in step.
  */
 const headingCase = (key) => key.replace(/[\p{L}\p{N}]+/gu, capitalise);
 
-/** The header row for those columns: the key names, as headings. */
-const tableHeader = (rows, strict = true) =>
+/** Course-table labels stay verbatim; per-section schema fields explicitly pass `headingCase`. */
+const tableHeader = (rows, strict = true, displayKey = (key) => key) =>
   `${tableKeys(rows, strict)
-    .map((k) => `\\textbf{${escapeLatex(headingCase(k))}}`)
+    .map((key) => `\\textbf{${escapeLatex(displayKey(key))}}`)
     .join(" & ")} \\\\`;
 
 /** One `\cventry`, plus its bullets and its table where it has them. */
@@ -279,7 +278,7 @@ const macroName = (key) => keyWords(key).join("");
  * new section print without a LaTeX edit. A section whose heading is not its key
  * spelt out - "Awards & Scholarships" - says so with `heading:`.
  *
- * The key becomes a heading by the same `headingCase` a column header does, with
+ * The key becomes a heading by `headingCase`, with
  * its separators read as spaces: `field_work` prints "Field Work", not
  * "Field_Work". Not `keyWords`, which is ASCII because macro names are.
  */
@@ -592,7 +591,7 @@ function render(cv) {
       macro(`cv${name}Note`, note.map(renderInline).join("\n\\cvnotesep\n")),
       macro(`cv${name}`, rows.map((r, i) => `\\ifnum${i + 1}>\\cvmax\\else\n${entry(r)}\n\\fi`).join("\n\n")),
       macro(`cv${name}Rows`, rows.length ? tableRows(rows, false) : ""),
-      macro(`cv${name}Header`, rows.length ? tableHeader(rows, false) : ""),
+      macro(`cv${name}Header`, rows.length ? tableHeader(rows, false, headingCase) : ""),
       macro(`cv${name}Inline`, rows.map((r) => arg(r.detail ? `${r.title} (${r.detail})` : r.title)).join(", ")),
       `\\newcommand{\\cv${name}Count}{${rows.length}}`
     );
