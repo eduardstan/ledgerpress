@@ -2,9 +2,9 @@
                                                sahana.kowhai@example.edu | Staff profile
 
           0000-0000-0000-0000 |  sahana-kowhai-example | a sahana-kowhai | ] sahana-kowhai | î Bluesky
-                           Associate Professor of Palaeoclimatology, School of Earth and Ice Studies
-                                                      Kārearea University,
-                 Southern Ocean Research Centre, Te Waka Wānanga, Ōtepoti Dunedin, Aotearoa New Zealand
+                              Associate Professor of Palaeoclimatology, School of Earth and Ice Studies
+                                                         Kārearea University,
+                             Tideglass Research Cooperative, Ōtepoti Dunedin, Aotearoa New Zealand
 
 SHORT BIO
 Sahana Aster Kōwhai is a fictional palaeoclimatologist whose research reconstructs Southern Ocean change from
@@ -18,26 +18,26 @@ APPOINTMENTS
 •   Associate Professor of Palaeoclimatology                                                                      Feb 2021 – Present
     Kārearea University, School of Earth and Ice Studies                                             Ōtepoti Dunedin, Aotearoa New
                                                                                                                            Zealand
-    ◦   Cross-appointed aﬀiliate of the Southern Ocean Research Centre, Te Waka Wānanga.
+    ◦   Cross-appointed aﬀiliate of the Tideglass Research Cooperative.
 •   Senior Lecturer in Marine Geology                                                                             Jul 2016 – Jan 2021
-    University of Southern Tasmania, Institute for Marine and Southern Ocean Studies                      nipaluna Hobart, Australia
+    Aster Coast University, Koru School of Marine Records                                                 nipaluna Hobart, Australia
 EDUCATION
 •   Ph.D. in Marine Geology                                                                                              2010 – 2014
-    Commonwealth University of Australia                                                                          Canberra, Australia
+    Aster Institute for Earth Records                                                                             Canberra, Australia
     ◦   Thesis: Foraminiferal Mg/Ca and Southern Ocean warming across Termination I.
 •   M.Sc. in Earth Sciences (First Class Honours)                                                                       2008 – 2009
-    Cape Maritime University                                                                                Cape Town, South Africa
+    Kōwhai Coast University                                                                                 Cape Town, South Africa
 AWARDS & SCHOLARSHIPS
 •   Early Career Research Excellence Award                                                                                       2019
-    Geoscientific Society of Aotearoa
-•   ICPR Visiting Fellowship                                                                                                  2017
-    International Council for Polar Research                                                            Cambridge, United Kingdom
+    Kārearea Earth Forum
+•   Tideglass Visiting Fellowship                                                                                             2017
+    Tideglass Research Cooperative                                                                      Cambridge, United Kingdom
 SELECTED PUBLICATIONS
 Peer-reviewed
 [1]       S. A. Kōwhai, M. Te Rangi, and C. Okafor. “Southern Ocean front migration recorded across two glacial terminations”. In:
-          Palaeo-Environments, Palaeoclimates, Palaeoecology 612 (2026), p. 111001.
+          Koru Basin Records 612 (2026), p. 111001.
 [2]       S. A. Kōwhai, H. Williams, and T. Ndlovu. “Transparent age-depth ensembles for Southern Ocean sediment archives”. In:
-          Earth’s Past Climate 20.8 (2024), pp. 1701–1724. URL: https://publications.example.edu/kowhai2024chronology.
+          Tideglass Climate Letters 20.8 (2024), pp. 1701–1724. URL: https://publications.example.edu/kowhai2024chronology.
 
 
 Example record. This curriculum vitae describes a fictional scholar and is supplied only to demonstrate the template.
