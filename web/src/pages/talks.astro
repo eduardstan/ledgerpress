@@ -8,6 +8,11 @@
  * for what it was — `note` is "Invited talk" / "Oral presentation" / "Poster
  * presentation" and `keywords` is the category badge — so the page relabels
  * nothing.
+ *
+ * Both of those fields are optional, because an adopter's `@unpublished` entry
+ * is under no obligation to carry them. An entry with neither shows no badge and
+ * no sub-line rather than an empty one, and is counted as uncategorised in the
+ * apparatus rather than dropped from it.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
@@ -29,6 +34,13 @@ const shown = (date: string) =>
     ? dateFormat.format(new Date(`${date.slice(0, 10)}T00:00:00Z`))
     : date;
 
+// The badge summary, counted from what the entries carry. An entry with no
+// `keywords` has no category name to print, so it is named as uncategorised
+// instead of contributing an empty one to the list.
+const named = byCategory.filter((category) => category.category);
+const unnamed = byCategory.find((category) => !category.category)?.count ?? 0;
+const uncategorised = unnamed ? `, ${unnamed} with no keywords field` : '';
+
 const description =
   `${talkCount.text}${span && `, ${span}`}, ` + `read from ${source} at build time.`;
 ---
@@ -39,7 +51,7 @@ const description =
       <b>{talkCount.text}</b>{span && `, ${span}`}, newest first, read from <b>{source}</b> when this
       page was built — the same file the printed CV's presentations are generated from. The badge on each
       row is that entry's own <b>keywords</b> field ({
-        byCategory.map((category) => `${category.count} ${category.category}`).join(', ')
+        named.map((category) => `${category.count} ${category.category}`).join(', ') + uncategorised
       }); nothing is relabelled here and nothing is left out.
     </p>
   </PageHead>
@@ -51,7 +63,7 @@ const description =
         <li>
           <span class="k">
             {talk.title}
-            <span class="rank">{talk.category}</span>
+            {talk.category && <span class="rank">{talk.category}</span>}
             {talk.note && <span class="sub">{talk.note}</span>}
           </span>
           <span class="v">
@@ -79,7 +91,7 @@ const description =
     </p>
     <p>
       Categories, counted from the <b>keywords</b> field: {
-        byCategory.map((category) => `${category.category} ${category.count}`).join(', ')
+        named.map((category) => `${category.category} ${category.count}`).join(', ') + uncategorised
       }. {
         undated.length === 0
           ? 'Every entry states a full ISO 8601 day, so every date below is shown as a day rather than widened or narrowed.'

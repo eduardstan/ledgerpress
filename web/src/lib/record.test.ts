@@ -357,9 +357,11 @@ assert.equal(formatStamp(offsetAnnouncement), '1 Jan 2025');
 // announce. Each one's kind on the feed's apparatus line is its own `note`
 // ("Invited talk", "Oral presentation", "Poster presentation") — the word moved
 // off the sentence and onto that line, and nothing is relabelled.
-const TALK_KINDS = ['Invited keynote', 'Oral presentation'];
+// `Talk` is the fallback for an entry that states no `note` — the word the feed
+// uses when the record does not supply one, rather than an empty apparatus line.
+const TALK_KINDS = ['Invited keynote', 'Oral presentation', 'Talk'];
 const talkItems = feed.items.filter((item) => TALK_KINDS.includes(item.kind));
-assert.equal(talkItems.length, 3, `expected 3 talks in the feed, got ${talkItems.length}`);
+assert.equal(talkItems.length, 4, `expected 4 talks in the feed, got ${talkItems.length}`);
 
 // ------------------------------------------------------------------ talks ---
 // /talks/ renders every entry in content/talks.bib, so the same rule as the
@@ -368,18 +370,18 @@ assert.equal(talkItems.length, 3, `expected 3 talks in the feed, got ${talkItems
 const pres = talks();
 const presGrepped = readSource(SOURCES.talks).match(/^@/gm)!.length;
 assert.equal(pres.entries.length, presGrepped, 'talk count disagrees with `grep -c "^@"`');
-assert.equal(pres.entries.length, 3, `expected 3 talks, got ${pres.entries.length}`);
+assert.equal(pres.entries.length, 4, `expected 4 talks, got ${pres.entries.length}`);
 assert.deepEqual(pres.undated, [], 'a talk reached the page without an ISO 8601 date');
 
 for (const talk of pres.entries) {
   assert.ok(talk.title, `${talk.key}: no title`);
   assert.ok(talk.event, `${talk.key}: no eventtitle`);
-  assert.ok(
-    talk.note,
-    `${talk.key}: no note — the page prints the entry's own word for what it was`,
-  );
-  // The badge on every row. An entry with no `keywords` would render an empty one.
-  assert.ok(talk.category.length > 0, `${talk.key}: empty category`);
+  // `note` and `keywords` are OPTIONAL. An adopter's `@unpublished` entry is
+  // under no obligation to carry either, so what is asserted is that both
+  // survive the parse as written — not that they were written. The sparse entry
+  // below proves the pages and the feed cope when they were not.
+  assert.equal(typeof talk.note, 'string', `${talk.key}: note is not a string`);
+  assert.equal(typeof talk.category, 'string', `${talk.key}: category is not a string`);
   assert.match(
     talk.date,
     /^\d{4}-\d{2}-\d{2}$/,
@@ -396,6 +398,24 @@ for (const talk of pres.entries) {
   }
 }
 
+// A talk that states neither `note` nor `keywords`. It is still parsed, still
+// dated, still counted, and still announced — under the feed's own fallback word
+// rather than under an empty one. This is the shape an adopter's own seminar
+// entry has, and the assertions above used to demand it away.
+const sparseTalk = pres.entries.find((talk) => talk.key === 'kowhai2023seminar')!;
+assert.equal(sparseTalk.note, '', 'a talk with no note field did not parse');
+assert.equal(sparseTalk.category, '', 'a talk with no keywords field did not parse');
+assert.ok(sparseTalk.title && sparseTalk.event, 'the sparse talk lost the fields it does state');
+assert.ok(
+  feed.items.some((item) => item.kind === 'Talk' && item.text.startsWith(sparseTalk.title)),
+  'a talk with no note did not reach the feed under the fallback kind',
+);
+// It is counted, not dropped: the categories still add up to every entry below.
+assert.ok(
+  pres.byCategory.some((category) => category.category === '' && category.count === 1),
+  'the uncategorised talk was dropped from the category counts instead of counted',
+);
+
 // A non-ASCII place survives the BibTeX reader.
 assert.ok(
   pres.entries.some((talk) => talk.where.includes('Te Whanganui-a-Tara')),
@@ -411,7 +431,7 @@ assert.equal(
   pres.entries.length,
   'the category counts do not add up to the number of talks',
 );
-assert.equal(pres.years.first, 2024, `earliest talk year is ${pres.years.first}`);
+assert.equal(pres.years.first, 2023, `earliest talk year is ${pres.years.first}`);
 
 // About, now `profile.bio.long` in the CV. Prettier runs over the source and
 // spells emphasis `_like this_`, so both markers have to render — and neither
