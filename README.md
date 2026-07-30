@@ -302,7 +302,7 @@ merge you resolve rather than a conflict with your record.
 Editing `cv/preamble.tex` is fine, but three things change often enough that a document can set them
 without touching the shared layout at all — which keeps `cv/preamble.tex` identical to ledgerpress's
 and every later update an unconflicted merge. Define any of them **before** that document's
-`\input{preamble.tex}`; each is unset by default and the template's own look is the default.
+`\input{preamble.tex}`; each defaults to what the template prints today.
 
 | Setting         | What it takes                                                            |
 | --------------- | ------------------------------------------------------------------------ |
