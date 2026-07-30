@@ -224,18 +224,16 @@ assert.ok(
   editorial.every((entry) => entry.title === 'Associate Editor'),
   'the editorial rule selected a role that is not an editorship',
 );
-assert.deepEqual(countPhrase(0, 'editorial board'), {
+assert.deepEqual(countPhrase(0, 'editorial board', 'editorial boards'), {
   count: 0,
   words: 'editorial boards',
   text: '0 editorial boards',
 });
-assert.equal(countPhrase(1, 'editorial board').text, '1 editorial board');
+assert.equal(
+  countPhrase(1, 'editorial board', 'editorial boards').text,
+  '1 editorial board',
+);
 assert.equal(countPhrase(2).text, '2 entries');
-assert.equal(countPhrase(2, { category: 'Books' }).text, '2 Books');
-assert.equal(countPhrase(1, { category: 'Books' }).text, '1 Book');
-assert.equal(countPhrase(2, { category: 'Journal' }).text, '2 Journals');
-assert.equal(countPhrase(2, { category: 'Data' }).text, '2 Data');
-assert.equal(countPhrase(1, { category: undefined }).text, '1 entry');
 assert.equal(
   countPhrase(
     1,
@@ -252,6 +250,26 @@ assert.equal(
   ).text,
   '2 entries carry no date and are shown undated',
 );
+const oneAnnouncement = countPhrase(1, 'announcement', 'announcements');
+const twoAnnouncements = countPhrase(2, 'announcement', 'announcements');
+assert.equal(
+  countPhrase(
+    1,
+    `of ${oneAnnouncement.text} is shown here`,
+    `of ${oneAnnouncement.text} are shown here`,
+  ).text,
+  '1 of 1 announcement is shown here',
+);
+assert.equal(
+  countPhrase(
+    2,
+    `of ${twoAnnouncements.text} is shown here`,
+    `of ${twoAnnouncements.text} are shown here`,
+  ).text,
+  '2 of 2 announcements are shown here',
+);
+assert.equal(countPhrase(1, 'is not', 'are not').text, '1 is not');
+assert.equal(countPhrase(2, 'is not', 'are not').text, '2 are not');
 
 const countSensitivePages = [
   '../pages/index.astro',
@@ -264,6 +282,18 @@ const countSensitivePages = [
 ];
 const hardCodedCountNoun =
   /(?:\$\{[^{}]*(?:\.length|\.size)\}|\{[^{}]*(?:\.length|\.size)\})[^{}]{0,64}\b(?:appointments|awards|boards|courses|degrees|entries|items|labels|languages|posts|presentations|projects|roles|rows|talks|venues)\b/;
+const homeSource = readFileSync(
+  fileURLToPath(new URL('../pages/index.astro', import.meta.url)),
+  'utf8',
+);
+assert.match(homeSource, /words:\s*kind\.kind\s*\|\|\s*countPhrase\(kind\.count\)\.words/);
+assert.doesNotMatch(homeSource, /kind\.kind\.toLowerCase|category:/);
+const publicationsSource = readFileSync(
+  fileURLToPath(new URL('../pages/publications/[...sort].astro', import.meta.url)),
+  'utf8',
+);
+assert.match(publicationsSource, /`\$\{kind\.kind\}: \$\{kind\.count\}`/);
+assert.doesNotMatch(publicationsSource, /kind\.kind\.toLowerCase|category:/);
 for (const page of countSensitivePages) {
   const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
   assert.match(source, /\bcountPhrase\(/, `${page}: generated count labels do not use countPhrase()`);

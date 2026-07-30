@@ -38,15 +38,14 @@ const roles = service();
 const groups = serviceGroups();
 const editorials = groups.filter((group) => isEditorial(group.role)).flatMap((group) => group.entries);
 const bibliographyEntries = countPhrase(bib.entries.length);
-const editorialBoards = countPhrase(editorials.length, 'editorial board');
+const editorialBoards = countPhrase(editorials.length, 'editorial board', 'editorial boards');
 
 const counts = [
   countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
-  ...bib.byKind.map((kind) =>
-    countPhrase(kind.count, {
-      category: kind.kind === 'Other' ? undefined : kind.kind.toLowerCase(),
-    }),
-  ),
+  ...bib.byKind.map((kind) => ({
+    count: kind.count,
+    words: kind.kind || countPhrase(kind.count).words,
+  })),
   editorialBoards,
   countPhrase(roles.length, 'service role on record', 'service roles on record'),
 ];
@@ -59,6 +58,17 @@ const counts = [
 const LATELY = 6;
 const shown = feed.items.slice(0, LATELY);
 const withheld = feed.items.length - shown.length;
+const announcementCount = countPhrase(
+  feed.items.length,
+  'announcement',
+  'announcements',
+);
+const shownClause = countPhrase(
+  shown.length,
+  `of ${announcementCount.text} is shown here`,
+  `of ${announcementCount.text} are shown here`,
+);
+const withheldClause = countPhrase(withheld, 'is not', 'are not');
 ---
 
 <BaseLayout
@@ -74,7 +84,9 @@ const withheld = feed.items.length - shown.length;
     <div class="dateline label">
       {affiliation.map((line) => <span>{line}</span>)}
       <span class="em">
-        {countPhrase(bib.entries.length, 'publication').text} · {editorialBoards.text}
+        {countPhrase(bib.entries.length, 'publication', 'publications').text} · {
+          editorialBoards.text
+        }
       </span>
     </div>
   </section>
@@ -110,9 +122,10 @@ const withheld = feed.items.length - shown.length;
       {bio.paragraphs.map((paragraph) => <p set:html={paragraph} />)}
       <Record>
         <p>
-          <b>{bio.source}</b> — {countPhrase(bio.paragraphs.length, 'paragraph').text}, rendered
-          verbatim. The printed CV does not carry them: it prints <b>profile.bio.short</b>, the same
-          person in the third person.
+          <b>{bio.source}</b> — {
+            countPhrase(bio.paragraphs.length, 'paragraph', 'paragraphs').text
+          }, rendered verbatim. The printed CV does not carry them: it prints <b>profile.bio.short</b
+          >, the same person in the third person.
         </p>
       </Record>
 
@@ -211,7 +224,7 @@ const withheld = feed.items.length - shown.length;
         <p>
           <b>{CV_SOURCE}</b> — <b>service[]</b>, {
             countPhrase(roles.length, 'entry grouped', 'entries grouped').text
-          } into {countPhrase(groups.length, 'role').text} by their own <b>title</b> field ({
+          } into {countPhrase(groups.length, 'role', 'roles').text} by their own <b>title</b> field ({
             groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
           }), in the order those roles first appear in the file. The meta on each row is the entry's{' '}
           <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the
@@ -317,12 +330,13 @@ const withheld = feed.items.length - shown.length;
         }
       </ul>
       <p class="more-feed">
-        <a class="label" href={url('/lately/')}>All {countPhrase(feed.items.length, 'item').text} →</a>
+        <a class="label" href={url('/lately/')}
+          >All {countPhrase(feed.items.length, 'item', 'items').text} →</a
+        >
       </p>
       <Record>
         <p>
-          {countPhrase(feed.items.length, 'announcement').text}, generated from the facts themselves
-          — {
+          {announcementCount.text}, generated from the facts themselves — {
             feed.sources.map((file, index) => (
               <>
                 {index > 0 && ', '}
@@ -333,8 +347,8 @@ const withheld = feed.items.length - shown.length;
           that date at the precision the source states it and no finer.
         </p>
         <p>
-          This column is capped at {LATELY}, so {shown.length} of {feed.items.length} are shown here
-          and {withheld} {withheld === 1 ? 'is' : 'are'} not; the full feed is at{' '}
+          This column is capped at {LATELY}, so {shownClause.text} and {withheldClause.text}; the full
+          feed is at{' '}
           <a href={url('/lately/')}>/lately/</a>.
         </p>
       </Record>

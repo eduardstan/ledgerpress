@@ -279,11 +279,7 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
     </p>
     <p>
       {bib.byKind
-        .map((kind) =>
-          countPhrase(kind.count, {
-            category: kind.kind === 'Other' ? undefined : kind.kind.toLowerCase(),
-          }).text
-        )
+        .map((kind) => (kind.kind ? `${kind.kind}: ${kind.count}` : countPhrase(kind.count).text))
         .join(', ')}. {
         countPhrase(
           abstracted,

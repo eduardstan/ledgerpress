@@ -234,76 +234,16 @@ export interface CountPhrase {
   text: string;
 }
 
-const invariantCategoryNouns = new Set([
-  'data',
-  'equipment',
-  'information',
-  'news',
-  'research',
-  'series',
-  'software',
-  'work',
-]);
-
-const irregularCategoryNouns = new Map([
-  ['analysis', 'analyses'],
-  ['basis', 'bases'],
-  ['child', 'children'],
-  ['index', 'indices'],
-  ['person', 'people'],
-  ['thesis', 'theses'],
-  ['woman', 'women'],
-  ['man', 'men'],
-]);
-
-const matchCase = (source: string, target: string) =>
-  source === source.toUpperCase()
-    ? target.toUpperCase()
-    : /^[A-Z]/.test(source)
-      ? target[0].toUpperCase() + target.slice(1)
-      : target;
-
-const categoryForms = (category?: string): [singular: string, plural: string] => {
-  const label = category?.trim();
-  if (!label) return ['entry', 'entries'];
-
-  const boundary = label.lastIndexOf(' ') + 1;
-  const prefix = label.slice(0, boundary);
-  const noun = label.slice(boundary);
-  const lower = noun.toLowerCase();
-  if (invariantCategoryNouns.has(lower) || /^under\s/i.test(label)) return [label, label];
-
-  const irregularPlural = irregularCategoryNouns.get(lower);
-  if (irregularPlural) return [label, prefix + matchCase(noun, irregularPlural)];
-
-  const irregularSingular = [...irregularCategoryNouns].find(([, plural]) => plural === lower)?.[0];
-  if (irregularSingular) return [prefix + matchCase(noun, irregularSingular), label];
-
-  if (/ies$/i.test(noun))
-    return [prefix + noun.slice(0, -3) + matchCase(noun.at(-3)!, 'y'), label];
-  if (/[^s]s$/i.test(noun) && !/(ss|us|is)$/i.test(noun))
-    return [prefix + noun.slice(0, -1), label];
-
-  const plural = /[^aeiou]y$/i.test(noun)
-    ? noun.slice(0, -1) + matchCase(noun.at(-1)!, 'ies')
-    : /(s|x|z|ch|sh)$/i.test(noun)
-      ? noun + 'es'
-      : noun + 's';
-  return [label, prefix + plural];
-};
-
-export const countPhrase = (
+export function countPhrase(count: number): CountPhrase;
+export function countPhrase(count: number, singular: string, plural: string): CountPhrase;
+export function countPhrase(
   count: number,
-  singularOrCategory: string | { category?: string } = 'entry',
-  plural?: string,
-): CountPhrase => {
-  const [singular, pluralForm] =
-    typeof singularOrCategory === 'string'
-      ? [singularOrCategory, plural ?? categoryForms(singularOrCategory)[1]]
-      : categoryForms(singularOrCategory.category);
-  const words = count === 1 ? singular : pluralForm;
+  singular = 'entry',
+  plural = 'entries',
+): CountPhrase {
+  const words = count === 1 ? singular : plural;
   return { count, words, text: `${count} ${words}` };
-};
+}
 
 /**
  * Whether a role is an editorship, matched on the file's own word for it.

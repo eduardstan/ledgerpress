@@ -48,23 +48,23 @@ const ranked = roles.filter((entry) => entry.metric);
 const linkedRanks = roles.filter((entry) => entry.rank_url);
 const venues = new Set(roles.map((entry) => entry.org)).size;
 const roleEntries = countPhrase(roles.length);
-const roleGroups = countPhrase(groups.length, 'role');
+const roleGroups = countPhrase(groups.length, 'role', 'roles');
 
 const description =
   `Editorial boards, conference committees and journal reviewing — ` +
-  `${countPhrase(roles.length, 'role').text} at ${countPhrase(venues, 'venue').text}, ` +
+  `${countPhrase(roles.length, 'role', 'roles').text} at ` +
+  `${countPhrase(venues, 'venue', 'venues').text}, ` +
   `read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Professional activities" description={description}>
   <PageHead title="Professional activities">
     <p class="blurb">
-      <b>{countPhrase(roles.length, 'service role').text}</b>, grouped by role and read from <b
-        >{CV_SOURCE}</b
-      > when this page was built — the same file the printed CV is generated from. Where the file
-      records a ranking it also records where that ranking is published, so every badge below links
-      to the CORE portal or SCImago entry behind it. Turn <b>inspect sources</b> on, in the bar above,
-      to see what each section is built from.
+      <b>{countPhrase(roles.length, 'service role', 'service roles').text}</b>, grouped by role and
+      read from <b>{CV_SOURCE}</b> when this page was built — the same file the printed CV is
+      generated from. Where the file records a ranking it also records where that ranking is
+      published, so every badge below links to the CORE portal or SCImago entry behind it. Turn{' '}
+      <b>inspect sources</b> on, in the bar above, to see what each section is built from.
     </p>
   </PageHead>
 

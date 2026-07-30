@@ -63,10 +63,10 @@ const omitted = sections()
   .filter((key) => !rendered.includes(key));
 
 const description =
-  `Curriculum vitae — ${countPhrase(appointments.length, 'appointment').text}, ` +
-  `${countPhrase(education.length, 'degree').text}, ` +
-  `${countPhrase(courses.length, 'course').text} and ` +
-  `${countPhrase(awards.length, 'award').text}, read from ${CV_SOURCE} at build time.`;
+  `Curriculum vitae — ${countPhrase(appointments.length, 'appointment', 'appointments').text}, ` +
+  `${countPhrase(education.length, 'degree', 'degrees').text}, ` +
+  `${countPhrase(courses.length, 'course', 'courses').text} and ` +
+  `${countPhrase(awards.length, 'award', 'awards').text}, read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Curriculum vitae" description={description}>
@@ -179,8 +179,8 @@ const description =
       <b>{CV_SOURCE}</b> — <b>teaching[]</b>, {
         countPhrase(
           teaching.length,
-          `entry holding ${countPhrase(courses.length, 'course').text} in its rows[] table`,
-          `entries holding ${countPhrase(courses.length, 'course').text} between them in their rows[] tables`,
+          `entry holding ${countPhrase(courses.length, 'course', 'courses').text} in its rows[] table`,
+          `entries holding ${countPhrase(courses.length, 'course', 'courses').text} between them in their rows[] tables`,
         ).text
       }. Each heading line is that entry's <b>org</b>, <b>title</b>, <b>place</b> and <b>dates</b>;
       each row below it is one row of its <b>rows[]</b>, with keys {keysOf(courses)} — and those keys,
@@ -190,7 +190,7 @@ const description =
       {teaching
         .map((block) => {
           const rows = (block.rows ?? []).length;
-          return `${block.org}: ${countPhrase(rows, 'row').text}`;
+          return `${block.org}: ${countPhrase(rows, 'row', 'rows').text}`;
         })
         .join(', ')}. Column names and order are read from each table's first row; the build refuses
       later rows whose shape differs, so a local term such as <b>points</b> never needs a machinery
@@ -204,7 +204,7 @@ const description =
   <Record>
     <p>
       <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above,
-      then <b>entries[]</b>, {countPhrase(supervision.length, 'row').text} with keys {
+      then <b>entries[]</b>, {countPhrase(supervision.length, 'row', 'rows').text} with keys {
         keysOf(supervision)
       }. The counts in the right-hand column are the <b>count</b> field verbatim, open-ended ({
         supervision.map((row) => row.count).join(', ')
