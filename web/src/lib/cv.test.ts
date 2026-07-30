@@ -187,7 +187,7 @@ for (const block of teaching) {
   for (const row of block.rows ?? [])
     assert.deepEqual(
       Object.keys(row),
-      ['course', 'programme', 'topics', 'points'],
+      ['Course', 'Programme', 'Topics', 'Points'],
       `teaching "${block.org}": row keys are the printed table's columns, in this order`,
     );
 }
@@ -196,10 +196,7 @@ assert.ok(
   'no teaching post dates run to Present',
 );
 
-// The column headings of that table, here and in the printed CV, are one rule
-// held in two copies across the build boundary. These are the same cases
-// `scripts/build-cv-data.test.mjs` asserts of `tableHeader`: if one copy is
-// edited and the other is not, one of the two files fails.
+// `headingCase` transforms identifier keys into title-cased labels (e.g. for announcement kinds).
 assert.equal(headingCase('programme / level'), 'Programme / Level');
 assert.equal(headingCase('key topics'), 'Key Topics');
 assert.equal(headingCase('kōwhai level'), 'Kōwhai Level');

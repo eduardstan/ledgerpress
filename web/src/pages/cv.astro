@@ -22,7 +22,6 @@ import {
   cv,
   CV_SOURCE,
   entriesOf,
-  headingCase,
   keysOf,
   noteOf,
   optsOutOfCv,
@@ -73,7 +72,7 @@ const leadership = entriesOf(cv.leadership);
 /** Every `rows:` table under a teaching post — the courses themselves. */
 const courses = teaching.flatMap((block) => block.rows ?? []);
 const withItems = (rows: { items?: string[] }[]) => rows.filter((row) => row.items?.length).length;
-const label = headingCase;
+const label = (key: string) => key;
 const appointmentEntries = countPhrase(appointments.length);
 const awardEntries = countPhrase(awards.length);
 

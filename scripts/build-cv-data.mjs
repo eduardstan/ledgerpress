@@ -224,27 +224,18 @@ const tableRows = (rows, strict = true) => {
 const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
 
 /**
- * A record key as a heading: every word capitalised, separators untouched.
+ * A section key as a heading: every word capitalised, separators untouched.
  *
- * Per word, not first character only, so `programme / level` prints as
- * "Programme / Level" without the record key carrying the capitals. Separators
- * survive untouched: casing is presentation, the key stays the fact it is - and
- * that key is what the website's provenance line publishes. A word is any run of
- * letters or digits in any script, so `kōwhai level` is two words and not three.
- *
- * The website applies this same rule to these same keys: `headingCase` in
- * `web/src/lib/cv-schema.ts`. Nothing crosses that build boundary - this is
- * plain node, that is a Vite module - so they are two copies of one rule and
- * they must agree. A column that reads "Programme / Level" in the PDF and
- * "Programme / level" on /cv/ is the contradiction this repository exists to
- * make impossible.
+ * Section keys derive from identifiers (e.g. `field_work` -> "Field Work")
+ * when a section does not declare an explicit `heading:`. Course-table column
+ * headers, by contrast, are printed verbatim as written in the record.
  */
 const headingCase = (key) => key.replace(/[\p{L}\p{N}]+/gu, capitalise);
 
-/** The header row for those columns: the key names, as headings. */
+/** The header row for those columns: the key names verbatim, as headings. */
 const tableHeader = (rows, strict = true) =>
   `${tableKeys(rows, strict)
-    .map((k) => `\\textbf{${escapeLatex(headingCase(k))}}`)
+    .map((k) => `\\textbf{${escapeLatex(k)}}`)
     .join(" & ")} \\\\`;
 
 /** One `\cventry`, plus its bullets and its table where it has them. */
@@ -279,7 +270,7 @@ const macroName = (key) => keyWords(key).join("");
  * new section print without a LaTeX edit. A section whose heading is not its key
  * spelt out - "Awards & Scholarships" - says so with `heading:`.
  *
- * The key becomes a heading by the same `headingCase` a column header does, with
+ * The key becomes a heading by `headingCase`, with
  * its separators read as spaces: `field_work` prints "Field Work", not
  * "Field_Work". Not `keyWords`, which is ASCII because macro names are.
  */
