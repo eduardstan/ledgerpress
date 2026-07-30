@@ -17,8 +17,9 @@
 % `content/talks.bib` through the biblatex refsections at the end of this file.
 %
 % Packages, page geometry, fonts, colours, the biblatex setup and the section
-% macros live here. Every document under cv/ opens with \input{preamble.tex},
-% so a change to the printed design is made once and reaches all of them.
+% macros live here. Every printable document under cv/ opens with
+% \input{preamble.tex}, so a change to the printed design is made once and
+% reaches all of them.
 %
 % To change what a CV says, edit content/cv.yaml and regenerate. To change how
 % it looks, edit this file. To change WHICH of it one document prints, edit that
@@ -197,8 +198,8 @@
 % entries in the matching .bib) instead of the five above. An adopter who has
 % declared neither - which is everyone on day one - would otherwise meet a raw
 % "Undefined control sequence" that stops xelatex at its interactive prompt.
-% Empty is the documented behaviour: the heading prints over an empty
-% bibliography and README.md tells them to delete the block.
+% Empty is the documented behaviour: the zero count makes the document skip
+% the heading and its entire refsection.
 \newcommand{\cvdeclarebib}[1]{%
   \expandafter\providecommand\csname cv#1Count\endcsname{0}%
   \expandafter\providecommand\csname cv#1Key\endcsname{}%

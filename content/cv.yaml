@@ -50,10 +50,10 @@ profile:
     is supplied only to demonstrate the template.
 
 # Prose the teaching CV prints in place of `profile.focus`. `profile:` is a
-# fixed set of fields, but every other top-level key is a section, and a
-# section's `note:` is free prose - so a variant gets its own statement without
-# the generator learning a new field name. A section with no entries prints
-# nothing on the website; cv/teaching.tex prints the note.
+# fixed set of fields, while an ordinary top-level section's `note:` is free
+# prose - so a variant gets its own statement without the generator learning a
+# new field name. The website does not render this note; cv/teaching.tex does.
+# See content/README.md for the website's omitted-section provenance.
 teaching_statement:
   note:
     - >-
