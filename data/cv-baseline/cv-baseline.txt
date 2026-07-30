@@ -1,10 +1,10 @@
-                           Sahana Aster KŌWHAI, Ph.D.
+                         Sahana Aster KŌWHAI, Ph.D.
                                               sahana.kowhai@example.edu | Staff profile
 
           0000-0000-0000-0000 |  sahana-kowhai-example | a sahana-kowhai | ] sahana-kowhai | î Bluesky
                  Associate Professor of Palaeoclimatology, Te Tari Tātai Arowhenua — Department of Geology
-                                        University of Otago — Ōtākou Whakaihu Waka,
-                   Antarctic Research Centre, Te Herenga Waka, Ōtepoti Dunedin, Aotearoa New Zealand
+                                    University of Ōtākou — Te Whare Wānanga o Ōtākou,
+                Southern Ocean Research Centre, Te Waka Wānanga, Ōtepoti Dunedin, Aotearoa New Zealand
 
 SHORT BIO
 Sahana Aster Kōwhai is a fictional palaeoclimatologist whose research reconstructs Southern Ocean change from
@@ -16,63 +16,63 @@ reproducible chronology and equitable Antarctic field partnerships.
 
 ACADEMIC APPOINTMENTS / EXPERIENCE
 •   Associate Professor of Palaeoclimatology                                                                     Feb 2021 – Present
-    University of Otago — Ōtākou Whakaihu Waka, Department of Geology                               Ōtepoti Dunedin, Aotearoa New
+    University of Ōtākou — Te Whare Wānanga o Ōtākou, Department of Geology                         Ōtepoti Dunedin, Aotearoa New
                                                                                                                           Zealand
-    ◦   Cross-appointed aﬀiliate of the Antarctic Research Centre, Te Herenga Waka.
+    ◦   Cross-appointed aﬀiliate of the Southern Ocean Research Centre, Te Waka Wānanga.
 •   Senior Lecturer in Marine Geology                                                                              Jul 2016 – Jan 2021
-    University of Tasmania, Institute for Marine and Antarctic Studies                                     nipaluna Hobart, Australia
+    University of Southern Tasmania, Institute for Marine and Southern Ocean Studies                       nipaluna Hobart, Australia
 EDUCATION
 •   Ph.D. in Marine Geology                                                                                              2010 – 2014
-    Australian National University                                                                                Canberra, Australia
+    Commonwealth University of Australia                                                                          Canberra, Australia
     ◦   Thesis: Foraminiferal Mg/Ca and Southern Ocean warming across Termination I.
 •   M.Sc. in Earth Sciences (First Class Honours)                                                                       2008 – 2009
-    University of Cape Town                                                                                 Cape Town, South Africa
+    Cape Maritime University                                                                                Cape Town, South Africa
 •   B.Sc. in Geology and Oceanography                                                                                     2005 – 2008
-    University of Madras                                                                                               Chennai, India
+    Madras Institute of Ocean Sciences                                                                                 Chennai, India
 TEACHING
 •   Course coordinator and lecturer                                                                                  2021 – Present
-    University of Otago — Ōtākou Whakaihu Waka                                                      Ōtepoti Dunedin, Aotearoa New
+    University of Ōtākou — Te Whare Wānanga o Ōtākou                                                Ōtepoti Dunedin, Aotearoa New
                                                                                                                           Zealand
-    Course                             Programme                         Topics                       Points
-    GEOL 273                           B.Sc. Geology                     Palaeoclimate archives;      18
+    Course                               Programme                       Topics                       Points
+    GEOL 273                             B.Sc. Geology                   Palaeoclimate archives;      18
                                                                          proxy calibration
-    GEOL 472                           B.Sc. (Hons)                      Marine cores; age-depth      18
+    GEOL 472                             B.Sc. (Hons)                    Marine cores; age-depth      18
                                                                          modelling
-    OCEN 405                           M.Sc. Oceanography                Southern Ocean               20
+    OCEN 405                             M.Sc. Oceanography              Southern Ocean               20
                                                                          circulation; uncertainty
 
 
 EDITORIAL, REVIEWING & CONFERENCE SERVICE
 •   Associate Editor                                                                                                    2023 – Present
-    Paleoceanography and Paleoclimatology, Marine palaeoclimate
+    Palaeoceanography and Climate Systems, Marine palaeoclimate
 •   Associate Editor
     Example Journal of Palaeoclimate Studies, 2022–2024 [IF: 3.4, Q1]
 •   Scientific Steering Committee
-    Southern Ocean Observing System, 2022–2026
+    Southern Ocean Climate Observatory Consortium, 2022–2026
 •   Panel reviewer                                                                                                      2021 – Present
-    Royal Society Te Apārangi
+    Aotearoa Research Council — Te Kāhui Pūtaiao
 •   Reviewer
-    Quaternary Science Reviews
+    Quaternary Palaeoenvironment Reviews
 RESEARCH PROJECTS
 •   TIDE — Termination Ice Dynamics and Ecosystems                                                                            2024 – 2027
-    Royal Society Te Apārangi, Principal investigator
+    Aotearoa Research Council — Te Kāhui Pūtaiao, Principal investigator
     ◦   Multiproxy reconstruction of Southern Ocean fronts across Termination II, with voyage support from the Southern
         Archive Voyage Consortium.
 •   Open Core Chronologies                                                                                                    2022 – 2025
-    Australian Antarctic Program Partnership, Co-investigator
+    Austral Polar Science Partnership, Co-investigator
     ◦   Reusable age-depth models and provenance for legacy sediment cores.
 
 AWARDS & SCHOLARSHIPS
 •   Early Career Research Excellence Award                                                                                          2019
-    Geoscience Society of New Zealand
-•   SCAR Visiting Fellowship                                                                                                      2017
-    Scientific Committee on Antarctic Research                                                              Cambridge, United Kingdom
+    Geoscientific Society of Aotearoa
+•   ICPR Visiting Fellowship                                                                                                      2017
+    International Council for Polar Research                                                                Cambridge, United Kingdom
 STUDENT SUPERVISION (THESES & INTERNSHIPS)
 Current supervision: projects span marine geochemistry, chronology and open polar data.
 
-Level                                            #      Notes (scope and international experience)
-Doctoral candidates                              4      Primary supervisor for two; co-supervisor for two
-M.Sc. and honours researchers                    9      Completed and current research dissertations
+Level                                           #        Notes (scope and international experience)
+Doctoral candidates                             4        Primary supervisor for two; co-supervisor for two
+M.Sc. and honours researchers                   9        Completed and current research dissertations
 
 
 ADDITIONAL INFORMATION
@@ -89,13 +89,13 @@ PUBLIC ENGAGEMENT
 TALKS & PRESENTATIONS                                                                                              I=INVITED, C=CONFERENCE
 
 Invited and keynote talks
-    [I1]   S. A. Kōwhai. “What an open sediment record should remember”. International Conference on Paleoceanography (Bergen,
+    [I1]   S. A. Kōwhai. “What an open sediment record should remember”. World Congress on Palaeoceanography (Bergen,
            Norway). Invited keynote. June 18, 2026.
 
 Conference presentations
-[C1]       S. A. Kōwhai and M. Te Rangi. “First results from the Pukaki Rise coring transect”. New Zealand Antarctic Science
-           Conference (Te Whanganui-a-Tara Wellington, Aotearoa New Zealand). Oral presentation. Aug. 21, 2025.
-[C2]       S. A. Kōwhai. “Age-depth ensembles without hidden decisions”. Australasian Quaternary Association Biennial Meeting
+[C1]       S. A. Kōwhai and M. Te Rangi. “First results from the Pukaki Rise coring transect”. Aotearoa Antarctic Science Symposium
+           (Te Whanganui-a-Tara Wellington, Aotearoa New Zealand). Oral presentation. Aug. 21, 2025.
+[C2]       S. A. Kōwhai. “Age-depth ensembles without hidden decisions”. Australasian Quaternary Research Society Biennial Meeting
            (nipaluna Hobart, Australia). Poster presentation. Dec. 4, 2024. URL: https://talks.example.edu/kowhai2024ensembles.
 [C3]       S. A. Kōwhai. “From core description to an auditable climate record”. Southern Archives Methods Forum (Ōtepoti Dunedin,
            Aotearoa New Zealand). Sept. 14, 2023.
@@ -104,9 +104,9 @@ PUBLICATIONS                                                                    
 
 Journal articles (peer-reviewed)
     [J1]   S. A. Kōwhai, M. Te Rangi, and C. Okafor. “Southern Ocean front migration recorded across two glacial terminations”. In:
-           Palaeogeography, Palaeoclimatology, Palaeoecology 612 (2026), p. 111001.
+           Palaeo-Environments, Palaeoclimates, Palaeoecology 612 (2026), p. 111001.
     [J2]   S. A. Kōwhai, H. Williams, and T. Ndlovu. “Transparent age-depth ensembles for Southern Ocean sediment archives”. In:
-           Climate of the Past 20.8 (2024), pp. 1701–1724. URL: https://publications.example.edu/kowhai2024chronology.
+           Earth’s Past Climate 20.8 (2024), pp. 1701–1724. URL: https://publications.example.edu/kowhai2024chronology.
 
 Conference papers (peer-reviewed)
 [C1]       S. A. Kōwhai and M. Te Rangi. “Automated tephra isochron matching in Southern Ocean sediment cores”. In: Proceedings of
@@ -124,8 +124,9 @@ Data archives
        https://data.example.edu/pukaki-rise-v1.
 
 Manuscripts under review
-[R1]   S. A. Kōwhai and M. Te Rangi. “Shelf-water change at the Pacific Antarctic margin”. In: Quaternary Science Reviews (2028).
-[R2]   S. A. Kōwhai and T. Ndlovu. “Sea-ice retreat and productivity at the East Antarctic margin”. In: The Cryosphere (2027).
+[R1]   S. A. Kōwhai and M. Te Rangi. “Shelf-water change at the Pacific Antarctic margin”. In: Quaternary Palaeoenvironment Reviews
+       (2028).
+[R2]   S. A. Kōwhai and T. Ndlovu. “Sea-ice retreat and productivity at the East Antarctic margin”. In: The Polar Cryosphere (2027).
 
 
 Example record. This curriculum vitae describes a fictional scholar and is supplied only to demonstrate the template.
