@@ -2,6 +2,7 @@
 title: Reading a sediment core without hiding the joins
 description: A fictional field note about provenance, uncertainty and layered climate records.
 date: 2026-02-12
+draft: false
 tags: ['Field notes', 'Open data']
 categories: ['Research practice']
 ---

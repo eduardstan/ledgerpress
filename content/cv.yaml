@@ -23,6 +23,8 @@ profile:
   links:
     orcid: 0000-0000-0000-0000
     scholar: sahana-kowhai-example
+    github: sahana-kowhai
+    linkedin: sahana-kowhai
     bluesky:
       label: Bluesky
       url: https://bsky.app/profile/sahana-kowhai.example
@@ -152,10 +154,18 @@ service:
     org: Paleoceanography and Paleoclimatology
     dates: 2023 – Present
     detail: Marine palaeoclimate
+    metric: "IF: 3.4, Q1"
+    rank_url: https://www.scimagojr.com/journalrank.php
     announced: 2023-03-10
   - title: Scientific Steering Committee
     org: Southern Ocean Observing System
-    years: [2022, 2023, 2024, 2025, 2026]
+    years:
+      - 2022
+      - 2023
+      - 2024
+      - year: 2025
+        announced: 2024-11-15
+      - 2026
   - title: Panel reviewer
     org: Royal Society Te Apārangi
     dates: 2021 – Present
@@ -232,16 +242,29 @@ publications:
   sections:
     - title: Journal articles (peer-reviewed)
       short: Journal
+      prefix: J
       types: [article]
       exclude_keywords: [underreview]
+    - title: Conference papers (peer-reviewed)
+      short: Conference
+      prefix: C
+      types: [inproceedings]
     - title: Books and chapters
       short: Books
-      types: [incollection, book]
-    - title: Data and software
+      prefix: B
+      types: [incollection, inbook, book]
+    - title: Data archives
       short: Data
-      types: [dataset, misc]
+      prefix: D
+      types: [dataset]
+    - title: Software & code
+      short: Software
+      prefix: S
+      types: [misc]
+      printed: false
     - title: Manuscripts under review
       short: Review
+      prefix: R
       types: [article]
       keywords: [underreview]
 

@@ -23,6 +23,10 @@ Sahana Aster KŌWHAI, Ph.D.%
 \;|\;
 \cviconscholar\,\href{https://scholar.google.com/citations?user=sahana-kowhai-example}{sahana-kowhai-example}
 \;|\;
+\cvicongithub\,\href{https://github.com/sahana-kowhai}{sahana-kowhai}
+\;|\;
+\cviconlinkedin\,\href{https://www.linkedin.com/in/sahana-kowhai}{sahana-kowhai}
+\;|\;
 \cviconlink\,\href{https://bsky.app/profile/sahana-kowhai.example}{Bluesky}%
 }
 
@@ -289,7 +293,7 @@ Doctoral candidates (Primary supervisor for two; co-supervisor for two), M.Sc. a
 \ifnum1>\cvmax\else
 \cventry
   {Associate Editor}
-  {Paleoceanography and Paleoclimatology, Marine palaeoclimate}
+  {Paleoceanography and Paleoclimatology, Marine palaeoclimate \textbf{[IF: 3.4, Q1]}}
   {2023 -- Present}
   {}
 \fi
@@ -320,14 +324,14 @@ Doctoral candidates (Primary supervisor for two; co-supervisor for two), M.Sc. a
 }
 
 \newcommand{\cvServiceRows}{%
-Associate Editor & Paleoceanography and Paleoclimatology & 2023 -- Present & Marine palaeoclimate & 2023-03-10 \\
-Scientific Steering Committee & Southern Ocean Observing System & 2022,2023,2024,2025,2026 \\
+Associate Editor & Paleoceanography and Paleoclimatology & 2023 -- Present & Marine palaeoclimate & IF: 3.4, Q1 & https://www.scimagojr.com/journalrank.php & 2023-03-10 \\
+Scientific Steering Committee & Southern Ocean Observing System & 2022,2023,2024,[object Object],2026 \\
 Panel reviewer & Royal Society Te Apārangi & 2021 -- Present \\
 Reviewer & Quaternary Science Reviews \\%
 }
 
 \newcommand{\cvServiceHeader}{%
-\textbf{Title} & \textbf{Org} & \textbf{Dates} & \textbf{Detail} & \textbf{Announced} \\%
+\textbf{Title} & \textbf{Org} & \textbf{Dates} & \textbf{Detail} & \textbf{Metric} & \textbf{Rank\_url} & \textbf{Announced} \\%
 }
 
 \newcommand{\cvServiceInline}{%
@@ -540,15 +544,16 @@ Tamil (Native), English (Fluent), te reo Māori (Intermediate learner)%
 
 \newcommand{\cvLanguagesCount}{3}
 
-\newcommand{\cvPublicationsCount}{7}
+\newcommand{\cvPublicationsCount}{10}
 
 \defbibfilter{Publications1}{type=article and not keyword=underreview}
-\defbibfilter{Publications2}{( type=incollection or type=book ) and not ( type=article and not keyword=underreview )}
-\defbibfilter{Publications3}{( type=dataset or type=misc ) and not ( type=article and not keyword=underreview ) and not ( ( type=incollection or type=book ) )}
-\defbibfilter{Publications4}{type=article and keyword=underreview and not ( type=article and not keyword=underreview ) and not ( ( type=incollection or type=book ) ) and not ( ( type=dataset or type=misc ) )}
+\defbibfilter{Publications2}{type=inproceedings and not ( type=article and not keyword=underreview )}
+\defbibfilter{Publications3}{( type=incollection or type=inbook or type=book ) and not ( type=article and not keyword=underreview ) and not ( type=inproceedings )}
+\defbibfilter{Publications4}{type=dataset and not ( type=article and not keyword=underreview ) and not ( type=inproceedings ) and not ( ( type=incollection or type=inbook or type=book ) )}
+\defbibfilter{Publications6}{type=article and keyword=underreview and not ( type=article and not keyword=underreview ) and not ( type=inproceedings ) and not ( ( type=incollection or type=inbook or type=book ) ) and not ( type=dataset ) and not ( type=misc )}
 
 \newcommand{\cvPublicationsKey}{%
-J=Journal, B=Books, D=Data, R=Review%
+J=Journal, C=Conference, B=Books, D=Data, R=Review%
 }
 
 \newcommand{\cvPublicationsSections}{%
@@ -556,16 +561,20 @@ J=Journal, B=Books, D=Data, R=Review%
 \printbibliography[heading=bibsubheading, title={Journal articles (peer-reviewed)}, filter=Publications1, resetnumbers=true]
 \end{refcontext}
 
+\begin{refcontext}[labelprefix=C]
+\printbibliography[heading=bibsubheading, title={Conference papers (peer-reviewed)}, filter=Publications2, resetnumbers=true]
+\end{refcontext}
+
 \begin{refcontext}[labelprefix=B]
-\printbibliography[heading=bibsubheading, title={Books and chapters}, filter=Publications2, resetnumbers=true]
+\printbibliography[heading=bibsubheading, title={Books and chapters}, filter=Publications3, resetnumbers=true]
 \end{refcontext}
 
 \begin{refcontext}[labelprefix=D]
-\printbibliography[heading=bibsubheading, title={Data and software}, filter=Publications3, resetnumbers=true]
+\printbibliography[heading=bibsubheading, title={Data archives}, filter=Publications4, resetnumbers=true]
 \end{refcontext}
 
 \begin{refcontext}[labelprefix=R]
-\printbibliography[heading=bibsubheading, title={Manuscripts under review}, filter=Publications4, resetnumbers=true]
+\printbibliography[heading=bibsubheading, title={Manuscripts under review}, filter=Publications6, resetnumbers=true]
 \end{refcontext}%
 }
 
