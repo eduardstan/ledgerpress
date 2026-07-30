@@ -20,7 +20,7 @@ Baseline facts:
 
 | Document          | Baseline            | Pages | Extracted text | Text SHA-256                                                       |
 | ----------------- | ------------------- | ----- | -------------- | ------------------------------------------------------------------ |
-| `cv/cv.pdf`       | `cv-baseline`       | 3     | 127 lines      | `d080ff2b69f57ead4394ea9fb325082a76ded3a8159204a84bfdf24d255b087a` |
+| `cv/cv.pdf`       | `cv-baseline`       | 3     | 131 lines      | `3f341611c06351d10e0e90d5ff19d19211cd9c1904d9d93c7f81553b0d23fe2c` |
 | `cv/short.pdf`    | `short-baseline`    | 1     | 43 lines       | `540cb6227a34266f2e5450facb4028a4a8230c3c1e76828899f94d63ee5cb353` |
 | `cv/teaching.pdf` | `teaching-baseline` | 1     | 56 lines       | `933a5594d5c927068ba081cbc5d1652882fddba4c1aaea6fa26e28e2f40d5d0a` |
 

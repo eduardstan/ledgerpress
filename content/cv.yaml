@@ -42,8 +42,7 @@ profile:
 
       My group works across oceanography, geology and _mātauranga-informed_
       environmental practice. We build open records that make uncertainty,
-      provenance and field decisions visible. Sampling decisions from the latest
-      voyage are recorded in a [field note](/blog/2026/reading-a-core/).
+      provenance and field decisions visible.
   focus: >-
     Southern Ocean palaeoceanography across glacial terminations, with an
     emphasis on multiproxy reconstructions, reproducible chronology and
@@ -156,6 +155,15 @@ service:
     dates: 2023 – Present
     detail: Marine palaeoclimate
     announced: 2023-03-10
+  - title: Associate Editor
+    org: Example Journal of Palaeoclimate Studies
+    years:
+      - 2022
+      - 2023
+      - year: 2024
+        announced: 2023-11-15
+    metric: "IF: 3.4, Q1"
+    rank_url: https://example.org/journals/palaeoclimate-studies
   - title: Scientific Steering Committee
     org: Southern Ocean Observing System
     years: [2022, 2023, 2024, 2025, 2026]
@@ -242,18 +250,9 @@ leadership:
       org: Southern Ocean Knowledge and Information community
       dates: 2024 – Present
       announced: 2024-02-01
-    - title: Faculty representative
+    - title: Faculty representative — [field note](/blog/2026/reading-a-core/)
       org: Pacific research partnerships committee
       dates: 2022 – 2024
-    - title: Associate Editor
-      org: Example Journal of Palaeoclimate Studies
-      years:
-        - 2022
-        - 2023
-        - year: 2024
-          announced: 2023-11-15
-      metric: "IF: 3.4, Q1"
-      rank_url: https://example.org/journals/palaeoclimate-studies
 
 languages:
   - title: Tamil
