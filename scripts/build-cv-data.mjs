@@ -517,8 +517,9 @@ function render(cv) {
     macro("cvFocus", renderInline(p.focus)),
     macro("cvFooter", renderInline(p.footer)),
   ];
-  // Every other top-level list is a section. Six macros each, all mechanical:
-  // the generator has no idea what any of them mean.
+  // Every other top-level list is a section. Six macros each, plus its line of
+  // the printed section sequence and, where the record opts out, one more macro.
+  // All mechanical: the generator has no idea what any of them mean.
   const printed = [];
   for (const [key, value] of Object.entries(cv)) {
     if (key === "profile") continue;
