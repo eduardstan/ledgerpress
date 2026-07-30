@@ -22,11 +22,13 @@ interface Props {
 const { name } = profile();
 const base = import.meta.env.BASE_URL;
 const { favicon } = identity(base);
-const { title, description = `Personal site of ${name}.`, canonical: canonicalPath, noindex = false } =
-  Astro.props;
-const canonical = canonicalPath
-  ? absoluteInternalUrl(canonicalPath, Astro.site!, base)
-  : Astro.url;
+const {
+  title,
+  description = `Personal site of ${name}.`,
+  canonical: canonicalPath,
+  noindex = false,
+} = Astro.props;
+const canonical = canonicalPath ? absoluteInternalUrl(canonicalPath, Astro.site!, base) : Astro.url;
 const url = (path: string) => internalUrl(path, base);
 ---
 

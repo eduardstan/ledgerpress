@@ -15,7 +15,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHead from '../../components/PageHead.astro';
 import Record from '../../components/Record.astro';
 import SectionHead from '../../components/SectionHead.astro';
-import { cv, CV_SOURCE, entriesOf, keysOf } from '../../lib/cv';
+import { countPhrase, cv, CV_SOURCE, entriesOf, keysOf } from '../../lib/cv';
 import { inline } from '../../lib/inline';
 import { profile } from '../../lib/record';
 import { internalUrl } from '../../lib/urls';
@@ -27,20 +27,22 @@ const render = (text: string | undefined) => inline(text, base);
 const funded = projects.filter((project) => project.funding);
 const running = projects.filter((project) => /present\s*$/i.test(project.dates ?? ''));
 const github = profile().links.find((link) => link.kind === 'github')?.href;
+const projectCount = countPhrase(projects.length, 'project', 'projects');
 
 const description =
-  `${projects.length} funded research projects, ${running.length} running, ` +
+  `${countPhrase(projects.length, 'funded research project', 'funded research projects').text}, ` +
+  `${running.length} running, ` +
   `read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Research projects" description={description}>
   <PageHead title="Research projects">
     <p class="blurb">
-      <b>{projects.length} funded projects</b>, newest first as the file writes them, read from <b
-        >{CV_SOURCE}</b
-      > when this page was built. The amounts are the file's own <b>funding</b> field: the printed CV
-      does not carry them, and that file keeps them so this page can. Turn <b>inspect sources</b> on,
-      in the bar above, to see what each row is built from.
+      <b>{countPhrase(projects.length, 'funded project', 'funded projects').text}</b>, newest first
+      as the file writes them, read from <b>{CV_SOURCE}</b> when this page was built. The amounts are
+      the file's own <b>funding</b> field: the printed CV does not carry them, and that file keeps them
+      so this page can. Turn <b>inspect sources</b> on, in the bar above, to see what each row is built
+      from.
     </p>
   </PageHead>
 
@@ -76,15 +78,26 @@ const description =
   </ul>
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>projects[]</b>, {projects.length} entries in file order. Keys read:{' '}
-      {keysOf(projects)}. {running.length} of {projects.length} have <b>dates</b> running to Present.
+      <b>{CV_SOURCE}</b> — <b>projects[]</b>, {
+        countPhrase(projects.length, 'entry in file order', 'entries in file order').text
+      }. Keys read: {keysOf(projects)}. {
+        countPhrase(running.length, `of ${projectCount.text} has`, `of ${projectCount.text} have`)
+          .text
+      }
+      <b>dates</b> running to Present.
     </p>
     <p>
-      {funded.length} of {projects.length} state a <b>funding</b> figure, shown under the dates: {
+      {
+        countPhrase(
+          funded.length,
+          `of ${projectCount.text} states`,
+          `of ${projectCount.text} state`,
+        ).text
+      } a <b>funding</b> figure, shown under the dates: {
         funded.map((project) => project.funding).join(', ')
-      }. Each is that field verbatim, including its own note about what the amount covers; nothing is
-      summed here, because a programme total and a grant to one group are not the same quantity and
-      adding them would state something the file does not.
+      }. Each is that field verbatim, including its own note about what the amount covers; nothing
+      is summed here, because a programme total and a grant to one group are not the same quantity
+      and adding them would state something the file does not.
     </p>
     <p>
       This page renders the whole of <b>projects[]</b>. It is not a software portfolio:{' '}

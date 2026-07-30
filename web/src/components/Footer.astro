@@ -26,14 +26,19 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
       </div>
       <Record>
         <p>
-          <b>{SOURCES.cv}</b> — one link per <code>profile.links</code> entry. Scholar, ORCID,
-          GitHub and LinkedIn may be compact IDs whose addresses are derived; any other service is
-          a <code>{'{ label, url }'}</code> pair used by both outputs.
+          <b>{SOURCES.cv}</b> — one link per <code>profile.links</code> entry. Scholar, ORCID, GitHub
+          and LinkedIn may be compact IDs whose addresses are derived; any other service is a <code
+            >{'{ label, url }'}</code
+          > pair used by both outputs.
           {
             missing.length > 0 && (
               <>
                 {' '}
-                No ID in the file, so not shown: {missing.map((kind) => <code>{kind}</code>)}.
+                No ID in the file, so not shown:{' '}
+                {missing.map((kind) => (
+                  <code>{kind}</code>
+                ))}
+                .
               </>
             )
           }
@@ -42,7 +47,16 @@ const url = (path: string) => internalUrl(path, import.meta.env.BASE_URL);
     </div>
     <div>
       <h2 class="label">Post</h2>
-      <address>{address.map((line) => <>{line}<br /></>)}</address>
+      <address>
+        {
+          address.map((line) => (
+            <>
+              {line}
+              <br />
+            </>
+          ))
+        }
+      </address>
       <Record>
         <p>
           <b>{addressSource}</b> — <code>affiliation[]</code> broadest first, then{' '}

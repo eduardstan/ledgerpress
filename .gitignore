@@ -33,3 +33,6 @@ web/public/assets/cv.pdf
 
 # Staged from content/media before every astro build; content/ is the source.
 web/public/media/
+
+# Throwaway output used by the deployment-base verification build.
+web/.deployment-base-dist/

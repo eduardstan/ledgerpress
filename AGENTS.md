@@ -45,6 +45,10 @@ family without the generator naming the section. Publication and talk grouping i
   Do not replace them with hand-written numbers or copy.
 - A zero-entry bibliography must skip its entire `refsection`; biber otherwise silently emits `[0]`
   labels. `\cvdeclare` and `\cvdeclarebib` keep missing sections safe for a minimal record.
+- `scripts/check-deployment-base.mjs` builds its fixture-base proof into its own ignored throwaway
+  directory and asserts the generated distribution is byte-identical afterwards. That distribution is
+  what the deploy publishes, so a verification build must be structurally incapable of becoming it.
+  It once rebuilt in place and the deploy published the fixture base with every check green.
 - `web/public/fonts/LICENSES.md` travels unchanged with the bundled Ledger fonts.
 - Root Prettier checks the whole repository with `.prettierrc`; keep nested configuration compatible.
 
