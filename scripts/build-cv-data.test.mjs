@@ -152,6 +152,13 @@ test("a table's header is its own row keys, so renaming a key renames a column",
   assert.equal(tableHeader([{ course: "Databases", points: "18 points" }]), "\\textbf{Course} & \\textbf{Points} \\\\");
 });
 
+test("a multi-word key capitalises every word, so no key carries its own capitals", () => {
+  // Found in the wild: "Programme / Level" was only reachable by storing the
+  // capital in the record key, which the website then published verbatim on its
+  // provenance line. Casing is presentation; separators are the key's own.
+  assert.equal(tableHeader([{ "programme / level": "B.Sc.", "key topics": "proxies" }]), "\\textbf{Programme / Level} & \\textbf{Key Topics} \\\\");
+});
+
 test("a table refuses rows whose columns or key order disagree", () => {
   assert.throws(
     () =>

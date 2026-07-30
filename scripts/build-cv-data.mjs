@@ -220,10 +220,20 @@ const tableRows = (rows, strict = true) => {
   return rows.map((r) => `${Object.values(r).map(cell).join(" & ")} \\\\`).join("\n");
 };
 
-/** The header row for those columns: the key names, capitalised. */
+/** One word, capitalised. The generator's only casing rule; every heading uses it. */
+const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
+
+/**
+ * The header row for those columns: the key names, every word capitalised.
+ *
+ * Per word, not first character only, so `programme / level` prints as
+ * "Programme / Level" without the record key carrying the capitals. Separators
+ * survive untouched: casing is presentation, the key stays the fact it is - and
+ * that key is what the website's provenance line publishes.
+ */
 const tableHeader = (rows, strict = true) =>
   `${tableKeys(rows, strict)
-    .map((k) => `\\textbf{${escapeLatex(k[0].toUpperCase() + k.slice(1))}}`)
+    .map((k) => `\\textbf{${escapeLatex(k.replace(/[A-Za-z0-9]+/g, capitalise))}}`)
     .join(" & ")} \\\\`;
 
 /** One `\cventry`, plus its bullets and its table where it has them. */
@@ -242,7 +252,7 @@ const keyWords = (key) =>
   key
     .split(/[^A-Za-z0-9]+/)
     .filter(Boolean)
-    .map((w) => w[0].toUpperCase() + w.slice(1));
+    .map(capitalise);
 
 /** `field_work` -> `FieldWork`, so a section key becomes a legal macro name. */
 const macroName = (key) => keyWords(key).join("");
