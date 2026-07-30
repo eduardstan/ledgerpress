@@ -30,18 +30,35 @@ fi
 # not be able to decide whether this check runs. A different name means this is
 # not a maintainer run at all, and saying so is more use than 110 lines of diff.
 # Either name unreadable means nothing can be decided, and that fails.
-mapfile -t baseline_owners < <(
-  sed -n 's/^Owner:[[:space:]]*//p' "$metadata" 2>/dev/null |
-    sed 's/[[:space:]]*$//'
-)
-if ((${#baseline_owners[@]} != 1)) || [[ -z ${baseline_owners[0]} ]]; then
+if [[ ! -r $metadata ]]; then
+  printf '%s\n' "$metadata cannot be read, so this check cannot tell whose record $baseline was taken from." >&2
+  exit 1
+fi
+baseline_owner=
+baseline_owner_count=0
+line=
+while IFS= read -r line || [[ -n $line ]]; do
+  case $line in
+    Owner:*)
+      baseline_owner=${line#Owner:}
+      baseline_owner=$(printf '%s' "$baseline_owner" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+      baseline_owner_count=$((baseline_owner_count + 1))
+      ;;
+  esac
+done < "$metadata"
+if ((baseline_owner_count != 1)) || [[ -z $baseline_owner ]]; then
   printf '%s\n' "$metadata does not name exactly one non-empty \`Owner:\`, so this check cannot tell whose record $baseline was taken from. Add one \`Owner:\` line naming the record owner the baseline was built from." >&2
   exit 1
 fi
-baseline_owner=${baseline_owners[0]}
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-if ! record_owner=$(node "$script_dir/read-cv-owner.mjs" "$record"); then
+# The shell must fail closed even if the helper exits successfully without one owner.
+record_owner=
+record_owner_status=0
+record_owner=$(node "$script_dir/read-cv-owner.mjs" "$record") || record_owner_status=$?
+record_owner_nonspace=$(printf '%s' "$record_owner" | tr -d '[:space:]')
+if ((record_owner_status != 0)) ||
+  [[ -z $record_owner_nonspace || $record_owner == *$'\n'* || $record_owner == *$'\r'* ]]; then
   printf '%s\n' "$record: profile.name could not be determined, so this check cannot tell whose record is in content/. Fix the record and ensure the repository dependencies are installed before comparing it with the baseline." >&2
   exit 1
 fi

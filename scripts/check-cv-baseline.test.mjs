@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +8,7 @@ import { spawnSync } from "node:child_process";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const script = join(root, "scripts/check-cv-baseline.sh");
+const ownerHelper = join(root, "scripts/read-cv-owner.mjs");
 const owner = "Sahana Aster KŌWHAI, Ph.D.";
 
 function fixture(record, metadata = `Owner: ${owner}\nPages: 2\n`, node = process.execPath) {
@@ -31,14 +32,18 @@ function fixture(record, metadata = `Owner: ${owner}\nPages: 2\n`, node = proces
 function run(record, metadata, node) {
   const directory = fixture(record, metadata, node);
   try {
-    return spawnSync("bash", [script], {
-      cwd: directory,
-      encoding: "utf8",
-      env: { ...process.env, PATH: `${join(directory, "bin")}:${process.env.PATH}` },
-    });
+    return runFrom(directory, script);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+}
+
+function runFrom(directory, baselineScript) {
+  return spawnSync("bash", [baselineScript], {
+    cwd: directory,
+    encoding: "utf8",
+    env: { ...process.env, PATH: `${join(directory, "bin")}:${process.env.PATH}` },
+  });
 }
 
 test("profile.name is parsed as YAML at any indentation and without decoys", () => {
@@ -81,4 +86,46 @@ test("an unavailable YAML parser fails closed", () => {
   const result = run(`profile:\n  name: ${owner}\n`, undefined, "/bin/false");
   assert.equal(result.status, 1);
   assert.match(result.stderr, /profile\.name could not be determined/);
+});
+
+test("the helper runs from paths containing spaces and through symlinks", () => {
+  const directory = mkdtempSync(join(tmpdir(), "ledgerpress helper path "));
+  try {
+    const record = join(directory, "cv.yaml");
+    writeFileSync(record, `profile:\n  name: ${owner}\n`);
+
+    const spacedDirectory = join(directory, "path with spaces");
+    mkdirSync(spacedDirectory);
+    symlinkSync(join(root, "node_modules"), join(directory, "node_modules"), "dir");
+    const spacedHelper = join(spacedDirectory, "read cv owner.mjs");
+    copyFileSync(ownerHelper, spacedHelper);
+    const spaced = spawnSync(process.execPath, [spacedHelper, record], { encoding: "utf8" });
+    assert.equal(spaced.status, 0, spaced.stderr);
+    assert.equal(spaced.stdout, owner);
+
+    const linkedHelper = join(directory, "owner-helper.mjs");
+    symlinkSync(ownerHelper, linkedHelper);
+    const linked = spawnSync(process.execPath, [linkedHelper, record], { encoding: "utf8" });
+    assert.equal(linked.status, 0, linked.stderr);
+    assert.equal(linked.stdout, owner);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("the shell rejects empty successful helper output", () => {
+  const directory = fixture(`profile:\n  name: ${owner}\n`);
+  try {
+    const scripts = join(directory, "scripts");
+    mkdirSync(scripts);
+    const baselineScript = join(scripts, "check-cv-baseline.sh");
+    copyFileSync(script, baselineScript);
+    writeFileSync(join(scripts, "read-cv-owner.mjs"), "");
+    const result = runFrom(directory, baselineScript);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /profile\.name could not be determined/);
+    assert.doesNotMatch(result.stdout, /Skipped:/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

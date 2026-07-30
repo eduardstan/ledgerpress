@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { load } from "js-yaml";
 
 export function readCvOwner(source, path = "content/cv.yaml") {
@@ -29,4 +30,5 @@ function main() {
   }
 }
 
-if (process.argv[1] === new URL(import.meta.url).pathname) main();
+const invokedPath = process.argv[1] ? realpathSync(process.argv[1]) : undefined;
+if (invokedPath === fileURLToPath(import.meta.url)) main();
