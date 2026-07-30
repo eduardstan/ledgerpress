@@ -25,6 +25,7 @@ import {
   editionAnnounced,
   editionYear,
   entriesOf,
+  headingCase,
   isEditorial,
   readCv,
   sections,
@@ -249,11 +250,18 @@ const md = (value: string | undefined) =>
  * `appointments` → `Appointment`, `awards` → `Award`, `teaching` → `Teaching`.
  * The kind of a CV fact is the name of the section it is in, and this module
  * names no section: an adopter's `fieldwork:` announces as `Fieldwork`.
+ *
+ * A kind is a label — the filter chip on /lately/ — so it takes `headingCase`,
+ * the one rule every heading derived from a record key takes, and `field_work:`
+ * reads "Field Work" here and in the printed CV alike. The one prose consumer
+ * lowercases it where it writes it. This is the display form only: `slug` below
+ * lowercases and strips to ASCII, so no id, anchor, filter slug or generated CSS
+ * rule can move with it.
  */
 const singular = (key: string) => {
   const word = key.replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const stem = /(?:ss|is|us)$/.test(word) ? word : word.replace(/s$/, '');
-  return stem.charAt(0).toUpperCase() + stem.slice(1);
+  return headingCase(stem);
 };
 
 function cvEntryLabel(entries: Entry[], index: number): string {
