@@ -228,6 +228,27 @@ assert.equal(plural(0, 'editorial board'), 'editorial boards');
 assert.equal(plural(1, 'editorial board'), 'editorial board');
 assert.equal(plural(2, 'entry', 'entries'), 'entries');
 
+const countSensitivePages = [
+  '../pages/professional_activities.astro',
+  '../pages/projects/index.astro',
+  '../pages/publications/[...sort].astro',
+  '../pages/talks.astro',
+  '../pages/blog/index.astro',
+  '../pages/cv.astro',
+];
+const hardCodedCountNoun =
+  /(?:\$\{[^{}]*(?:\.length|\.size)\}|\{[^{}]*(?:\.length|\.size)\})[^{}]{0,64}\b(?:appointments|awards|boards|courses|degrees|entries|items|labels|languages|posts|presentations|projects|roles|rows|talks|venues)\b/;
+for (const page of countSensitivePages) {
+  const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
+  assert.match(source, /\bplural\(/, `${page}: generated count labels do not use plural()`);
+  assert.doesNotMatch(source, /\blength\s*===\s*1\s*\?/, `${page}: duplicates plural()`);
+  assert.doesNotMatch(
+    source.replace(/\s+/g, ' '),
+    hardCodedCountNoun,
+    `${page}: generated count noun bypasses plural()`,
+  );
+}
+
 // `projects[]` feeds /projects/, including the funding figures the printed CV
 // deliberately omits — the reason they are in this file at all.
 assert.equal(projects.length, 2, `expected 2 research projects, got ${projects.length}`);

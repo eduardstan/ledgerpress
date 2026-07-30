@@ -15,7 +15,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
-import { CV_SOURCE, editionYear, keysOf, service, serviceGroups, type Entry } from '../lib/cv';
+import {
+  CV_SOURCE,
+  editionYear,
+  keysOf,
+  plural,
+  service,
+  serviceGroups,
+  type Entry,
+} from '../lib/cv';
 import { inline } from '../lib/inline';
 import { internalUrl } from '../lib/urls';
 
@@ -38,21 +46,22 @@ const announcedOnly = noTerm.filter((entry) => entry.announced);
 const dateless = noTerm.filter((entry) => !entry.announced);
 const ranked = roles.filter((entry) => entry.metric);
 const linkedRanks = roles.filter((entry) => entry.rank_url);
+const venues = new Set(roles.map((entry) => entry.org)).size;
 
 const description =
   `Editorial boards, conference committees and journal reviewing — ` +
-  `${roles.length} roles at ${new Set(roles.map((entry) => entry.org)).size} venues, ` +
+  `${roles.length} ${plural(roles.length, 'role')} at ${venues} ${plural(venues, 'venue')}, ` +
   `read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Professional activities" description={description}>
   <PageHead title="Professional activities">
     <p class="blurb">
-      <b>{roles.length} service roles</b>, grouped by role and read from <b>{CV_SOURCE}</b> when
-      this page was built — the same file the printed CV is generated from. Where the file records a
-      ranking it also records where that ranking is published, so every badge below links to the CORE
-      portal or SCImago entry behind it. Turn <b>inspect sources</b> on, in the bar above, to see what
-      each section is built from.
+      <b>{roles.length} {plural(roles.length, 'service role')}</b>, grouped by role and read from{' '}
+      <b>{CV_SOURCE}</b> when this page was built — the same file the printed CV is generated from.
+      Where the file records a ranking it also records where that ranking is published, so every
+      badge below links to the CORE portal or SCImago entry behind it. Turn <b>inspect sources</b> on,
+      in the bar above, to see what each section is built from.
     </p>
   </PageHead>
 
@@ -101,7 +110,7 @@ const description =
         <Record>
           <p>
             <b>{CV_SOURCE}</b> — the {group.entries.length} <b>service[]</b>{' '}
-            {group.entries.length === 1 ? 'entry' : 'entries'} whose <b>title</b> is “{group.role}”,
+            {plural(group.entries.length, 'entry', 'entries')} whose <b>title</b> is “{group.role}”,
             in file order. Keys read: {keysOf(group.entries)}.
             {group.entries.some((entry) => entry.years?.length) && (
               <>
@@ -122,26 +131,32 @@ const description =
 
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length} entries grouped into {groups.length}
-      {' '}roles ({groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')}). The
-      grouping is by the <b>title</b> field and the order is the order those roles first appear in the
-      file; no entry is filtered out and none is relabelled.
+      <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length}{' '}
+      {plural(roles.length, 'entry', 'entries')} grouped into {groups.length}{' '}
+      {plural(groups.length, 'role')} ({
+        groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
+      }). The grouping is by the <b>title</b> field and the order is the order those roles first
+      appear in the file; no entry is filtered out and none is relabelled.
     </p>
     <p>
-      {ranked.length} of {roles.length} entries carry a <b>metric</b>, and {linkedRanks.length}
-      {' '}carry the <b>rank_url</b> the badge links to. The badge text is the <b>metric</b> field verbatim
-      — “{[...new Set(ranked.map((entry) => entry.metric))].join('”, “')}” — not a rank computed here.
+      {ranked.length} of {roles.length} {plural(roles.length, 'entry', 'entries')}{' '}
+      {plural(ranked.length, 'carries', 'carry')} a <b>metric</b>, and {linkedRanks.length}{' '}
+      {plural(linkedRanks.length, 'carries', 'carry')} the <b>rank_url</b> the badge links to. The
+      badge text is the <b>metric</b> field verbatim — “{
+        [...new Set(ranked.map((entry) => entry.metric))].join('”, “')
+      }” — not a rank computed here.
     </p>
     <p>
-      {noTerm.length} entries state neither <b>dates</b> nor <b>years[]</b>, so the column on the right
-      is empty for them. {announcedOnly.length} of those carry an <b>announced</b> day ({
+      {noTerm.length} {plural(noTerm.length, 'entry', 'entries')}{' '}
+      {plural(noTerm.length, 'states', 'state')} neither <b>dates</b> nor <b>years[]</b>, so the
+      column on the right is empty for them. {announcedOnly.length} of those{' '}
+      {plural(announcedOnly.length, 'carries', 'carry')} an <b>announced</b> day ({
         announcedOnly.map((entry) => entry.org).join('; ')
-      }), which is the date the <a href={url('/lately/')}>register</a> announces the invitation on
-      — the day it
-      was accepted, not a term of service, so it is not printed here as one. The remaining {
-        dateless.length
-      } carry no date of any kind ({dateless.map((entry) => entry.org).join('; ')}), and are shown
-      undated rather than given a year the file does not state.
+      }), which is the date the <a href={url('/lately/')}>register</a> announces the invitation on —
+      the day it was accepted, not a term of service, so it is not printed here as one. The
+      remaining {dateless.length} {plural(dateless.length, 'carries', 'carry')} no date of any kind
+      ({dateless.map((entry) => entry.org).join('; ')}), and are shown undated rather than given a
+      year the file does not state.
     </p>
   </Record>
 </BaseLayout>
