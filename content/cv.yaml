@@ -7,10 +7,10 @@ profile:
   site: https://eduardstan.github.io/ledgerpress/
   headline: Associate Professor of Palaeoclimatology
   affiliation:
-    - label: Te Tari Tātai Arowhenua — Department of Geology
-      url: https://geology.example.edu
-    - label: University of Ōtākou — Te Whare Wānanga o Ōtākou
-      url: https://otakou.example.edu
+    - label: School of Earth and Ice Studies
+      url: https://earth-ice.example.edu
+    - label: Kārearea University
+      url: https://karearea.example.edu
     - label: Southern Ocean Research Centre, Te Waka Wānanga
       url: https://antarctic.example.edu
   place: Ōtepoti Dunedin, Aotearoa New Zealand
@@ -88,11 +88,11 @@ strands:
 
 appointments:
   - title: Associate Professor of Palaeoclimatology
-    org: University of Ōtākou — Te Whare Wānanga o Ōtākou
+    org: Kārearea University
     place: Ōtepoti Dunedin, Aotearoa New Zealand
     dates: Feb 2021 – Present
-    detail: Department of Geology
-    url: https://geology.example.edu
+    detail: School of Earth and Ice Studies
+    url: https://earth-ice.example.edu
     items:
       - Cross-appointed affiliate of the Southern Ocean Research Centre, Te Waka Wānanga.
     announced: 2021-02-15
@@ -121,7 +121,7 @@ education:
 
 teaching:
   - title: Course coordinator and lecturer
-    org: University of Ōtākou — Te Whare Wānanga o Ōtākou
+    org: Kārearea University
     place: Ōtepoti Dunedin, Aotearoa New Zealand
     dates: 2021 – Present
     rows:
@@ -207,7 +207,7 @@ fieldwork:
       detail: Co-chief scientist
       announced: 2025-01-12
     - title: East Antarctic margin core curation
-      org: National Marine Geoscience Collection
+      org: Koru Basin Core Archive
       place: Te Whanganui-a-Tara Wellington
       dates: Nov 2022
       detail: Visiting scientist
@@ -247,7 +247,7 @@ leadership:
   printed: false
   entries:
     - title: Co-chair, Open Polar Data Working Group
-      org: Southern Ocean Knowledge and Information community
+      org: Tideglass Research Cooperative
       dates: 2024 – Present
       announced: 2024-02-01
     - title: Faculty representative — [field note](/blog/2026/reading-a-core/)
