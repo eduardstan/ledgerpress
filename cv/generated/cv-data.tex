@@ -5,7 +5,7 @@
 % Edit cv.yaml and regenerate; hand edits here are overwritten and CI rejects
 % them (the workflow fails if this file is stale relative to cv.yaml).
 %
-% This file holds CONTENT ONLY. Layout, spacing and styling live in cv/cv.tex.
+% This file holds CONTENT ONLY. Layout, spacing and styling live in cv/preamble.tex.
 % =============================================================================
 
 \newcommand{\cvName}{%
@@ -44,11 +44,34 @@ Southern Ocean palaeoceanography across glacial terminations, with an emphasis o
 \textbf{Example record.} This curriculum vitae describes a fictional scholar and is supplied only to demonstrate the template.%
 }
 
+\newcommand{\cvTeachingStatementNote}{%
+I teach palaeoclimate reasoning as \textbf{evidence work}: students leave able to defend an age model, not only to run one.%
+}
+
+\newcommand{\cvTeachingStatement}{%
+%
+}
+
+\newcommand{\cvTeachingStatementRows}{%
+%
+}
+
+\newcommand{\cvTeachingStatementHeader}{%
+%
+}
+
+\newcommand{\cvTeachingStatementInline}{%
+%
+}
+
+\newcommand{\cvTeachingStatementCount}{0}
+
 \newcommand{\cvStrandsNote}{%
 %
 }
 
 \newcommand{\cvStrands}{%
+\ifnum1>\cvmax\else
 \cventry
   {Ocean archives}
   {Reading marine sediments as layered records of temperature, circulation and sea-ice change.}
@@ -57,7 +80,9 @@ Southern Ocean palaeoceanography across glacial terminations, with an emphasis o
 \resumeItemListStart
   \item Evidence lives in content/publications.bib and the fieldwork section.
 \resumeItemListEnd
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {Chronology and uncertainty}
   {Making age models, proxy calibration and uncertainty legible from sample to published claim.}
@@ -66,7 +91,9 @@ Southern Ocean palaeoceanography across glacial terminations, with an emphasis o
 \resumeItemListStart
   \item Evidence lives in content/publications.bib and the teaching record.
 \resumeItemListEnd
+\fi
 
+\ifnum3>\cvmax\else
 \cventry
   {Open polar practice}
   {Designing reusable datasets and reciprocal field partnerships for Southern Ocean research.}
@@ -74,7 +101,8 @@ Southern Ocean palaeoceanography across glacial terminations, with an emphasis o
   {}
 \resumeItemListStart
   \item Evidence lives in the projects and service sections.
-\resumeItemListEnd%
+\resumeItemListEnd
+\fi%
 }
 
 \newcommand{\cvStrandsRows}{%
@@ -100,6 +128,7 @@ Ocean archives (Reading marine sediments as layered records of temperature, circ
 }
 
 \newcommand{\cvAppointments}{%
+\ifnum1>\cvmax\else
 \cventry
   {Associate Professor of Palaeoclimatology}
   {University of Otago --- Ōtākou Whakaihu Waka, Department of Geology}
@@ -108,12 +137,15 @@ Ocean archives (Reading marine sediments as layered records of temperature, circ
 \resumeItemListStart
   \item Cross-appointed affiliate of the Antarctic Research Centre, Te Herenga Waka.
 \resumeItemListEnd
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {Senior Lecturer in Marine Geology}
   {University of Tasmania, Institute for Marine and Antarctic Studies}
   {Jul 2016 -- Jan 2021}
-  {nipaluna Hobart, Australia}%
+  {nipaluna Hobart, Australia}
+\fi%
 }
 
 \newcommand{\cvAppointmentsRows}{%
@@ -136,6 +168,7 @@ Associate Professor of Palaeoclimatology (Department of Geology), Senior Lecture
 }
 
 \newcommand{\cvEducation}{%
+\ifnum1>\cvmax\else
 \cventry
   {Ph.D. in Marine Geology}
   {Australian National University}
@@ -144,18 +177,23 @@ Associate Professor of Palaeoclimatology (Department of Geology), Senior Lecture
 \resumeItemListStart
   \item Thesis: Foraminiferal Mg/Ca and Southern Ocean warming across Termination I.
 \resumeItemListEnd
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {M.Sc. in Earth Sciences (First Class Honours)}
   {University of Cape Town}
   {2008 -- 2009}
   {Cape Town, South Africa}
+\fi
 
+\ifnum3>\cvmax\else
 \cventry
   {B.Sc. in Geology and Oceanography}
   {University of Madras}
   {2005 -- 2008}
-  {Chennai, India}%
+  {Chennai, India}
+\fi%
 }
 
 \newcommand{\cvEducationRows}{%
@@ -179,6 +217,7 @@ Ph.D. in Marine Geology, M.Sc. in Earth Sciences (First Class Honours), B.Sc. in
 }
 
 \newcommand{\cvTeaching}{%
+\ifnum1>\cvmax\else
 \cventry
   {Course coordinator and lecturer}
   {University of Otago --- Ōtākou Whakaihu Waka}
@@ -187,7 +226,8 @@ Ph.D. in Marine Geology, M.Sc. in Earth Sciences (First Class Honours), B.Sc. in
 \cvcourses{Y Y Y Y}{\textbf{Course} & \textbf{Programme} & \textbf{Topics} & \textbf{Points} \\}{
 GEOL 273 & B.Sc. Geology & Palaeoclimate archives; proxy calibration & 18 \\
 GEOL 472 & B.Sc. (Hons) & Marine cores; age-depth modelling & 18 \\
-OCEN 405 & M.Sc. Oceanography & Southern Ocean circulation; uncertainty & 20 \\}%
+OCEN 405 & M.Sc. Oceanography & Southern Ocean circulation; uncertainty & 20 \\}
+\fi%
 }
 
 \newcommand{\cvTeachingRows}{%
@@ -209,17 +249,21 @@ Course coordinator and lecturer%
 }
 
 \newcommand{\cvSupervision}{%
+\ifnum1>\cvmax\else
 \cventry
   {Doctoral candidates}
   {Primary supervisor for two; co-supervisor for two, 4}
   {}
   {}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {M.Sc. and honours researchers}
   {Completed and current research dissertations, 9}
   {}
-  {}%
+  {}
+\fi%
 }
 
 \newcommand{\cvSupervisionRows}{%
@@ -242,29 +286,37 @@ Doctoral candidates (Primary supervisor for two; co-supervisor for two), M.Sc. a
 }
 
 \newcommand{\cvService}{%
+\ifnum1>\cvmax\else
 \cventry
   {Associate Editor}
   {Paleoceanography and Paleoclimatology, Marine palaeoclimate}
   {2023 -- Present}
   {}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {Scientific Steering Committee}
   {Southern Ocean Observing System, 2022--2026}
   {}
   {}
+\fi
 
+\ifnum3>\cvmax\else
 \cventry
   {Panel reviewer}
   {Royal Society Te Apārangi}
   {2021 -- Present}
   {}
+\fi
 
+\ifnum4>\cvmax\else
 \cventry
   {Reviewer}
   {Quaternary Science Reviews}
   {}
-  {}%
+  {}
+\fi%
 }
 
 \newcommand{\cvServiceRows}{%
@@ -289,6 +341,7 @@ Associate Editor (Marine palaeoclimate), Scientific Steering Committee, Panel re
 }
 
 \newcommand{\cvProjects}{%
+\ifnum1>\cvmax\else
 \cventry
   {TIDE --- Termination Ice Dynamics and Ecosystems}
   {Royal Society Te Apārangi, Principal investigator}
@@ -297,7 +350,9 @@ Associate Editor (Marine palaeoclimate), Scientific Steering Committee, Panel re
 \resumeItemListStart
   \item Multiproxy reconstruction of Southern Ocean fronts across Termination II.
 \resumeItemListEnd
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {Open Core Chronologies}
   {Australian Antarctic Program Partnership, Co-investigator}
@@ -305,7 +360,8 @@ Associate Editor (Marine palaeoclimate), Scientific Steering Committee, Panel re
   {}
 \resumeItemListStart
   \item Reusable age-depth models and provenance for legacy sediment cores.
-\resumeItemListEnd%
+\resumeItemListEnd
+\fi%
 }
 
 \newcommand{\cvProjectsRows}{%
@@ -328,17 +384,21 @@ TIDE --- Termination Ice Dynamics and Ecosystems (Principal investigator), Open 
 }
 
 \newcommand{\cvFieldwork}{%
+\ifnum1>\cvmax\else
 \cventry
   {Pukaki Rise sediment coring voyage}
   {RV Tangaroa, Co-chief scientist}
   {Jan -- Feb 2025}
   {Southern Ocean}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {East Antarctic margin core curation}
   {National Marine Geoscience Collection, Visiting scientist}
   {Nov 2022}
-  {Te Whanganui-a-Tara Wellington}%
+  {Te Whanganui-a-Tara Wellington}
+\fi%
 }
 
 \newcommand{\cvFieldworkRows}{%
@@ -363,17 +423,21 @@ Pukaki Rise sediment coring voyage (Co-chief scientist), East Antarctic margin c
 }
 
 \newcommand{\cvAwards}{%
+\ifnum1>\cvmax\else
 \cventry
   {Early Career Research Excellence Award}
   {Geoscience Society of New Zealand}
   {2019}
   {}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {SCAR Visiting Fellowship}
   {Scientific Committee on Antarctic Research}
   {2017}
-  {Cambridge, United Kingdom}%
+  {Cambridge, United Kingdom}
+\fi%
 }
 
 \newcommand{\cvAwardsRows}{%
@@ -396,17 +460,21 @@ Early Career Research Excellence Award, SCAR Visiting Fellowship%
 }
 
 \newcommand{\cvLeadership}{%
+\ifnum1>\cvmax\else
 \cventry
   {Co-chair, Open Polar Data Working Group}
   {Southern Ocean Knowledge and Information community}
   {2024 -- Present}
   {}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {Faculty representative}
   {Pacific research partnerships committee}
   {2022 -- 2024}
-  {}%
+  {}
+\fi%
 }
 
 \newcommand{\cvLeadershipRows}{%
@@ -431,23 +499,29 @@ Co-chair, Open Polar Data Working Group, Faculty representative%
 }
 
 \newcommand{\cvLanguages}{%
+\ifnum1>\cvmax\else
 \cventry
   {Tamil}
   {Native}
   {}
   {}
+\fi
 
+\ifnum2>\cvmax\else
 \cventry
   {English}
   {Fluent}
   {}
   {}
+\fi
 
+\ifnum3>\cvmax\else
 \cventry
   {te reo Māori}
   {Intermediate learner}
   {}
-  {}%
+  {}
+\fi%
 }
 
 \newcommand{\cvLanguagesRows}{%
@@ -515,6 +589,7 @@ I=Invited, C=Conference%
 }
 
 \newcommand{\cvAutoSections}{%
+\cvautopart{Teaching Statement}{TeachingStatement}%
 \cvautopart{Strands}{Strands}%
 \cvautopart{Appointments}{Appointments}%
 \cvautopart{Education}{Education}%

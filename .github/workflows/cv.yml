@@ -1,10 +1,12 @@
 name: Build CV
 
-# Builds the PDF CV from content/cv.yaml + cv/cv.tex, proves a clean adopter can
-# build both outputs, and uploads the example PDF as an artifact.
+# Builds every printed document from content/cv.yaml — the full CV and the two
+# bundled variants — proves a clean adopter can build both outputs, and uploads
+# the example PDFs as artifacts.
 #
-# This workflow deliberately does NOT deploy or publish the PDF: deploy.yml builds
-# the same document and stages it for the Astro site.
+# This workflow deliberately does NOT deploy or publish any PDF: deploy.yml builds
+# cv/cv.tex alone and stages it for the Astro site. The site links one canonical
+# CV; which PDFs it should offer is a separate question from whether they build.
 
 on:
   push:
@@ -78,10 +80,17 @@ jobs:
       # resolve to zero-height boxes and \resizebox's auto-ratio computation
       # divides by zero. 2024 ships academicons v1.9.1, which loads the font
       # via a plain NFSS .fd file and is unaffected.
-      - name: Build the PDF
+      #
+      # All three documents are built from the one record. The variants exist to
+      # prove that costs nothing: if a change to the shared cv/preamble.tex or to
+      # the generated macros only works for the full CV, one of these fails here.
+      - name: Build the PDFs
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: cv.tex
+          root_file: |
+            cv.tex
+            short.tex
+            teaching.tex
           working_directory: cv
           latexmk_use_xelatex: true
           texlive_version: "2024"
@@ -91,12 +100,15 @@ jobs:
           pre_compile: npm ci --prefix "$GITHUB_WORKSPACE/web"
           post_compile: cd "$GITHUB_WORKSPACE" && node scripts/check-adopter-build.mjs
 
-      - name: Check the printed CV baseline
-        run: bash scripts/check-cv-baseline.sh
+      - name: Check the printed CV baselines
+        run: |
+          bash scripts/check-cv-baseline.sh
+          bash scripts/check-cv-baseline.sh cv/short.pdf
+          bash scripts/check-cv-baseline.sh cv/teaching.pdf
 
-      - name: Upload the PDF
+      - name: Upload the PDFs
         uses: actions/upload-artifact@v4
         with:
           name: cv-pdf
-          path: cv/cv.pdf
+          path: cv/*.pdf
           if-no-files-found: error
