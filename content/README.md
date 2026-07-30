@@ -221,11 +221,11 @@ with `place` right-aligned.
 
 `title` is the strong word on the line, so make it the thing worth reading. For a membership or a
 subscription there is often no title; write the body in `title` and leave `org` out
-— `title: Geoscience Society of New Zealand` reads better than `title: Member`.
+— `title: Kārearea Earth Forum` reads better than `title: Member`.
 
 `detail` is the same field everywhere and nothing interprets it: it is one more line of prose after
 `org`. What it conventionally holds therefore changes with the section — the sub-unit of an
-appointment (`Department of Geology`), the role held on a piece of fieldwork (`Co-chief scientist`),
+appointment (`School of Earth and Ice Studies`), the role held on a piece of fieldwork (`Co-chief scientist`),
 the fluency of a language (`Native`), the explanation of a research strand. Read the section, not the
 field name, to know what to write.
 
