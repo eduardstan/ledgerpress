@@ -30,9 +30,21 @@ fi
 # not be able to decide whether this check runs. A different name means this is
 # not a maintainer run at all, and saying so is more use than 110 lines of diff.
 # Either name unreadable means nothing can be decided, and that fails.
+# The record's own indentation is the adopter's: `content/` is prettier-ignored,
+# so `name:` is taken at whatever depth it sits under the top-level `profile:`
+# key, and the block ends at the next top-level key so no other section's
+# `name:` can stand in for it.
 trim_trailing() { sed -n '1s/[[:space:]]*$//p'; }
 baseline_owner=$(sed -n 's/^Owner:[[:space:]]*//p' "$metadata" 2>/dev/null | trim_trailing)
-record_owner=$(sed -n 's/^  name:[[:space:]]*//p' "$record" 2>/dev/null | trim_trailing)
+record_owner=$(
+  awk '
+    /^[^[:space:]#]/ { in_profile = ($0 ~ /^profile:/); next }
+    in_profile && match($0, /^[[:space:]]+name:[[:space:]]*/) {
+      print substr($0, RLENGTH + 1)
+      exit
+    }
+  ' "$record" 2>/dev/null | trim_trailing
+)
 # One layer of YAML quoting, so quoting style alone cannot look like a rename.
 for quote in \" \'; do
   if [[ $record_owner == "$quote"*"$quote" ]]; then

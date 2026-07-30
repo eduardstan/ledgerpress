@@ -82,10 +82,12 @@ Publication and talk grouping is declared under
   is ignored build output, never source.
 - `web/src/lib/cv.ts` uses Vite's `?raw` import because Astro relocates prerender bundles.
   Node-compatible schema and pure helpers stay in `web/src/lib/cv-schema.ts`.
-- `readCv` in `web/src/lib/cv-schema.ts` is the one boundary every reader of `content/cv.yaml`
-  crosses, `profile:` included: nothing may parse that file a second time. It coerces
-  YAML scalars to text and rejects anything else by naming the file, the field path and what was
-  expected. A schema failure that does not name the field is a bug in that function.
+- `readCv` in `web/src/lib/cv-schema.ts` is the one boundary every website reader of
+  `content/cv.yaml` crosses, `profile:` included: nothing under `web/` may parse that file a second
+  time. It coerces YAML scalars to text and rejects anything else by naming the file, the field path
+  and what was expected. A schema failure that does not name the field is a bug in that function.
+  `scripts/build-cv-data.mjs` is the one deliberate exception: it runs under plain node outside
+  `web/`, so it parses the record itself and coerces with `String()` where it renders.
 - The website self-checks read `web/src/lib/fixtures/record/`, not `content/`; that directory's
   README states the rule. Only `web/src/lib/live-record.test.ts` reads the real record, and
   everything in it must hold for any valid record.
