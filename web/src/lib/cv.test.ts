@@ -22,6 +22,7 @@ import {
   groupByTitle,
   isEditorial,
   noteOf,
+  plural,
   sections,
   type CV,
   type Entry,
@@ -223,6 +224,9 @@ assert.ok(
   editorial.every((entry) => entry.title === 'Associate Editor'),
   'the editorial rule selected a role that is not an editorship',
 );
+assert.equal(plural(0, 'editorial board'), 'editorial boards');
+assert.equal(plural(1, 'editorial board'), 'editorial board');
+assert.equal(plural(2, 'entry', 'entries'), 'entries');
 
 // `projects[]` feeds /projects/, including the funding figures the printed CV
 // deliberately omits — the reason they are in this file at all.

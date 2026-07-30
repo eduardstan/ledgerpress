@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { about, bibliography, identity, profile, SOURCES, yearSpan } from '../lib/record';
-import { CV_SOURCE, isEditorial, service, serviceGroups, serviceWhen } from '../lib/cv';
+import { CV_SOURCE, isEditorial, plural, service, serviceGroups, serviceWhen } from '../lib/cv';
 import { inline } from '../lib/inline';
 import { announcements, formatStamp } from '../lib/announcements';
 import { strands } from '../lib/strands';
@@ -39,10 +39,19 @@ const groups = serviceGroups();
 const editorials = groups.filter((group) => isEditorial(group.role)).flatMap((group) => group.entries);
 
 const counts = [
-  { n: bib.entries.length, label: 'entries in this bibliography' },
-  ...bib.byKind.map((kind) => ({ n: kind.count, label: `${kind.kind.toLowerCase()} entries` })),
-  { n: editorials.length, label: 'editorial boards' },
-  { n: roles.length, label: 'service roles on record' },
+  {
+    n: bib.entries.length,
+    label: `${plural(bib.entries.length, 'entry', 'entries')} in this bibliography`,
+  },
+  ...bib.byKind.map((kind) => ({
+    n: kind.count,
+    label: `${kind.kind.toLowerCase()} ${plural(kind.count, 'entry', 'entries')}`,
+  })),
+  { n: editorials.length, label: plural(editorials.length, 'editorial board') },
+  {
+    n: roles.length,
+    label: `${plural(roles.length, 'service role')} on record`,
+  },
 ];
 
 /**
@@ -68,7 +77,8 @@ const withheld = feed.items.length - shown.length;
     <div class="dateline label">
       {affiliation.map((line) => <span>{line}</span>)}
       <span class="em">
-        {bib.entries.length} publications · {editorials.length} editorial boards
+        {bib.entries.length} {plural(bib.entries.length, 'publication')} · {editorials.length}{' '}
+        {plural(editorials.length, 'editorial board')}
       </span>
     </div>
   </section>
@@ -104,9 +114,9 @@ const withheld = feed.items.length - shown.length;
       {bio.paragraphs.map((paragraph) => <p set:html={paragraph} />)}
       <Record>
         <p>
-          <b>{bio.source}</b> — {bio.paragraphs.length} paragraphs, rendered verbatim. The printed CV
-          does not carry them: it prints <b>profile.bio.short</b>, the same person in the third
-          person.
+          <b>{bio.source}</b> — {bio.paragraphs.length}{' '}
+          {plural(bio.paragraphs.length, 'paragraph')}, rendered verbatim. The printed CV does not
+          carry them: it prints <b>profile.bio.short</b>, the same person in the third person.
         </p>
       </Record>
 
@@ -123,8 +133,9 @@ const withheld = feed.items.length - shown.length;
       </ol>
       <Record>
         <p>
-          <b>{CV_SOURCE}</b> — <b>strands[]</b>, {research.length} entries in file order. The
-          title, explanatory copy and evidence note are all part of the adopter-owned record.
+          <b>{CV_SOURCE}</b> — <b>strands[]</b>, {research.length}{' '}
+          {plural(research.length, 'entry', 'entries')} in file order. The title, explanatory copy
+          and evidence note are all part of the adopter-owned record.
         </p>
         {
           research.map((strand) => (
@@ -151,14 +162,16 @@ const withheld = feed.items.length - shown.length;
       </ul>
       <Record>
         <p>
-          <b>{SOURCES.bibliography}</b> — {bib.entries.length} entries{
+          <b>{SOURCES.bibliography}</b> — {bib.entries.length}{' '}
+          {plural(bib.entries.length, 'entry', 'entries')}{
             yearSpan(bib.years) && `, ${yearSpan(bib.years)}`
           }, counted at build by parsing the file. The two service figures are counted from <b
             >{CV_SOURCE}</b
-          >: <b>{editorials.length}</b> entries of <b>service[]</b> whose <b>title</b> matches
-          “editor” ({editorials.map((entry) => entry.org).join(', ')}), and <b>
-            {roles.length}
-          </b> entries in that list altogether.
+          >: <b>{editorials.length}</b> {plural(editorials.length, 'entry', 'entries')} of{' '}
+          <b>service[]</b> whose <b>title</b> matches “editor” ({
+            editorials.map((entry) => entry.org).join(', ')
+          }), and <b>{roles.length}</b> {plural(roles.length, 'entry', 'entries')} in that list
+          altogether.
         </p>
       </Record>
 
@@ -202,9 +215,9 @@ const withheld = feed.items.length - shown.length;
       }
       <Record>
         <p>
-          <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length} entries grouped into {
-            groups.length
-          } roles by their own <b>title</b> field ({
+          <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length}{' '}
+          {plural(roles.length, 'entry', 'entries')} grouped into {groups.length}{' '}
+          {plural(groups.length, 'role')} by their own <b>title</b> field ({
             groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
           }), in the order those roles first appear in the file. The meta on each row is the entry's{' '}
           <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the
@@ -310,11 +323,14 @@ const withheld = feed.items.length - shown.length;
         }
       </ul>
       <p class="more-feed">
-        <a class="label" href={url('/lately/')}>All {feed.items.length} items →</a>
+        <a class="label" href={url('/lately/')}
+          >All {feed.items.length} {plural(feed.items.length, 'item')} →</a
+        >
       </p>
       <Record>
         <p>
-          {feed.items.length} announcements, generated from the facts themselves — {
+          {feed.items.length} {plural(feed.items.length, 'announcement')}, generated from the facts
+          themselves — {
             feed.sources.map((file, index) => (
               <>
                 {index > 0 && ', '}

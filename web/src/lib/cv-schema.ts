@@ -228,6 +228,10 @@ export const sections = (source: CV): [string, Section][] =>
 export const keysOf = (rows: object[]) =>
   [...new Set(rows.flatMap((row) => Object.keys(row)))].join(', ');
 
+/** Choose a count-sensitive noun without making callers repeat the condition. */
+export const plural = (count: number, singular: string, plural = `${singular}s`) =>
+  count === 1 ? singular : plural;
+
 /**
  * Whether a role is an editorship, matched on the file's own word for it.
  *
