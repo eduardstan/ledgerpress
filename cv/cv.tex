@@ -475,6 +475,11 @@
 % Every section of content/cv.yaml the lines above did not place, in the order the
 % record writes them. This is the line that makes a new section print without a
 % LaTeX edit: nothing here names one.
+%
+% Every \cvpart, \cvpartflush and hand-written \cvdeclare MUST stay above this
+% line: \cvautopart skips a key only once \cvdeclare has marked it laid out, so a
+% section moved below would print twice, once under each heading. The cv.tex
+% contract test in scripts/build-cv-data.test.mjs enforces the ordering.
 \cvAutoSections
 
 \cvdeclarebib{Talks}

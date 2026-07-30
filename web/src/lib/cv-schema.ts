@@ -108,6 +108,16 @@ export type Section =
 export const entriesOf = (section: Section | undefined): Entry[] =>
   Array.isArray(section) ? section : (section?.entries ?? []);
 
+/**
+ * Whether a section reaches the printed CV, by the same rule `cv/cv.tex` applies:
+ * it has entries, and the record did not say `printed: false`.
+ *
+ * `scripts/build-cv-data.mjs` emits that opt-out as `\cv<Key>Printed{0}` and the
+ * layout guards every section on it, so the reader and the generator agree.
+ */
+export const printsInCv = (section: Section | undefined): boolean =>
+  entriesOf(section).length > 0 && (Array.isArray(section) || section?.printed !== false);
+
 /** The paragraphs above a section's entries, as a list. */
 export const noteOf = (section: Section | undefined): string[] =>
   Array.isArray(section) || !section?.note ? [] : [section.note].flat();

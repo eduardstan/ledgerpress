@@ -10,6 +10,12 @@ mkdirSync(temporaryRoot, { recursive: true });
 const copy = mkdtempSync(join(temporaryRoot, "adopter-build-"));
 const syntheticName = "Alex Newcomer";
 const syntheticDomain = "alex-newcomer.example";
+/**
+ * The heading the synthetic record's `outreach:` section must print under. No
+ * `\cvpart` line names it, so it can only appear through \cvAutoSections: this is
+ * the end-to-end proof that a section added to content/ reaches the PDF.
+ */
+const syntheticAutoHeading = "Outreach";
 const exampleSurname = "Kōwhai";
 const exampleDomain = "sahana-kowhai.example";
 
@@ -108,6 +114,13 @@ try {
     long: I study reliable knowledge systems.
 
 appointments: []
+
+# A section cv/cv.tex does not lay out by hand: it must reach the PDF, under the
+# heading its own key spells out, with no LaTeX edit at all.
+outreach:
+  - title: Sediment cores for schools
+    org: Somewhere Public Library
+    date: 2026
 `
   );
   writeFileSync(join(content, "publications.bib"), "");
@@ -142,6 +155,13 @@ appointments: []
   if (pdfText.status !== 0) throw new Error(`pdftotext exited with status ${pdfText.status}`);
   if (!pdfText.stdout.includes(syntheticName)) {
     throw new Error(`${JSON.stringify(syntheticName)} was not derived into the synthetic PDF`);
+  }
+  if (!pdfText.stdout.toLocaleUpperCase().includes(syntheticAutoHeading.toLocaleUpperCase())) {
+    throw new Error(
+      `the ${JSON.stringify(syntheticAutoHeading)} section of the synthetic record did not print. ` +
+        "cv/cv.tex names no such section, so it can only reach the PDF through the generated " +
+        "\\cvAutoSections sequence: adding a section to content/ must need no LaTeX edit."
+    );
   }
   if (pdfText.stdout.toLocaleLowerCase().includes(exampleSurname.toLocaleLowerCase())) {
     throw new Error(`${JSON.stringify(exampleSurname)} leaked into the synthetic PDF`);

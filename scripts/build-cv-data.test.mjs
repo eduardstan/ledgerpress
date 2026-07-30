@@ -242,6 +242,16 @@ test("cv.tex prints the record's section sequence and names no section inside it
 
   assert.match(tex, /^\\cvAutoSections$/m, "the document body must print the generated section sequence");
 
+  // The skip below is order-dependent: \cvautopart passes over a key only once
+  // \cvdeclare has marked it laid out, so every hand-placed section must appear
+  // above \cvAutoSections or it prints twice, once under each heading.
+  const body = tex.slice(tex.indexOf("\\begin{document}"));
+  const lastLaidOut = Math.max(body.lastIndexOf("\\cvdeclare{"), body.lastIndexOf("\\cvpart{"), body.lastIndexOf("\\cvpartflush{"));
+  assert.ok(
+    body.search(/^\\cvAutoSections$/m) > lastLaidOut,
+    "\\cvAutoSections must come after every \\cvpart, \\cvpartflush and \\cvdeclare in the body, " + "or the section below it prints twice"
+  );
+
   // \cvautopart is what makes the sequence safe to print in full: a key this
   // layout already set by hand is skipped rather than printed twice.
   const autopart = tex.match(/\\newcommand\{\\cvautopart\}\[2\]\{([\s\S]*?)\n\}/);
