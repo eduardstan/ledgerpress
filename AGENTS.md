@@ -24,7 +24,8 @@ family without the generator naming the section. Publication and talk grouping i
 
 - `npm test` runs the repository and website self-checks plus the generated-data freshness gate.
 - `npm run build` regenerates CV data and builds the production website.
-- `cd web && npm run dev` runs the local site.
+- `npm run dev` runs the local site; it forwards to the `web` package.
+- `npm run check:format` is the Prettier gate; `npm test` does not cover formatting.
 - `latexmk -xelatex -cd cv/cv.tex` builds the PDF. XeLaTeX is required.
 - `bash scripts/check-cv-baseline.sh` compares the built PDF with `data/cv-baseline/`.
 - `npm run check:adopter` creates a tracked-file-only copy, replaces only `content/`, and proves
