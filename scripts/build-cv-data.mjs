@@ -220,16 +220,23 @@ const tableRows = (rows, strict = true) => {
   return rows.map((r) => `${Object.values(r).map(cell).join(" & ")} \\\\`).join("\n");
 };
 
-/** One word, capitalised. The generator's only casing rule; every heading uses it. */
+/** One word, capitalised. The generator's only casing rule. */
 const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
 
 /**
  * A section key as a heading: every word capitalised, separators untouched.
  *
  * Section keys derive from identifiers (e.g. `field_work` -> "Field Work")
- * when a section does not declare an explicit `heading:`. Course-table column
- * headers, by contrast, are printed verbatim as written in the record.
- * Section-key casing must match `headingCase` in `web/src/lib/cv-schema.ts`.
+ * when a section does not declare an explicit `heading:`, and the generated
+ * per-section table header names those schema fields. Course-table column
+ * headers, by contrast, are printed verbatim as written in the record: a row
+ * key is a fact the website publishes on its provenance line, so it prints as
+ * the adopter wrote it, here and there.
+ *
+ * The website has its own copy of this rule (`headingCase` in
+ * `web/src/lib/cv-schema.ts`) for the announcement kind chips on /lately/. No
+ * heading passes through both, so the two are independent, not a pair to keep
+ * in step.
  */
 const headingCase = (key) => key.replace(/[\p{L}\p{N}]+/gu, capitalise);
 

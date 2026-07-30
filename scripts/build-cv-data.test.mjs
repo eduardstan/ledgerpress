@@ -157,10 +157,7 @@ test("a section header macro title-cases its schema field names", () => {
     profile: { name: "Alex Newcomer" },
     appointments: [{ title: "Postdoctoral Researcher", org: "University of Example" }],
   });
-  assert.match(
-    tex,
-    /\\newcommand\{\\cvAppointmentsHeader\}\{%\n\\textbf\{Title\} & \\textbf\{Org\} \\\\%\n\}/
-  );
+  assert.match(tex, /\\newcommand\{\\cvAppointmentsHeader\}\{%\n\\textbf\{Title\} & \\textbf\{Org\} \\\\%\n\}/);
 });
 
 test("a table refuses rows whose columns or key order disagree", () => {

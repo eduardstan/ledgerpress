@@ -610,9 +610,14 @@ export const keysOf = (rows: object[]) =>
 /**
  * An identifier key as a heading label: every word capitalised, separators untouched.
  *
- * Used for announcement kind chips on `/lately/`. Course-table column headers,
- * by contrast, are printed verbatim as written in the record.
- * Section-key casing must match `headingCase` in `scripts/build-cv-data.mjs`.
+ * The one caller is the announcement kind chip on `/lately/`, whose kind is an
+ * identifier this site derives. Record keys are not recased: a course table's
+ * column headers are its row keys verbatim, the same keys `keysOf` above
+ * publishes on the provenance lines.
+ *
+ * The printed CV has its own copy of this rule (`headingCase` in
+ * `scripts/build-cv-data.mjs`) for section keys. No heading passes through
+ * both, so the two are independent, not a pair to keep in step.
  */
 export const headingCase = (key: string) =>
   key.replace(/[\p{L}\p{N}]+/gu, (word) => word[0].toUpperCase() + word.slice(1));
