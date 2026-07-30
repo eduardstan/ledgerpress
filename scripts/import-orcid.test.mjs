@@ -83,3 +83,41 @@ test("imports ORCID record fixture with no employments at all", () => {
   assert.equal(loaded.education.length, 1);
   assert.equal(loaded.education[0].title, "B.Sc. in Physics");
 });
+
+test("selects the highest display-index assertion from each affiliation group", () => {
+  const summary = (title, displayIndex) => ({
+    "display-index": displayIndex,
+    "role-title": title,
+    "start-date": { year: { value: "2020" } },
+    "end-date": { year: { value: "2021" } },
+    organization: { name: "Example University" },
+  });
+  const group = (key, lowerTitle, preferredTitle) => ({
+    summaries: [
+      { [key]: summary(lowerTitle, 1) },
+      { [key]: summary(preferredTitle, 10) },
+    ],
+  });
+  const parsed = parseOrcidRecord({
+    "activities-summary": {
+      employments: {
+        "affiliation-group": [group("employment-summary", "Old employment", "Preferred employment")],
+      },
+      educations: {
+        "affiliation-group": [group("education-summary", "Old education", "Preferred education")],
+      },
+      qualifications: {
+        "affiliation-group": [group("qualification-summary", "Old qualification", "Preferred qualification")],
+      },
+    },
+  });
+
+  assert.deepEqual(
+    parsed.appointments.map(({ entry }) => entry.title),
+    ["Preferred employment"],
+  );
+  assert.deepEqual(
+    parsed.education.map(({ entry }) => entry.title),
+    ["Preferred education", "Preferred qualification"],
+  );
+});

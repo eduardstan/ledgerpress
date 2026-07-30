@@ -146,9 +146,16 @@ export function parseOrcidRecord(data) {
     if (!groupObj || !Array.isArray(groupObj["affiliation-group"])) return [];
     const res = [];
     for (const grp of groupObj["affiliation-group"]) {
-      for (const s of grp.summaries || []) {
-        if (s[key]) res.push(s[key]);
-      }
+      const summaries = (grp.summaries || []).map((item) => item[key]).filter(Boolean);
+      const preferred = summaries.reduce((current, summary) => {
+        if (!current) return summary;
+        const currentIndex = Number(current["display-index"]);
+        const summaryIndex = Number(summary["display-index"]);
+        const normalizedCurrentIndex = Number.isFinite(currentIndex) ? currentIndex : Number.NEGATIVE_INFINITY;
+        const normalizedSummaryIndex = Number.isFinite(summaryIndex) ? summaryIndex : Number.NEGATIVE_INFINITY;
+        return normalizedSummaryIndex > normalizedCurrentIndex ? summary : current;
+      }, undefined);
+      if (preferred) res.push(preferred);
     }
     return res;
   }
