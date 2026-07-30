@@ -96,7 +96,7 @@ high-contrast editorial interface in `web/`, including the Ledger Serif type fam
 - **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional
   palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII
   names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via
-  `printed: false`, a post and an SVG portrait.
+  `printed: false`, a post and a PNG portrait.
 - **[eduardstan.github.io](https://eduardstan.github.io/)**: The real personal site and CV from
   which ledgerpress was extracted.
 
