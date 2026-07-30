@@ -1,6 +1,6 @@
                            Sahana Aster KŌWHAI, Ph.D.
                                                sahana.kowhai@example.edu | Staff profile
-                               0000-0000-0000-0000 |  sahana-kowhai-example | î Bluesky
+          0000-0000-0000-0000 |  sahana-kowhai-example | a sahana-kowhai | ] sahana-kowhai | î Bluesky
                  Associate Professor of Palaeoclimatology, Te Tari Tātai Arowhenua — Department of Geology
                                         University of Otago — Ōtākou Whakaihu Waka,
                    Antarctic Research Centre, Te Herenga Waka, Ōtepoti Dunedin, Aotearoa New Zealand
@@ -43,7 +43,7 @@ TEACHING
 
 EDITORIAL, REVIEWING & CONFERENCE SERVICE
 •   Associate Editor                                                                                                    2023 – Present
-    Paleoceanography and Paleoclimatology, Marine palaeoclimate
+    Paleoceanography and Paleoclimatology, Marine palaeoclimate [IF: 3.4, Q1]
 •   Scientific Steering Committee
     Southern Ocean Observing System, 2022–2026
 •   Panel reviewer                                                                                                      2021 – Present
@@ -83,9 +83,9 @@ Conference presentations
 [C1]       S. A. Kōwhai and M. Te Rangi. “First results from the Pukaki Rise coring transect”. New Zealand Antarctic Science
            Conference (Te Whanganui-a-Tara Wellington, Aotearoa New Zealand). Oral presentation. Aug. 21, 2025.
 [C2]       S. A. Kōwhai. “Age-depth ensembles without hidden decisions”. Australasian Quaternary Association Biennial Meeting
-           (nipaluna Hobart, Australia). Oral presentation. Dec. 4, 2024.
+           (nipaluna Hobart, Australia). Poster presentation. Dec. 4, 2024. URL: https://talks.example.edu/kowhai2024ensembles.
 
-PUBLICATIONS                                                                                      J=JOURNAL, B=BOOKS, D=DATA, R=REVIEW
+PUBLICATIONS                                                                        J=JOURNAL, C=CONFERENCE, B=BOOKS, D=DATA, R=REVIEW
 
 Journal articles (peer-reviewed)
     [J1]   S. A. Kōwhai, M. Te Rangi, and C. Okafor. “Southern Ocean front migration recorded across two glacial terminations”. In:
@@ -93,12 +93,18 @@ Journal articles (peer-reviewed)
     [J2]   S. A. Kōwhai, H. Williams, and T. Ndlovu. “Transparent age-depth ensembles for Southern Ocean sediment archives”. In:
            Climate of the Past 20.8 (2024), pp. 1701–1724. URL: https://publications.example.edu/kowhai2024chronology.
 
+Conference papers (peer-reviewed)
+[C1]       S. A. Kōwhai and M. Te Rangi. “Automated tephra isochron matching in Southern Ocean sediment cores”. In: Proceedings of
+           the International Palaeoceanography Symposium. Bergen, Norway, 2023, pp. 145–152. DOI: 10.5555/palaeo.2023.0145.
+
 Books and chapters
 [B1]       S. A. Kōwhai. “Proxy agreement and disagreement in high-latitude marine archives”. In: Southern Ocean Palaeoceanography:
            Methods and Records. Ed. by L. Navarro and K. Adeyemi. Cape Town: Aster Academic Press, 2023, pp. 81–108.
-[B2]       S. A. Kōwhai and M. Te Rangi. Field Notes for Reciprocal Polar Science. Ōtepoti Dunedin: Koru Open Books, 2021.
+[B2]       S. A. Kōwhai and C. Okafor. “Southern Ocean Foraminiferal Assemblages as Thermal Proxies”. In: Advances in Marine
+           Palaeoecology. Ed. by L. Navarro. Aster Academic Press, 2022. Chap. 4, pp. 89–112.
+[B3]       S. A. Kōwhai and M. Te Rangi. Field Notes for Reciprocal Polar Science. Ōtepoti Dunedin: Koru Open Books, 2021.
 
-Data and software
+Data archives
 [D1]       S. A. Kōwhai and C. Okafor. Pukaki Rise multiproxy core chronology, version 1.0. Aotearoa Polar Data Commons, 2025. URL:
            https://data.example.edu/pukaki-rise-v1.
 

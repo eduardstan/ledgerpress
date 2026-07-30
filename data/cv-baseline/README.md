@@ -31,8 +31,6 @@ skipping, so no layout change and no parsing defect can silently disable it.
 
 Owner for all three baselines: Sahana Aster KŌWHAI, Ph.D.
 
-`cv-baseline.pdf` is retained for visual review.
-
 `cv-baseline.pdf` is retained for visual review of the full CV. The variants keep text and page
 count only: the gate reads nothing else, and they share `cv/preamble.tex` with the full CV, so a
 change to the printed design already shows up in a retained PDF.

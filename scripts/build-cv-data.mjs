@@ -198,10 +198,26 @@ function tableKeys(rows, strict = true) {
   return keys;
 }
 
+/**
+ * One cell. A value in cv.yaml is not always a string: `years:` is a list that
+ * may hold `{ year, announced }` maps and `rows:` is a nested table, and
+ * String() turns either into `[object Object]`. A list of editions folds exactly
+ * as it does on an entry's second line; any other structure is its own values,
+ * rendered the same way.
+ */
+function cell(value) {
+  const edition = (v) => v !== null && (typeof v !== "object" || v.year !== undefined);
+  if (Array.isArray(value)) return value.every(edition) ? arg(editions(value)) : value.map(cell).join(", ");
+  if (value && typeof value === "object" && !(value instanceof Date)) {
+    return value.year !== undefined ? cell(value.year) : Object.values(value).map(cell).join(" ");
+  }
+  return arg(value);
+}
+
 /** `a & b & c \\` - the row's own keys, in their validated order. */
 const tableRows = (rows, strict = true) => {
   tableKeys(rows, strict);
-  return rows.map((r) => `${Object.values(r).map(arg).join(" & ")} \\\\`).join("\n");
+  return rows.map((r) => `${Object.values(r).map(cell).join(" & ")} \\\\`).join("\n");
 };
 
 /** The header row for those columns: the key names, capitalised. */
