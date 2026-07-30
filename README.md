@@ -358,13 +358,16 @@ cp cv/short.tex cv/grant.tex
 ```
 
 Every document opens with `\input{preamble.tex}` and `\input{header.tex}`, so the printed design and
-the contact block are written once and shared. A variant differs only in layout, four ways:
+the contact block are written once and shared. A variant differs only in layout, five ways:
 
 - **Drop a section** by not writing its `\cvpart` line.
 - **Reorder sections** by reordering those lines.
 - **Print only the first few** with `\cvpart`'s optional count: `\cvpart[3]{Appointments}{Appointments}`.
   The count is a page budget belonging to that document, so it lives in the `.tex` and never in
   `content/cv.yaml`.
+- **Set its own typeface, course-table widths or bibliography tidying** before that
+  `\input{preamble.tex}`, without editing the shared layout — see
+  [Three printed-CV settings a document carries itself](#three-printed-cv-settings-a-document-carries-itself).
 - **Print a narrower slice of the bibliography** with a `\defbibfilter` in the variant's own preamble,
   matching a keyword you set on the entries in `content/publications.bib`. `cv/short.tex` filters on
   `selected` this way, and prints it with `\cvbibfiltered{<heading>}{<filter>}` rather than
