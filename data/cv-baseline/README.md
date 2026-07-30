@@ -31,3 +31,16 @@ change to the printed design already shows up in a retained PDF.
 When a deliberate record or layout change alters the output, rebuild the affected artefacts and
 explain the user-visible reason in the commit. A changed generator is not by itself a reason to
 accept a changed PDF.
+
+## Re-recording one baseline
+
+Build the document first, then write the two files the gate reads, named after the PDF:
+
+```sh
+pdftotext -layout cv/short.pdf data/cv-baseline/short-baseline.txt
+pdfinfo cv/short.pdf | grep '^Pages:' > data/cv-baseline/short-baseline-meta.txt
+```
+
+For the full CV also refresh the retained artefact, `cp cv/cv.pdf data/cv-baseline/cv-baseline.pdf`.
+Then update that document's row in the table above: `wc -l` the text file for the line count and
+`shasum -a 256` it for the digest.

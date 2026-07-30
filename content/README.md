@@ -16,7 +16,7 @@ content/
   media/             portrait, favicon and post images
 ```
 
-Two consumers read it: the website (`web/`) and the printed CV (`cv/cv.tex`, via
+Two consumers read it: the website (`web/`) and the printed documents in `cv/` (via
 `npm run build:cv-data`). Neither has a second copy of anything.
 
 A few fields reach only one of the two. Every such case is stated where the field is documented, and
