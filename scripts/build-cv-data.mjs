@@ -220,10 +220,31 @@ const tableRows = (rows, strict = true) => {
   return rows.map((r) => `${Object.values(r).map(cell).join(" & ")} \\\\`).join("\n");
 };
 
-/** The header row for those columns: the key names, capitalised. */
+/** One word, capitalised. The generator's only casing rule; every heading uses it. */
+const capitalise = (word) => word[0].toUpperCase() + word.slice(1);
+
+/**
+ * A record key as a heading: every word capitalised, separators untouched.
+ *
+ * Per word, not first character only, so `programme / level` prints as
+ * "Programme / Level" without the record key carrying the capitals. Separators
+ * survive untouched: casing is presentation, the key stays the fact it is - and
+ * that key is what the website's provenance line publishes. A word is any run of
+ * letters or digits in any script, so `kōwhai level` is two words and not three.
+ *
+ * The website applies this same rule to these same keys: `headingCase` in
+ * `web/src/lib/cv-schema.ts`. Nothing crosses that build boundary - this is
+ * plain node, that is a Vite module - so they are two copies of one rule and
+ * they must agree. A column that reads "Programme / Level" in the PDF and
+ * "Programme / level" on /cv/ is the contradiction this repository exists to
+ * make impossible.
+ */
+const headingCase = (key) => key.replace(/[\p{L}\p{N}]+/gu, capitalise);
+
+/** The header row for those columns: the key names, as headings. */
 const tableHeader = (rows, strict = true) =>
   `${tableKeys(rows, strict)
-    .map((k) => `\\textbf{${escapeLatex(k[0].toUpperCase() + k.slice(1))}}`)
+    .map((k) => `\\textbf{${escapeLatex(headingCase(k))}}`)
     .join(" & ")} \\\\`;
 
 /** One `\cventry`, plus its bullets and its table where it has them. */
@@ -237,12 +258,16 @@ function entry(item) {
   return [head, itemList(item.items), table].filter(Boolean).join("\n");
 }
 
-/** The words of a section key, each capitalised: `field_work` -> [Field, Work]. */
+/**
+ * The words of a section key, each capitalised: `field_work` -> [Field, Work].
+ *
+ * ASCII-only, because a macro name is: this feeds `macroName`, not a heading.
+ */
 const keyWords = (key) =>
   key
     .split(/[^A-Za-z0-9]+/)
     .filter(Boolean)
-    .map((w) => w[0].toUpperCase() + w.slice(1));
+    .map(capitalise);
 
 /** `field_work` -> `FieldWork`, so a section key becomes a legal macro name. */
 const macroName = (key) => keyWords(key).join("");
@@ -253,8 +278,13 @@ const macroName = (key) => keyWords(key).join("");
  * `fieldwork:` prints as "Fieldwork" with nothing declared, which is what makes a
  * new section print without a LaTeX edit. A section whose heading is not its key
  * spelt out - "Awards & Scholarships" - says so with `heading:`.
+ *
+ * The key becomes a heading by the same `headingCase` a column header does, with
+ * its separators read as spaces: `field_work` prints "Field Work", not
+ * "Field_Work". Not `keyWords`, which is ASCII because macro names are.
  */
-const sectionHeading = (key, value) => arg((Array.isArray(value) ? undefined : value.heading) ?? keyWords(key).join(" "));
+const sectionHeading = (key, value) =>
+  arg((Array.isArray(value) ? undefined : value.heading) ?? headingCase(key.replace(/[^\p{L}\p{N}]+/gu, " ").trim()));
 
 function macro(name, body) {
   return `\\newcommand{\\${name}}{%\n${body}%\n}`;
