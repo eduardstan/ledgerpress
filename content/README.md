@@ -588,7 +588,7 @@ CI runs the same cold-start proof with a synthetic adopter on every push and pul
 ```bash
 npm run build:cv-data                 # content/cv.yaml -> cv/generated/cv-data.tex
 latexmk -xelatex -cd cv/cv.tex        # the PDF. xelatex, not pdflatex
-latexmk -xelatex -cd cv/short.tex     # the same record, one page
+latexmk -xelatex -cd cv/short.tex     # the same record, compactly curated
 latexmk -xelatex -cd cv/teaching.tex  # the same record, led by teaching
 npm run dev                           # the site
 ```
