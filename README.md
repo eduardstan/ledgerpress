@@ -71,7 +71,7 @@ You need Node.js 22.12 or newer. Building the PDF locally also needs XeLaTeX, bi
 checking it against the included baseline additionally needs Poppler's `pdftotext`/`pdfinfo`. The
 GitHub workflows provide all of those tools in CI.
 
-A minimal TeX Live install is not enough. `cv/cv.tex` loads `fontspec`, `biblatex`, `academicons`,
+A minimal TeX Live install is not enough. `cv/preamble.tex` loads `fontspec`, `biblatex`, `academicons`,
 `fontawesome5`, `eurosym`, `marvosym`, `tcolorbox`, `titlesec`, `enumitem`, `wrapfig` and `lipsum`,
 and sets the document in the TeX Gyre Pagella family. On Debian or Ubuntu that is:
 

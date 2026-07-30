@@ -391,7 +391,7 @@ Both `journal` and BibLaTeX's `journaltitle` are read, so a Better BibTeX BibLaT
 ### How they are grouped: `publications:` and `talks:` in `cv.yaml`
 
 **A section is a title plus a filter, and you declare it.** No publication entry type is named in
-`cv.tex` or in the website's source, so every BibTeX type is expressible — an adopter whose career
+the printed layout or in the website's source, so every BibTeX type is expressible — an adopter whose career
 is books, datasets or patents declares a section and it works, with no LaTeX edit. The
 `publications:` declaration is read by both, so the PDF and the publication index cannot disagree
 about how the work is grouped.

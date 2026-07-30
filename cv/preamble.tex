@@ -218,7 +218,11 @@
 % Curation is neither: "my five best papers" is a judgement about the work, so
 % it is marked on the fact itself - see the `selected` keyword in
 % content/publications.bib and how cv/short.tex filters on it.
-\newcommand{\cvmax}{99999}
+%
+% The sentinel is named once here and used for \cvmax and for the optional
+% argument of \cvpart and \cvpartflush, so the three cannot disagree.
+\newcommand{\cvall}{99999}
+\newcommand{\cvmax}{\cvall}
 
 % Print one section of content/cv.yaml. #2 is the heading, #3 the section's
 % macro name (`Awards` for the `awards:` key), and the optional #1 is how many
@@ -228,9 +232,14 @@
 %
 % The whole thing is one group so that \cvmax is restored afterwards: a
 % \cvpart[3] must not silently truncate the section written after it.
-\newcommand{\cvpart}[3][99999]{{%
+%
+% The count is tested alongside the section's own: \cvpart[0] asks for no
+% entries, and every entry is then suppressed by the generated guard, so
+% printing the heading would open an itemize with nothing to put in it.
+\newcommand{\cvpart}[3][\cvall]{{%
   \renewcommand{\cvmax}{#1}%
   \cvdeclare{#3}%
+  \ifnum#1>0
   \ifnum\csname cv#3Count\endcsname>0
   \ifnum\csname cv#3Printed\endcsname>0
   \section{\textbf{#2}}
@@ -239,6 +248,7 @@
   \csname cv#3\endcsname
   \resumeSubHeadingListEnd
   \vspace{-6mm}
+  \fi
   \fi
   \fi
 }}
@@ -254,7 +264,7 @@
 % `\cvpart`, with the second line of every entry set the other way. Which
 % sections use which is a layout choice and lives here; cv.yaml says nothing
 % about it.
-\newcommand{\cvpartflush}[3][99999]{{%
+\newcommand{\cvpartflush}[3][\cvall]{{%
   \renewcommand{\cventry}[4]{%
     \vspace{0.5mm}\item
     \begin{tabularx}{0.98\textwidth}[t]{@{}Y >{\raggedleft\arraybackslash}p{4.8cm}@{}}

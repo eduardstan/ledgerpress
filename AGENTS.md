@@ -28,8 +28,9 @@ honours `printed: false`, because it reaches every section through `\cvpart`. An
 as `selected` is in `content/publications.bib`.
 
 Three documents are printed: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. `cv/preamble.tex`
-holds every package, style and macro they share and `cv/header.tex` the contact block, so the
-printed design is written once; a document body is only which sections it prints, in what order,
+holds every package, style and macro they share; a block too particular for a macro is a body
+fragment they `\input`, as `cv/header.tex` and `cv/supervision.tex` are. The printed design is
+therefore written once, and a document body is only which sections it prints, in what order,
 and how many of each. No fact is repeated per variant, and none may be: a variant carrying its own
 copy of an appointment breaks the premise. What belongs to a variant is layout — including the
 entry count on `\cvpart` and any `\defbibfilter` only that document prints. What belongs to the

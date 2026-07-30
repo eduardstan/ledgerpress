@@ -491,18 +491,23 @@ test("cv/preamble.tex keeps the declaration macros the generated file relies on"
   // The optional argument is the entry count, and it must reach \cvmax: the
   // generator guards every entry with \ifnum<n>>\cvmax, so a layout that stops
   // setting it would print whole sections where a variant asked for three.
-  const cvpart = tex.match(/\\newcommand\{\\cvpart\}\[3\]\[\d+\]\{\{([\s\S]*?)\n\}\}/);
+  const cvpart = tex.match(/\\newcommand\{\\cvpart\}\[3\]\[\\cvall\]\{\{([\s\S]*?)\n\}\}/);
   assert.ok(cvpart, "\\cvpart must remain defined, taking an optional entry count");
   assert.match(cvpart[1], /\\renewcommand\{\\cvmax\}\{#1\}/);
   assert.match(cvpart[1], /\\cvdeclare\{#3\}/);
+  // \cvpart[0] must omit the section, not open an itemize the generated guard
+  // then leaves empty - "Something's wrong--perhaps a missing \item".
+  assert.match(cvpart[1], /\\ifnum#1>0/);
 
-  const cvpartflush = tex.match(/\\newcommand\{\\cvpartflush\}\[3\]\[\d+\]\{\{([\s\S]*?)\n\n/);
+  const cvpartflush = tex.match(/\\newcommand\{\\cvpartflush\}\[3\]\[\\cvall\]\{\{([\s\S]*?)\n\n/);
   assert.ok(cvpartflush, "\\cvpartflush must remain defined");
   assert.match(cvpartflush[1], /\\cvpart\[#1\]\{#2\}\{#3\}/);
 
-  // \cvmax must have a default, or the guard around the first entry of the
-  // first section is an undefined control sequence in every document.
-  assert.match(tex, /\\newcommand\{\\cvmax\}\{\d+\}/);
+  // One named sentinel, so \cvmax and the two optional-argument defaults cannot
+  // drift apart; and \cvmax must have a default, or the guard around the first
+  // entry of the first section is undefined in every document.
+  assert.match(tex, /\\newcommand\{\\cvall\}\{\d+\}/);
+  assert.match(tex, /\\newcommand\{\\cvmax\}\{\\cvall\}/);
 });
 
 // The cold-start trap: a document names a macro the generator only emits when
