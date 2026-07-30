@@ -69,8 +69,8 @@ const rendered = [
   'leadership',
 ];
 const omitted = sections()
-  .map(([key]) => key)
-  .filter((key) => !rendered.includes(key));
+  .filter(([key, section]) => !rendered.includes(key) && entriesOf(section).length > 0)
+  .map(([key]) => key);
 
 const description =
   `Curriculum vitae — ${countPhrase(appointments.length, 'appointment', 'appointments').text}, ` +
@@ -268,9 +268,10 @@ const description =
       These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {
         omitted.join(', ')
       }. The list is derived from the file's own top-level sections minus the ones rendered above.
-      Both have pages of their own, read from this same file: <b>service</b> at <a
-        href={url('/service/')}>/service/</a
-      > and <b>projects</b> at <a href={url('/projects/')}>/projects/</a>.
+      They are rendered elsewhere on the site, read from this same file: <b>strands</b> on the <a
+        href={url('/')}>home page</a
+      >, <b>service</b> at <a href={url('/service/')}>/service/</a>{' '}
+      and <b>projects</b> at <a href={url('/projects/')}>/projects/</a>.
     </p>
   </Record>
 
