@@ -68,8 +68,8 @@ publish.
   publication. Each is one small `.tex` that names sections, orders them and says how many to print.
 - **The record balances.** Publication groups are declared once and drive both the website's type
   column and the PDF's headings and numbering.
-- **The gaps stay visible.** Missing dates, unmatched publication types and omitted sections appear
-  in generated provenance instead of being silently invented.
+- **The gaps stay visible.** Missing dates, unmatched publication types and populated sections
+  omitted from a page appear in generated provenance instead of being silently invented.
 - **It is a real site, not a CV pasted into HTML.** Blog posts, RSS, sitemap, search, dark mode,
   responsive layouts, accessible navigation and GitHub Pages deployment are included.
 

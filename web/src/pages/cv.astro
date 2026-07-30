@@ -8,8 +8,9 @@
  * describes: the counts, the field names and the totals are computed here at
  * build time, so a change to the YAML changes the record with it.
  *
- * What the page leaves out is derived the same way, from the file's own sections
- * minus the ones rendered here, so the omission list cannot drift.
+ * What the page leaves out is derived the same way, from the file's own populated
+ * sections minus the ones rendered here, so prose-only and empty sections do not
+ * appear in the omission list and the list cannot drift.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
@@ -58,7 +59,7 @@ const label = (key: string) => key[0].toUpperCase() + key.slice(1);
 const appointmentEntries = countPhrase(appointments.length);
 const awardEntries = countPhrase(awards.length);
 
-/** Sections this page renders; every other one is named in a record below. */
+/** Sections this page renders; every other populated one is named in a record below. */
 const rendered = [
   'appointments',
   'education',
@@ -68,9 +69,13 @@ const rendered = [
   'languages',
   'leadership',
 ];
+const omittedPages = new Map<string, string>([
+  ['service', '/service/'],
+  ['projects', '/projects/'],
+]);
 const omitted = sections()
-  .map(([key]) => key)
-  .filter((key) => !rendered.includes(key));
+  .filter(([key, section]) => !rendered.includes(key) && entriesOf(section).length > 0)
+  .map(([key]) => key);
 
 const description =
   `Curriculum vitae — ${countPhrase(appointments.length, 'appointment', 'appointments').text}, ` +
@@ -264,14 +269,25 @@ const description =
         )
       }
     </p>
-    <p>
-      These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {
-        omitted.join(', ')
-      }. The list is derived from the file's own top-level sections minus the ones rendered above.
-      Both have pages of their own, read from this same file: <b>service</b> at <a
-        href={url('/service/')}>/service/</a
-      > and <b>projects</b> at <a href={url('/projects/')}>/projects/</a>.
-    </p>
+    {
+      omitted.length > 0 && (
+        <p>
+          These sections exist in <b>{CV_SOURCE}</b> and this page does not render them:{' '}
+          {omitted.map((key, index) => (
+            <>
+              {index > 0 && ', '}
+              {omittedPages.has(key) ? (
+                <a href={url(omittedPages.get(key)!)}>{key}</a>
+              ) : (
+                <b>{key}</b>
+              )}
+            </>
+          ))}
+          . The list is derived from the file's own top-level sections minus the ones rendered
+          above. Linked sections have their own pages. Unlinked sections have no dedicated page.
+        </p>
+      )
+    }
   </Record>
 
   <SectionHead source={`${CV_SOURCE} · languages[]`}>Languages</SectionHead>
