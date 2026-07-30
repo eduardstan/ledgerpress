@@ -70,8 +70,13 @@ try {
   const text = (path) => readFileSync(join(proofDist, path), "utf8");
   const home = text("index.html");
   assert.match(home, /href="\/ledgerpress-proof\/publications\/"/);
+  assert.ok(home.includes(`property="og:url" content="${site}"`), "og:url lost deployment site base");
+  assert.ok(home.includes('property="og:type" content="website"'));
+  assert.ok(home.includes('name="twitter:card" content="summary"'));
   if (portrait) {
     assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
+    assert.ok(home.includes(`property="og:image" content="${site}media/${portrait}"`), `og:image lost deployment site base`);
+    assert.ok(home.includes(`name="twitter:image" content="${site}media/${portrait}"`), `twitter:image lost deployment site base`);
   }
   assert.match(home, /href="\/ledgerpress-proof\/fonts\/Archivo-Black\.woff2"/);
   assert.ok(home.includes(`>${homeCounts}<`), `home count is not "${homeCounts}"`);
@@ -129,7 +134,7 @@ try {
     "cv",
     "404",
   ];
-  const unbased = new RegExp(`(?:src|href)="/(?!${base.slice(1)})(?:${prefixes.join("|")})(?:/|")`);
+  const unbased = new RegExp(`(?:src|href|content)="/(?!${base.slice(1)})(?:${prefixes.join("|")})(?:/|")`);
   for (const page of pages) {
     assert.doesNotMatch(text(page), unbased, `${page}: an internal URL lost the deployment base`);
   }
