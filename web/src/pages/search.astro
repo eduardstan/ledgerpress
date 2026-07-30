@@ -14,19 +14,11 @@ const url = (path: string) => internalUrl(path, base);
 
 <BaseLayout title="Search" description="Search this site.">
   <link slot="head" rel="stylesheet" href={url('/pagefind/pagefind-component-ui.css')} />
-  <script
-    slot="head"
-    is:inline
-    type="module"
-    src={url('/pagefind/pagefind-component-ui.js')}
+  <script slot="head" is:inline type="module" src={url('/pagefind/pagefind-component-ui.js')}
   ></script>
   <PageHead title="Search" />
   <div class="single mt-6" data-pagefind-ignore>
-    {
-      base !== '/' && (
-        <pagefind-config bundle-path={url('/pagefind/')} base-url={base}></pagefind-config>
-      )
-    }
+    {base !== '/' && <pagefind-config bundle-path={url('/pagefind/')} base-url={base} />}
     <pagefind-searchbox></pagefind-searchbox>
   </div>
   <noscript>

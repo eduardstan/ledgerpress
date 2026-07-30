@@ -16,7 +16,7 @@ import PageHead from '../components/PageHead.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Entries from '../components/Entries.astro';
-import { cv, CV_SOURCE, entriesOf, keysOf, noteOf, sections } from '../lib/cv';
+import { countPhrase, cv, CV_SOURCE, entriesOf, keysOf, noteOf, sections } from '../lib/cv';
 import { hasSource } from '../lib/record';
 import { inline } from '../lib/inline';
 import { internalUrl } from '../lib/urls';
@@ -45,6 +45,8 @@ const leadership = entriesOf(cv.leadership);
 const courses = teaching.flatMap((block) => block.rows ?? []);
 const withItems = (rows: { items?: string[] }[]) => rows.filter((row) => row.items?.length).length;
 const label = (key: string) => key[0].toUpperCase() + key.slice(1);
+const appointmentEntries = countPhrase(appointments.length);
+const awardEntries = countPhrase(awards.length);
 
 /** Sections this page renders; every other one is named in a record below. */
 const rendered = [
@@ -61,8 +63,10 @@ const omitted = sections()
   .filter((key) => !rendered.includes(key));
 
 const description =
-  `Curriculum vitae — ${appointments.length} appointments, ${education.length} degrees, ` +
-  `${courses.length} courses and ${awards.length} awards, read from ${CV_SOURCE} at build time.`;
+  `Curriculum vitae — ${countPhrase(appointments.length, 'appointment', 'appointments').text}, ` +
+  `${countPhrase(education.length, 'degree', 'degrees').text}, ` +
+  `${countPhrase(courses.length, 'course', 'courses').text} and ` +
+  `${countPhrase(awards.length, 'award', 'awards').text}, read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Curriculum vitae" description={description}>
@@ -78,10 +82,8 @@ const description =
     {
       pdf && (
         <p class="blurb">
-          <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from {
-            CV_SOURCE
-          } by{' '}
-          <b>cv/cv.tex</b> when this page was built, so it states the same facts.
+          <a href={url('/assets/cv.pdf')}>Download the printed CV (PDF)</a> — typeset from{' '}
+          {CV_SOURCE} by <b>cv/cv.tex</b> when this page was built, so it states the same facts.
         </p>
       )
     }
@@ -91,9 +93,9 @@ const description =
   <p class="blurb" set:html={render(cv.profile.bio?.short)} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered
-      with the file's own inline grammar (<b>**bold**</b>, <b>_italic_</b>, <b>[text](url)</b>). The
-      same two strings are what <b>scripts/build-cv-data.mjs</b> turns into LaTeX for the PDF.
+      <b>{CV_SOURCE}</b> — the <b>profile.bio.short</b> and <b>profile.focus</b> scalars, rendered with
+      the file's own inline grammar (<b>**bold**</b>, <b>_italic_</b>, <b>[text](url)</b>). The same
+      two strings are what <b>scripts/build-cv-data.mjs</b> turns into LaTeX for the PDF.
     </p>
   </Record>
 
@@ -101,10 +103,15 @@ const description =
   <Entries entries={appointments} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>appointments[]</b>, {appointments.length} entries in file order, newest
-      first as written. Keys read: {keysOf(appointments)}. {withItems(appointments)} of {
-        appointments.length
-      } carry an <b>items</b> list, shown as the bullets under the organisation.
+      <b>{CV_SOURCE}</b> — <b>appointments[]</b>, {
+        countPhrase(appointments.length, 'entry in file order', 'entries in file order').text
+      }, newest first as written. Keys read: {keysOf(appointments)}. {
+        countPhrase(
+          withItems(appointments),
+          `of ${appointmentEntries.text} carries`,
+          `of ${appointmentEntries.text} carry`,
+        ).text
+      } an <b>items</b> list, shown as the bullets under the organisation.
     </p>
   </Record>
 
@@ -112,7 +119,7 @@ const description =
   <Entries entries={education} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>education[]</b>, {education.length} entries. Keys read: {
+      <b>{CV_SOURCE}</b> — <b>education[]</b>, {countPhrase(education.length).text}. Keys read: {
         keysOf(education)
       }. The classification in each degree line (<i>cum laude</i>, 110/110) is part of the <b
         >title</b
@@ -140,44 +147,53 @@ const description =
             </span>
           </li>
         </ul>
-        {
-          (block.rows ?? []).length > 0 && (
-            <div class="record-table-wrap">
-              <table class="record-table">
-                <thead>
-                  <tr>
-                    {Object.keys(block.rows![0]).map((key) => <th scope="col">{label(key)}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {block.rows!.map((row) => (
-                    <tr>
-                      {Object.entries(row).map(([key, value]) => (
-                        <td data-label={label(key)} set:html={render(value)} />
-                      ))}
-                    </tr>
+        {(block.rows ?? []).length > 0 && (
+          <div class="record-table-wrap">
+            <table class="record-table">
+              <thead>
+                <tr>
+                  {Object.keys(block.rows![0]).map((key) => (
+                    <th scope="col">{label(key)}</th>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )
-        }
+                </tr>
+              </thead>
+              <tbody>
+                {block.rows!.map((row) => (
+                  <tr>
+                    {Object.entries(row).map(([key, value]) => (
+                      <td data-label={label(key)} set:html={render(value)} />
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </>
     ))
   }
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>teaching[]</b>, {teaching.length} entries holding {courses.length}
-      {' '}courses between them in their <b>rows[]</b> tables. Each heading line is that entry's <b
-        >org</b
-      >, <b>title</b>, <b>place</b> and <b>dates</b>; each row below it is one row of its <b>rows[]</b
-      >, with keys {keysOf(courses)} — and those keys, in the order the file writes them, are also
-      the columns of the same table in the printed CV.
+      <b>{CV_SOURCE}</b> — <b>teaching[]</b>, {
+        countPhrase(
+          teaching.length,
+          `entry holding ${countPhrase(courses.length, 'course', 'courses').text} in its rows[] table`,
+          `entries holding ${countPhrase(courses.length, 'course', 'courses').text} between them in their rows[] tables`,
+        ).text
+      }. Each heading line is that entry's <b>org</b>, <b>title</b>, <b>place</b> and <b>dates</b>;
+      each row below it is one row of its <b>rows[]</b>, with keys {keysOf(courses)} — and those keys,
+      in the order the file writes them, are also the columns of the same table in the printed CV.
     </p>
     <p>
-      {teaching.map((block) => `${block.org}: ${(block.rows ?? []).length}`).join(', ')} rows. Column
-      names and order are read from each table's first row; the build refuses later rows whose
-      shape differs, so a local term such as <b>points</b> never needs a machinery edit.
+      {
+        teaching
+          .map((block) => {
+            const rows = (block.rows ?? []).length;
+            return `${block.org}: ${countPhrase(rows, 'row', 'rows').text}`;
+          })
+          .join(', ')
+      }. Column names and order are read from each table's first row; the build refuses later rows
+      whose shape differs, so a local term such as <b>points</b> never needs a machinery edit.
     </p>
   </Record>
 
@@ -186,9 +202,10 @@ const description =
   <Entries entries={supervision} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above,
-      then <b>entries[]</b>, {supervision.length} rows with keys {keysOf(supervision)}. The counts in
-      the right-hand column are the <b>count</b> field verbatim, open-ended ({
+      <b>{CV_SOURCE}</b> — <b>supervision</b>, written as a map: the <b>note</b> paragraphs above, then
+      <b>entries[]</b>, {countPhrase(supervision.length, 'row', 'rows').text} with keys {
+        keysOf(supervision)
+      }. The counts in the right-hand column are the <b>count</b> field verbatim, open-ended ({
         supervision.map((row) => row.count).join(', ')
       }) exactly as the file writes them.
     </p>
@@ -198,8 +215,15 @@ const description =
   <Entries entries={awards} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>awards[]</b>, {awards.length} entries with keys {keysOf(awards)}.{' '}
-      {withItems(awards)} carry an <b>items</b> list.
+      <b>{CV_SOURCE}</b> — <b>awards[]</b>, {
+        countPhrase(awards.length, 'entry with', 'entries with').text
+      } keys {keysOf(awards)}. {
+        countPhrase(
+          withItems(awards),
+          `of ${awardEntries.text} carries`,
+          `of ${awardEntries.text} carry`,
+        ).text
+      } an <b>items</b> list.
     </p>
   </Record>
 
@@ -207,10 +231,12 @@ const description =
   <Entries entries={leadership} />
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>leadership[]</b>, {leadership.length} entries with keys{' '}
-      {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does not
-      print, which is the whole answer to keeping a section off the PDF and on the site: leave its{' '}
-      <code>\cvpart</code> line out.
+      <b>{CV_SOURCE}</b> — <b>leadership[]</b>, {
+        countPhrase(leadership.length, 'entry with', 'entries with').text
+      } keys {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does not
+      print, which is the whole answer to keeping a section off the PDF and on the site: leave its <code
+        >\cvpart</code
+      > line out.
     </p>
     <p>
       These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {
@@ -235,9 +261,9 @@ const description =
   </ul>
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>languages[]</b>, {languages.length} entries with keys {
-        keysOf(languages)
-      }, in file order. The levels are the file's own words ({
+      <b>{CV_SOURCE}</b> — <b>languages[]</b>, {
+        countPhrase(languages.length, 'entry with', 'entries with').text
+      } keys {keysOf(languages)}, in file order. The levels are the file's own words ({
         [...new Set(languages.map((language) => language.detail))].join(', ')
       }), not a CEFR scale.
     </p>
