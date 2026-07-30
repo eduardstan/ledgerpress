@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
-import { macroName } from '../../../scripts/build-cv-data.mjs';
+import { macroName, renderInline } from '../../../scripts/build-cv-data.mjs';
 import { keywordList, readCv, sections } from './cv-schema.ts';
 import { bibliography, publicationSections, readSource, talks, SOURCES } from './record.ts';
 import { consistency, report } from './consistency.ts';
@@ -77,10 +77,12 @@ const printedHeadings = [
   ...generated.matchAll(
     /\\printbibliography\[heading=bibsubheading, title=\{(.+?)\}, filter=Publications/g,
   ),
-].map((match) => match[1].replace(/\\&/g, '&'));
+].map((match) => match[1]);
 assert.deepEqual(
   printedHeadings,
-  declared.filter((section) => section.printed !== false).map((section) => section.title),
+  declared
+    .filter((section) => section.printed !== false)
+    .map((section) => renderInline(section.title)),
   'the printed CV and the publication declaration disagree about the sections',
 );
 

@@ -483,6 +483,25 @@ function readProfile(value: unknown, where: string): void {
     const coerced = optionalText(profile[field], `${where}.${field}`);
     if (coerced !== undefined) profile[field] = coerced;
   }
+  if (profile.site) {
+    let published: URL;
+    try {
+      published = new URL(profile.site);
+    } catch {
+      throw new RecordError(
+        `${where}.site: expected an absolute HTTP(S) URL without a query or fragment, found ${JSON.stringify(profile.site)}`,
+      );
+    }
+    if (
+      !['http:', 'https:'].includes(published.protocol) ||
+      published.search.length > 0 ||
+      published.hash.length > 0
+    ) {
+      throw new RecordError(
+        `${where}.site: expected an absolute HTTP(S) URL without a query or fragment, found ${JSON.stringify(profile.site)}`,
+      );
+    }
+  }
   if (profile.address !== undefined) {
     profile.address = list(profile.address, `${where}.address`).map((line, index) =>
       text(line, `${where}.address[${index}]`),
@@ -532,11 +551,11 @@ function readProfile(value: unknown, where: string): void {
  * The parsed `content/cv.yaml`, checked and coerced once, at the one boundary
  * every reader crosses.
  *
- * Four modules read this file — `cv.ts` through Vite, `record.ts`,
- * `announcements.ts` and `consistency.ts` under plain node — and all four call
- * this, so a record that reaches any page has already been through it. The
- * record is normalised in place and returned; nothing is reordered, renamed or
- * reworded.
+ * Five website readers use this file — `astro.config.mjs`, `cv.ts` through
+ * Vite, and `record.ts`, `announcements.ts` and `consistency.ts` under plain
+ * node — and all five call this, so a record that reaches any page has already
+ * been through it. The record is normalised in place and returned; nothing is
+ * reordered, renamed or reworded.
  */
 export function readCv(parsed: unknown, path = 'content/cv.yaml'): CV {
   if (!isMap(parsed)) {

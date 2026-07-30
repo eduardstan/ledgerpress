@@ -9,11 +9,16 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { parse } from 'yaml';
 import { consistency, report } from './src/lib/consistency.ts';
+import { readCv } from './src/lib/cv-schema.ts';
 import { legacyRedirects } from './src/lib/legacy-urls.ts';
 import { cssInternalUrls, deploymentBase, rehypeInternalUrls } from './src/lib/urls.ts';
 
-const content = parse(readFileSync(new URL('../content/cv.yaml', import.meta.url), 'utf8'));
-const publishedSite = process.env.LEDGERPRESS_SITE ?? content?.profile?.site;
+const recordSource = 'content/cv.yaml';
+const content = readCv(
+  parse(readFileSync(new URL('../content/cv.yaml', import.meta.url), 'utf8')),
+  recordSource,
+);
+const publishedSite = process.env.LEDGERPRESS_SITE ?? content.profile.site;
 if (!publishedSite) {
   throw new Error(
     'Missing `profile.site` in `content/cv.yaml`: set it to the final URL where this site is published (see `content/README.md`).',

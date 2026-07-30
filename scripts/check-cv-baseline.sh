@@ -30,36 +30,19 @@ fi
 # not be able to decide whether this check runs. A different name means this is
 # not a maintainer run at all, and saying so is more use than 110 lines of diff.
 # Either name unreadable means nothing can be decided, and that fails.
-# The record's own indentation is the adopter's: `content/` is prettier-ignored,
-# so `name:` is taken at whatever depth it sits under the top-level `profile:`
-# key, and the block ends at the next top-level key so no other section's
-# `name:` can stand in for it.
-trim_trailing() { sed -n '1s/[[:space:]]*$//p'; }
-baseline_owner=$(sed -n 's/^Owner:[[:space:]]*//p' "$metadata" 2>/dev/null | trim_trailing)
-record_owner=$(
-  awk '
-    /^[^[:space:]#]/ { in_profile = ($0 ~ /^profile:/); next }
-    in_profile && match($0, /^[[:space:]]+name:[[:space:]]*/) {
-      print substr($0, RLENGTH + 1)
-      exit
-    }
-  ' "$record" 2>/dev/null | trim_trailing
+mapfile -t baseline_owners < <(
+  sed -n 's/^Owner:[[:space:]]*//p' "$metadata" 2>/dev/null |
+    sed 's/[[:space:]]*$//'
 )
-# One layer of YAML quoting, so quoting style alone cannot look like a rename.
-for quote in \" \'; do
-  if [[ $record_owner == "$quote"*"$quote" ]]; then
-    record_owner=${record_owner#"$quote"}
-    record_owner=${record_owner%"$quote"}
-    break
-  fi
-done
-
-if [[ -z $baseline_owner ]]; then
-  printf '%s\n' "$metadata names no \`Owner:\`, so this check cannot tell whose record $baseline was taken from. Add an \`Owner:\` line naming the record owner the baseline was built from." >&2
+if ((${#baseline_owners[@]} != 1)) || [[ -z ${baseline_owners[0]} ]]; then
+  printf '%s\n' "$metadata does not name exactly one non-empty \`Owner:\`, so this check cannot tell whose record $baseline was taken from. Add one \`Owner:\` line naming the record owner the baseline was built from." >&2
   exit 1
 fi
-if [[ -z $record_owner ]]; then
-  printf '%s\n' "$record states no \`profile.name\`, so this check cannot tell whose record is in content/. Fix the record before comparing it with the baseline." >&2
+baseline_owner=${baseline_owners[0]}
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+if ! record_owner=$(node "$script_dir/read-cv-owner.mjs" "$record"); then
+  printf '%s\n' "$record: profile.name could not be determined, so this check cannot tell whose record is in content/. Fix the record and ensure the repository dependencies are installed before comparing it with the baseline." >&2
   exit 1
 fi
 

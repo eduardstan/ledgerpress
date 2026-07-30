@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { load } from "js-yaml";
+import { bibEntryCount } from "./build-cv-data.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const web = join(root, "web");
@@ -13,6 +15,15 @@ const stagedCv = join(web, "public/assets/cv.pdf");
 const site = "https://example.github.io/ledgerpress-proof/";
 const base = "/ledgerpress-proof/";
 const stagedFixture = !existsSync(stagedCv);
+const record = load(readFileSync(join(root, "content/cv.yaml"), "utf8"));
+const portrait = record?.profile?.portrait == null ? undefined : String(record.profile.portrait);
+const service = Array.isArray(record?.service) ? record.service : (record?.service?.entries ?? []);
+const publicationCount = bibEntryCount(readFileSync(join(root, "content/publications.bib"), "utf8"));
+const editorialCount = service.filter((entry) => /\beditor\b/i.test(String(entry?.title ?? ""))).length;
+const publicationLabel = publicationCount === 1 ? "publication" : "publications";
+const editorialLabel = editorialCount === 1 ? "editorial board" : "editorial boards";
+const homeCounts = `${publicationCount} ${publicationLabel} · ${editorialCount} ${editorialLabel}`;
+const htmlAttribute = (value) => String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 const snapshot = (directory) => {
   if (!existsSync(directory)) return null;
@@ -58,10 +69,11 @@ try {
   const text = (path) => readFileSync(join(proofDist, path), "utf8");
   const home = text("index.html");
   assert.match(home, /href="\/ledgerpress-proof\/publications\/"/);
-  assert.match(home, /src="\/ledgerpress-proof\/media\/portrait\.svg"/);
+  if (portrait) {
+    assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
+  }
   assert.match(home, /href="\/ledgerpress-proof\/fonts\/Archivo-Black\.woff2"/);
-  assert.match(home, />7 publications · 1 editorial board</);
-  assert.doesNotMatch(home, /1 editorial boards/);
+  assert.ok(home.includes(`>${homeCounts}<`), `home count is not "${homeCounts}"`);
 
   const styles = readdirSync(join(proofDist, "_astro"))
     .filter((path) => path.endsWith(".css"))

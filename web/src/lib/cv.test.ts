@@ -61,6 +61,11 @@ assert.equal(SOURCES.cv, 'content/cv.yaml', 'the CV source is registered in SOUR
 // performs are part of the shape asserted below.
 const cv = readCv(parse(readFileSync(fixture, 'utf8')), SOURCES.cv);
 
+assert.throws(
+  () => readCv({ profile: { name: 'Researcher', site: 2021 } }, SOURCES.cv),
+  /content\/cv\.yaml: profile\.site: expected an absolute HTTP\(S\) URL/,
+);
+
 const text = (value: unknown, what: string) =>
   assert.ok(
     typeof value === 'string' && value.trim().length > 0,
