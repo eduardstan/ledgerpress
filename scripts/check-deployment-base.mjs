@@ -75,9 +75,18 @@ try {
   assert.ok(home.includes('name="twitter:card" content="summary"'));
   if (portrait) {
     assert.ok(home.includes(`src="${htmlAttribute(`${base}media/${portrait}`)}"`), `${portrait} lost the deployment base`);
-    assert.ok(home.includes(`property="og:image" content="${site}media/${portrait}"`), `og:image lost deployment site base`);
-    assert.ok(home.includes(`name="twitter:image" content="${site}media/${portrait}"`), `twitter:image lost deployment site base`);
+    if (/\.(?:png|jpe?g|webp)$/i.test(portrait)) {
+      assert.ok(home.includes(`property="og:image" content="${site}media/${portrait}"`), `og:image lost deployment site base`);
+      assert.ok(home.includes(`name="twitter:image" content="${site}media/${portrait}"`), `twitter:image lost deployment site base`);
+    } else {
+      assert.doesNotMatch(home, /property="og:image"/);
+      assert.doesNotMatch(home, /name="twitter:image"/);
+    }
   }
+  const alternatePublications = text("publications/year-asc/index.html");
+  assert.ok(alternatePublications.includes(`rel="canonical" href="${site}publications/"`));
+  assert.doesNotMatch(alternatePublications, /property="og:/);
+  assert.doesNotMatch(alternatePublications, /name="twitter:/);
   assert.match(home, /href="\/ledgerpress-proof\/fonts\/Archivo-Black\.woff2"/);
   assert.ok(home.includes(`>${homeCounts}<`), `home count is not "${homeCounts}"`);
 

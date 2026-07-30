@@ -152,7 +152,8 @@ profile:
     bluesky:                    # every other service takes a label and URL;
       label: Bluesky            # the site and PDF both render it without a
       url: https://bsky.app/profile/ada.example # machinery edit.
-  portrait: portrait.jpg        # a file in content/media/
+  portrait: portrait.jpg        # a raster file in content/media/. It is also
+                                # the Open Graph and Twitter card image.
   favicon: favicon.svg          # another file in content/media/. Optional: if it
                                 # is omitted or missing, no icon link is emitted.
   bio:
@@ -502,8 +503,10 @@ draft: false
 
 Images. `profile.portrait` and the optional `profile.favicon` name files here by bare filename;
 **inside a post or an item, refer to one as `/media/<file>`** — the directory is published at
-that address. The build prefixes the project path from `profile.site` when the site is deployed
-below an origin root.
+that address. The portrait also supplies the Open Graph and Twitter card image when it is a
+`.png`, `.jpg`, `.jpeg` or `.webp` file. Other formats, including SVG, still display on the site
+but emit no social image tag. The build prefixes the project path from `profile.site` when the
+site is deployed below an origin root.
 
 ## Announcements
 

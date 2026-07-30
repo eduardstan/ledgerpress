@@ -30,7 +30,10 @@ const {
 } = Astro.props;
 const canonical = canonicalPath ? absoluteInternalUrl(canonicalPath, Astro.site!, base) : Astro.url;
 const url = (path: string) => internalUrl(path, base);
-const portraitUrl = portrait ? new URL(portrait, Astro.site!).href : undefined;
+const socialImageUrl =
+  portrait && /\.(?:png|jpe?g|webp)$/i.test(portrait)
+    ? new URL(portrait, Astro.site!).href
+    : undefined;
 ---
 
 <html lang="en" data-theme="light">
@@ -40,14 +43,20 @@ const portraitUrl = portrait ? new URL(portrait, Astro.site!).href : undefined;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical.href} />
-    <meta property="og:site_name" content={name} />
-    <meta name="twitter:card" content="summary" />
-    {portraitUrl && <meta property="og:image" content={portraitUrl} />}
-    {portraitUrl && <meta name="twitter:image" content={portraitUrl} />}
+    {
+      canonicalPath === undefined && (
+        <>
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={description} />
+          <meta property="og:url" content={canonical.href} />
+          <meta property="og:site_name" content={name} />
+          <meta name="twitter:card" content="summary" />
+          {socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+          {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
+        </>
+      )
+    }
     {favicon && <link rel="icon" href={favicon} />}
     <link rel="alternate" type="application/rss+xml" title={name} href={url('/rss.xml')} />
     {

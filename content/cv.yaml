@@ -28,7 +28,7 @@ profile:
     bluesky:
       label: Bluesky
       url: https://bsky.app/profile/sahana-kowhai.example
-  portrait: portrait.svg
+  portrait: portrait.png
   favicon: favicon.svg
   bio:
     short: >-
