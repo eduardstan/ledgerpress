@@ -1,2 +1,2 @@
-Owner:           Sahana Aster KŌWHAI, Ph.D.
-Pages:           3
+Owner: Sahana Aster KŌWHAI, Ph.D.
+Pages: 3
