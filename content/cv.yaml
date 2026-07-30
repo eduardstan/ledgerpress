@@ -7,12 +7,12 @@ profile:
   site: https://eduardstan.github.io/ledgerpress/
   headline: Associate Professor of Palaeoclimatology
   affiliation:
-    - label: Te Tari Tātai Arowhenua — Department of Geology
-      url: https://www.otago.ac.nz/geology
-    - label: University of Otago — Ōtākou Whakaihu Waka
-      url: https://www.otago.ac.nz/
-    - label: Antarctic Research Centre, Te Herenga Waka
-      url: https://www.wgtn.ac.nz/antarctic
+    - label: School of Earth and Ice Studies
+      url: https://earth-ice.example.edu
+    - label: Kārearea University
+      url: https://karearea.example.edu
+    - label: Tideglass Research Cooperative
+      url: https://tideglass.example.edu
   place: Ōtepoti Dunedin, Aotearoa New Zealand
   address:
     - 360 Leith Street
@@ -88,40 +88,40 @@ strands:
 
 appointments:
   - title: Associate Professor of Palaeoclimatology
-    org: University of Otago — Ōtākou Whakaihu Waka
+    org: Kārearea University
     place: Ōtepoti Dunedin, Aotearoa New Zealand
     dates: Feb 2021 – Present
-    detail: Department of Geology
-    url: https://www.otago.ac.nz/geology
+    detail: School of Earth and Ice Studies
+    url: https://earth-ice.example.edu
     items:
-      - Cross-appointed affiliate of the Antarctic Research Centre, Te Herenga Waka.
+      - Cross-appointed affiliate of the Tideglass Research Cooperative.
     announced: 2021-02-15
   - title: Senior Lecturer in Marine Geology
-    org: University of Tasmania
+    org: Aster Coast University
     place: nipaluna Hobart, Australia
     dates: Jul 2016 – Jan 2021
-    detail: Institute for Marine and Antarctic Studies
+    detail: Koru School of Marine Records
     announced: 2016-07-01
 
 education:
   - title: Ph.D. in Marine Geology
-    org: Australian National University
+    org: Aster Institute for Earth Records
     place: Canberra, Australia
     dates: 2010 – 2014
     items:
       - "Thesis: Foraminiferal Mg/Ca and Southern Ocean warming across Termination I."
   - title: M.Sc. in Earth Sciences (First Class Honours)
-    org: University of Cape Town
+    org: Kōwhai Coast University
     place: Cape Town, South Africa
     dates: 2008 – 2009
   - title: B.Sc. in Geology and Oceanography
-    org: University of Madras
+    org: Tideglass Ocean Institute
     place: Chennai, India
     dates: 2005 – 2008
 
 teaching:
   - title: Course coordinator and lecturer
-    org: University of Otago — Ōtākou Whakaihu Waka
+    org: Kārearea University
     place: Ōtepoti Dunedin, Aotearoa New Zealand
     dates: 2021 – Present
     rows:
@@ -151,7 +151,7 @@ supervision:
 
 service:
   - title: Associate Editor
-    org: Paleoceanography and Paleoclimatology
+    org: Tideglass Climate Letters
     dates: 2023 – Present
     detail: Marine palaeoclimate
     announced: 2023-03-10
@@ -165,17 +165,17 @@ service:
     metric: "IF: 3.4, Q1"
     rank_url: https://example.org/journals/palaeoclimate-studies
   - title: Scientific Steering Committee
-    org: Southern Ocean Observing System
+    org: Tideglass Research Cooperative
     years: [2022, 2023, 2024, 2025, 2026]
   - title: Panel reviewer
-    org: Royal Society Te Apārangi
+    org: Kōwhai Research Trust
     dates: 2021 – Present
   - title: Reviewer
-    org: Quaternary Science Reviews
+    org: Open Core Review
 
 projects:
   - title: TIDE — Termination Ice Dynamics and Ecosystems
-    org: Royal Society Te Apārangi
+    org: Kōwhai Research Trust
     dates: 2024 – 2027
     detail: Principal investigator
     funding: NZ$960,000
@@ -187,7 +187,7 @@ projects:
         II, with voyage support from the [Southern Archive Voyage
         Consortium](https://voyages.example.edu).
   - title: Open Core Chronologies
-    org: Australian Antarctic Program Partnership
+    org: Koru Basin Research Alliance
     dates: 2022 – 2025
     detail: Co-investigator
     funding: A$420,000
@@ -201,13 +201,13 @@ fieldwork:
   printed: false
   entries:
     - title: Pukaki Rise sediment coring voyage
-      org: RV Tangaroa
+      org: RV Tāwhirimātea
       place: Southern Ocean
       dates: Jan – Feb 2025
       detail: Co-chief scientist
       announced: 2025-01-12
     - title: East Antarctic margin core curation
-      org: National Marine Geoscience Collection
+      org: Koru Basin Core Archive
       place: Te Whanganui-a-Tara Wellington
       dates: Nov 2022
       detail: Visiting scientist
@@ -234,11 +234,11 @@ outreach:
 
 awards:
   - title: Early Career Research Excellence Award
-    org: Geoscience Society of New Zealand
+    org: Kārearea Earth Forum
     dates: "2019"
     announced: 2019-11-20
-  - title: SCAR Visiting Fellowship
-    org: Scientific Committee on Antarctic Research
+  - title: Tideglass Visiting Fellowship
+    org: Tideglass Research Cooperative
     place: Cambridge, United Kingdom
     dates: 2017
 
@@ -247,7 +247,7 @@ leadership:
   printed: false
   entries:
     - title: Co-chair, Open Polar Data Working Group
-      org: Southern Ocean Knowledge and Information community
+      org: Tideglass Research Cooperative
       dates: 2024 – Present
       announced: 2024-02-01
     - title: Faculty representative — [field note](/blog/2026/reading-a-core/)
