@@ -56,11 +56,21 @@ lives in `content/`, how it looks lives in code.
 
 ## Positioning
 
-Popular academic site templates like [al-folio](https://github.com/alshedivat/al-folio) and [academicpages](https://github.com/academicpages/academicpages.github.io) optimize for feature-rich personal sites or Markdown portfolios. In both, the site and the printed CV are separate artifacts maintained independently.
+Popular academic site templates like [al-folio](https://github.com/alshedivat/al-folio) and
+[academicpages](https://github.com/academicpages/academicpages.github.io) optimise for
+feature-rich personal sites or Markdown portfolios. While al-folio can generate a CV page and PDF
+from RenderCV or JSONResume data, neither template enforces consistency across the full site and
+printed document.
 
-ledgerpress optimizes for single-source accuracy. **One record produces both the website and the printed CV**, and the build **refuses to publish a contradiction between them.** The website lets readers inspect source provenance, while the consistency gate fails the production build if two hand-written dates on one fact disagree.
+ledgerpress optimises for single-source accuracy. **One record produces both the website and the
+printed CV**, and the build **refuses to publish a contradiction between them.** The website lets
+readers inspect source provenance, while the consistency gate fails the production build if two
+hand-written dates on one fact disagree.
 
-**Who this is not for:** If you want a blog-focused site with a photo grid and no CV, use al-folio or another general portfolio template. ledgerpress is built specifically for researchers who maintain an authoritative record and need their web and print publications, appointments and CV variants to stay in strict alignment.
+**Who this is not for:** If you want a blog-focused site with a photo grid and no CV, use al-folio
+or another general portfolio template. ledgerpress is built specifically for researchers who
+maintain an authoritative record and need their web and print publications, appointments and CV
+variants to stay in strict alignment.
 
 ## Why ledgerpress
 
@@ -68,7 +78,7 @@ ledgerpress optimizes for single-source accuracy. **One record produces both the
   then replace `content/publications.bib` with a Zotero, Mendeley, DBLP or Google Scholar export.
   Journal articles, chapters, books, datasets and other BibTeX types render without transcription.
 - **CV variants win the argument.** Facts and layout are separate. A short CV and a teaching CV ship
-  alongside the full one, built from the same record — without copying a single appointment or
+  alongside the full one, built from the same record - without copying a single appointment or
   publication. Each is one small `.tex` that names sections, orders them and says how many to print.
 - **The record balances.** Publication groups are declared once and drive both the website's type
   column and the PDF's headings and numbering.
@@ -83,8 +93,15 @@ high-contrast editorial interface in `web/`, including the Ledger Serif type fam
 
 ## In the wild
 
-- **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via `printed: false`, a post and an SVG portrait.
-- **[eduardstan.github.io](https://eduardstan.github.io/)**: The personal site and CV of Ionel Eduard Stan, Assistant Professor at the University of Milano-Bicocca. ledgerpress was extracted from this site, proving the template survives contact with a real publication record.
+- **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional
+  palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII
+  names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via
+  `printed: false`, a post and an SVG portrait.
+- **[eduardstan.github.io](https://eduardstan.github.io/)**: The personal site and CV of Ionel
+  Eduard Stan, Assistant Professor at the University of Milano-Bicocca. ledgerpress was extracted
+  from this site, proving the template survives contact with a real publication record.
+
+The example record is fictional. Your own record and media remain yours.
 
 ## Start in ten minutes
 
