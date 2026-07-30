@@ -16,6 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
+import { macroName } from '../../../scripts/build-cv-data.mjs';
 import { keywordList, readCv, sections } from './cv-schema.ts';
 import { bibliography, publicationSections, readSource, talks, SOURCES } from './record.ts';
 import { consistency, report } from './consistency.ts';
@@ -85,9 +86,10 @@ assert.deepEqual(
 
 // Every top-level list is a section in both readers; the generator emits one
 // count macro per section, so a section the generated file has never heard of is
-// a section the PDF prints nothing for.
+// a section the PDF prints nothing for. The macro name comes from the generator
+// itself, so `field_work:` is looked for under the name the generator gave it.
 for (const [key] of sections(cv)) {
-  const macro = `\\cv${key[0].toUpperCase()}${key.slice(1)}Count`;
+  const macro = `\\cv${macroName(key)}Count`;
   assert.ok(
     generated.includes(macro),
     `${SOURCES.cv}: the ${key} section has no ${macro} — run \`npm run build:cv-data\``,

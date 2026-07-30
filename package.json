@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build-cv-data.mjs && npm --prefix web run build",
     "build:cv-data": "node scripts/build-cv-data.mjs",
-    "check": "npm test && npm --prefix web run check && npm --prefix web run build && npm run check:deployment-base && npm run check:adopter && npm run check:format",
+    "check": "echo \"Regenerating cv/generated/cv-data.tex from content/cv.yaml \u2014 this check writes that tracked file.\" && npm run build:cv-data && npm test && npm --prefix web run check && npm --prefix web run build && npm run check:deployment-base && npm run check:adopter && npm run check:format",
     "check:maintainer": "bash scripts/check-cv-baseline.sh && bash scripts/check-cv-baseline.sh cv/short.pdf && bash scripts/check-cv-baseline.sh cv/teaching.pdf",
     "check:adopter": "node scripts/check-adopter-build.mjs",
     "check:deployment-base": "node scripts/check-deployment-base.mjs",

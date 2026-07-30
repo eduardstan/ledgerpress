@@ -25,15 +25,33 @@ if [[ ! -f $pdf ]]; then
   exit 1
 fi
 
-# Whose record this is, read from the two files themselves rather than written
-# down anywhere: the baseline's first line is the printed name, and `profile.name`
-# is where that name came from. A different name means this is not a maintainer
-# run at all, and saying so is more use than 110 lines of diff.
-baseline_owner=$(sed -n '1{s/^[[:space:]]*//;s/[[:space:]]*$//;p;}' "$baseline" 2>/dev/null)
-record_owner=$(sed -n 's/^  name:[[:space:]]*//p' "$record" 2>/dev/null | head -1)
-record_owner=${record_owner%\"}
-record_owner=${record_owner#\"}
-if [[ -n $baseline_owner && -n $record_owner && $record_owner != "$baseline_owner" ]]; then
+# Whose record this baseline was taken from, recorded beside the page count
+# rather than inferred from the PDF's layout: a change to cv.tex's header must
+# not be able to decide whether this check runs. A different name means this is
+# not a maintainer run at all, and saying so is more use than 110 lines of diff.
+# Either name unreadable means nothing can be decided, and that fails.
+trim_trailing() { sed -n '1s/[[:space:]]*$//p'; }
+baseline_owner=$(sed -n 's/^Owner:[[:space:]]*//p' "$metadata" 2>/dev/null | trim_trailing)
+record_owner=$(sed -n 's/^  name:[[:space:]]*//p' "$record" 2>/dev/null | trim_trailing)
+# One layer of YAML quoting, so quoting style alone cannot look like a rename.
+for quote in \" \'; do
+  if [[ $record_owner == "$quote"*"$quote" ]]; then
+    record_owner=${record_owner#"$quote"}
+    record_owner=${record_owner%"$quote"}
+    break
+  fi
+done
+
+if [[ -z $baseline_owner ]]; then
+  printf '%s\n' "$metadata names no \`Owner:\`, so this check cannot tell whose record $baseline was taken from. Add an \`Owner:\` line naming the record owner the baseline was built from." >&2
+  exit 1
+fi
+if [[ -z $record_owner ]]; then
+  printf '%s\n' "$record states no \`profile.name\`, so this check cannot tell whose record is in content/. Fix the record before comparing it with the baseline." >&2
+  exit 1
+fi
+
+if [[ $record_owner != "$baseline_owner" ]]; then
   printf '%s\n' \
     "Skipped: this maintainer check compares $pdf with the baseline of the bundled example record ($baseline_owner), and $record now holds a different person ($record_owner) — an adopted record is expected to differ, so there is nothing here to verify. The checks that do apply to your record are under \"Validation\" in README.md; \`npm run check\` runs all of them."
   exit 0

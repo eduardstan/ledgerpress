@@ -39,7 +39,10 @@ const shown = (date: string) =>
 // instead of contributing an empty one to the list.
 const named = byCategory.filter((category) => category.category);
 const unnamed = byCategory.find((category) => !category.category)?.count ?? 0;
-const uncategorised = unnamed ? `, ${unnamed} with no keywords field` : '';
+const uncategorised = unnamed ? `${unnamed} with no keywords field` : '';
+/** One list, so a record whose entries all lack `keywords` reads as a list of one. */
+const categoryList = (part: (count: number, category: string) => string) =>
+  [...named.map((c) => part(c.count, c.category)), uncategorised].filter(Boolean).join(', ');
 
 const description =
   `${talkCount.text}${span && `, ${span}`}, ` + `read from ${source} at build time.`;
@@ -51,7 +54,7 @@ const description =
       <b>{talkCount.text}</b>{span && `, ${span}`}, newest first, read from <b>{source}</b> when this
       page was built — the same file the printed CV's presentations are generated from. The badge on each
       row is that entry's own <b>keywords</b> field ({
-        named.map((category) => `${category.count} ${category.category}`).join(', ') + uncategorised
+        categoryList((count, category) => `${count} ${category}`)
       }); nothing is relabelled here and nothing is left out.
     </p>
   </PageHead>
@@ -91,7 +94,7 @@ const description =
     </p>
     <p>
       Categories, counted from the <b>keywords</b> field: {
-        named.map((category) => `${category.category} ${category.count}`).join(', ') + uncategorised
+        categoryList((count, category) => `${category} ${count}`)
       }. {
         undated.length === 0
           ? 'Every entry states a full ISO 8601 day, so every date below is shown as a day rather than widened or narrowed.'

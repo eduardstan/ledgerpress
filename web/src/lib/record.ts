@@ -752,10 +752,8 @@ interface ProfileBlock {
 
 let profileCache: ProfileBlock | undefined;
 
-const profileBlock = (): ProfileBlock => {
-  profileCache ??= (parseYaml(read(SOURCES.cv)) as { profile?: ProfileBlock })?.profile ?? {};
-  return profileCache;
-};
+/** `profile:` from the same parse every other reader here uses, through `readCv`. */
+const profileBlock = (): ProfileBlock => (profileCache ??= cvRecord().profile);
 
 export interface About {
   source: string;

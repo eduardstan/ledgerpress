@@ -150,9 +150,15 @@ failure here is something to fix in `content/`:
 npm run check
 ```
 
+It starts by regenerating `cv/generated/cv-data.tex` from your `content/cv.yaml`, because the
+checks that follow compare that committed file against your record. So `npm run check` **writes**
+that one tracked file, and it says so when it runs — if you see it modified afterwards, that is
+why, and the change belongs in your next commit.
+
 That runs, in order:
 
 ```sh
+npm run build:cv-data          # your record, regenerated into cv/generated/cv-data.tex
 npm test                       # the readers, the generators, and your record
 npm --prefix web run check     # types
 npm --prefix web run build     # the site, including the consistency gate
