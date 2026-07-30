@@ -52,6 +52,21 @@ test('one deployment base prefixes routes, assets, feeds, and media', () => {
   );
 });
 
+test('profile.site accepts an optional trailing slash but refuses non-path URL parts', () => {
+  assert.equal(
+    deploymentBase('https://example.github.io/scholar'),
+    deploymentBase('https://example.github.io/scholar/'),
+  );
+  assert.throws(
+    () => deploymentBase('https://example.github.io/scholar/?preview=true'),
+    /must not include a query or fragment/,
+  );
+  assert.throws(
+    () => deploymentBase('https://example.github.io/scholar/#cv'),
+    /must not include a query or fragment/,
+  );
+});
+
 test('external URLs and document fragments are inert', () => {
   assert.equal(internalUrl('https://example.edu/work', '/scholar/'), 'https://example.edu/work');
   assert.equal(

@@ -12,7 +12,10 @@ content/
 ```
 
 Two consumers read it: the website (`web/`) and the printed CV (`cv/cv.tex`, via
-`node scripts/build-cv-data.mjs`). Neither has a second copy of anything.
+`npm run build:cv-data`). Neither has a second copy of anything.
+
+A few fields reach only one of the two. Every such case is stated where the field is documented, and
+[collected in one table](#where-the-misleading-fields-land).
 
 **The fastest way in:** copy the example below into `cv.yaml`, put an empty `publications.bib` and
 `talks.bib` beside it, and run the two builds. You get a one-page CV and a working site. Then grow it
@@ -23,7 +26,7 @@ Two consumers read it: the website (`web/`) and the printed CV (`cv/cv.tex`, via
 ```yaml
 profile:
   name: Alex Newcomer
-  site: https://alex-newcomer.example
+  site: https://alex-newcomer.example/
   headline: Postdoctoral Researcher
   affiliation:
     - label: University of Somewhere
@@ -111,10 +114,15 @@ profile:
                                 # the site's masthead. Surname capitalised and a
                                 # degree appended are conventions, not rules —
                                 # write your name the way you want it set.
-  site: https://ada.example     # final published URL. Include a project path,
+  site: https://ada.example/    # final published URL. Include a project path,
                                 # e.g. https://name.github.io/repository/, when
                                 # the site is not served from the origin root.
-                                # Do not include a query string or fragment.
+                                # A trailing slash is optional: only the origin
+                                # and the path are read, and the path is
+                                # normalised, so `.../repository` and
+                                # `.../repository/` are the same deployment.
+                                # A query string or fragment is refused.
+                                # WEBSITE only — the PDF never reads it.
   headline: Reader in Analytical Engines        # your role, alone. No institution.
   affiliation:                  # smallest unit first: group, then department,
     - label: Analytical Engine Group            # then institution. A list, so a
@@ -128,7 +136,11 @@ profile:
   email: ada@example.ac.uk
   website:                      # a page about you that ISN'T this site — your
     label: ada.example.com      # staff page, your lab. Omit it if you have none.
-    url: https://ada.example.com/
+    url: https://ada.example.com/             # NOT a synonym for `site` above:
+                                # `site` is where THIS record is published, and
+                                # `website` is somewhere else. It is printed in
+                                # the CV's header block and the website does not
+                                # render it; `links` below reaches both.
   links:                        # known kinds take compact account IDs:
     orcid: 0000-0002-1825-0097  # scholar, orcid, github and linkedin
     github: adalovelace
@@ -140,12 +152,16 @@ profile:
                                 # is omitted or missing, no icon link is emitted.
   bio:
     short: >-                   # THIRD person, one paragraph. Printed as the CV's
-                                # "Short Bio". The site does not show it.
+                                # "Short Bio", and shown under the same heading on
+                                # the site's /cv/ page. NOT a shortened `long`:
+                                # the two differ in grammatical person and in
+                                # where they appear, not in length.
       Ada Lovelace is a Reader in ...
     long: >-                    # FIRST person, several paragraphs. The site's
                                 # front page shows all of it, and quotes the first
                                 # sentence above the fold. The CV does not print
-                                # it. `>-` FOLDS: wrap at 80 columns freely and
+                                # it, and no other page shows it.
+                                # `>-` FOLDS: wrap at 80 columns freely and
                                 # separate paragraphs with a blank line. (`|-`
                                 # would keep every wrap as a hard line break.)
       I work on ...
@@ -202,6 +218,12 @@ with `place` right-aligned.
 subscription there is often no title; write the body in `title` and leave `org` out
 — `title: Geoscience Society of New Zealand` reads better than `title: Member`.
 
+`detail` is the same field everywhere and nothing interprets it: it is one more line of prose after
+`org`. What it conventionally holds therefore changes with the section — the sub-unit of an
+appointment (`Department of Geology`), the role held on a piece of fieldwork (`Co-chief scientist`),
+the fluency of a language (`Native`), the explanation of a research strand. Read the section, not the
+field name, to know what to write.
+
 A classification or grade is part of the title string: `M.Sc. in Earth Sciences (First Class
 Honours)`, `Ph.D. in Mathematics (Excellent cum laude)`.
 
@@ -236,6 +258,14 @@ heading, no gap, nothing printed, no error.
 | `funding` | grant or programme amount | website only, never the CV |
 | `count` | how many | after the detail, or as a column in a section table |
 | `rows` | a table hanging under the entry | see below |
+
+`years` and `dates` are not alternative spellings of each other. `dates` is one free-form string for
+a single continuous span (`Mar 2024 – Present`), set in the right-hand column. `years` is a list of
+the separate editions of a recurring role, printed after `org` and folded to `2024–2026` when they
+run consecutively. A role that recurs in some years and not others keeps them visible as a list; use
+one or the other on a single entry. `web/src/lib/cv.test.ts` checks that no `service[]` entry carries
+both, because the website's Entries component renders `dates` (falling back to `count`) and never
+`years` in that column, while the PDF generator would print both.
 
 `years` is a plain list. Only an edition that carries an announcement date grows into a map:
 
@@ -308,7 +338,8 @@ about how the work is grouped.
 publications:
   sections:
     - title: Journal articles (peer-reviewed) # the heading in the PDF
-      short: Journal # the site's Type column, and the "J=Journal" key
+      short: Journal # the site's Type column, the "J=Journal" key, and — through
+                     # its first letter — the PDF's numbering prefix (J1, J2, …)
       types: [article] # entry types, ANY of which matches
     - title: Conference papers (peer-reviewed)
       short: Conference
@@ -420,7 +451,28 @@ The sentence each kind of fact is announced in is one table, `TEMPLATES`, at the
 
 The home page renders the optional `strands:` list with the ordinary entry shape. `title` is the
 strand name, `detail` is its short explanation, and `items` are evidence notes visible when a
-reader turns on **Inspect sources**. Omit `strands:` and the block disappears.
+reader turns on **Inspect sources** — they are not body text, so a reader who never opens the
+inspect view never sees them. `strands:` is website-only: `cv/cv.tex` prints no strands section.
+Omit `strands:` and the block disappears.
+
+## Where the misleading fields land
+
+Most fields reach both the website and the PDF. These land somewhere their names do not say:
+
+| Field | Website | Printed CV |
+| --- | --- | --- |
+| `profile.site` | the origin and base path of every canonical, feed and sitemap URL | never read |
+| `profile.website` | not rendered | printed in the header contact line |
+| `profile.bio.short` | shown on `/cv/` as "Short bio" | printed as "Short Bio" |
+| `profile.bio.long` | the home page, in full, first sentence quoted above the fold | never printed |
+| `profile.address` | the footer | never printed |
+| `strands` | the home page; `items` only under **Inspect sources** | no section |
+| `funding` | shown under the dates on `/projects/` | never printed |
+| `rank_url` | links the `metric` badge | never printed |
+| a publication section with `printed: false` | still names and labels its entries | no section, and its entries are subtracted from every section declared below it |
+
+A section key the website has no route for — `fieldwork:`, `outreach:` — reaches the printed CV and
+the announcement register but no page of its own; see [Which sections exist](#which-sections-exist).
 
 ## Prove a clean handoff
 
@@ -449,9 +501,9 @@ CI runs the same cold-start proof with a synthetic adopter on every push and pul
 ## The two builds
 
 ```bash
-node scripts/build-cv-data.mjs   # content/cv.yaml -> cv/generated/cv-data.tex
+npm run build:cv-data            # content/cv.yaml -> cv/generated/cv-data.tex
 latexmk -xelatex -cd cv/cv.tex   # the PDF. xelatex, not pdflatex
-cd web && npm run dev            # the site
+npm run dev                      # the site
 ```
 
 `web` refuses to build when two records in `content/` contradict each other; it tells you which
