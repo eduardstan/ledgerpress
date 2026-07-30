@@ -54,9 +54,13 @@ code edit, and it is normal, supported and documented in
 [Make it yours](#make-it-yours-after-the-first-green-build). That is the whole line: what you are
 lives in `content/`, how it looks lives in code.
 
-The website lets a reader turn on **Inspect sources** and see where every claim came from. The
-production build goes further: if two hand-written dates on one fact contradict, it refuses to
-publish.
+## Positioning
+
+Popular academic site templates like [al-folio](https://github.com/alshedivat/al-folio) and [academicpages](https://github.com/academicpages/academicpages.github.io) optimize for feature-rich personal sites or Markdown portfolios. In both, the site and the printed CV are separate artifacts maintained independently.
+
+ledgerpress optimizes for single-source accuracy. **One record produces both the website and the printed CV**, and the build **refuses to publish a contradiction between them.** The website lets readers inspect source provenance, while the consistency gate fails the production build if two hand-written dates on one fact disagree.
+
+**Who this is not for:** If you want a blog-focused site with a photo grid and no CV, use al-folio or another general portfolio template. ledgerpress is built specifically for researchers who maintain an authoritative record and need their web and print publications, appointments and CV variants to stay in strict alignment.
 
 ## Why ledgerpress
 
@@ -64,7 +68,7 @@ publish.
   then replace `content/publications.bib` with a Zotero, Mendeley, DBLP or Google Scholar export.
   Journal articles, chapters, books, datasets and other BibTeX types render without transcription.
 - **CV variants win the argument.** Facts and layout are separate. A short CV and a teaching CV ship
-  alongside the full one, built from the same record - without copying a single appointment or
+  alongside the full one, built from the same record — without copying a single appointment or
   publication. Each is one small `.tex` that names sections, orders them and says how many to print.
 - **The record balances.** Publication groups are declared once and drive both the website's type
   column and the PDF's headings and numbering.
@@ -77,14 +81,10 @@ The name is literal: a **ledger** is the record kept once and required to balanc
 publishes it. The product is **ledgerpress**. **Ledger** is the design system inside it—the
 high-contrast editorial interface in `web/`, including the Ledger Serif type family.
 
-## See the example
+## In the wild
 
-The repository opens with Dr. Sahana Aster Kōwhai, a fictional palaeoclimatologist in Aotearoa New
-Zealand. Her record deliberately exercises cross-appointments, non-ASCII names, several BibTeX
-types, talks, teaching tables, projects, service, fieldwork kept off the printed CV by its own
-`printed: false`, a post and a non-photographic SVG portrait.
-
-The example record is fictional. Your own record and media remain yours.
+- **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via `printed: false`, a post and an SVG portrait.
+- **[eduardstan.github.io](https://eduardstan.github.io/)**: The personal site and CV of Ionel Eduard Stan, Assistant Professor at the University of Milano-Bicocca. ledgerpress was extracted from this site, proving the template survives contact with a real publication record.
 
 ## Start in ten minutes
 
