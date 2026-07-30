@@ -68,13 +68,13 @@ const rendered = [
   'languages',
   'leadership',
 ];
+const omittedPages = new Map<string, string>([
+  ['service', '/service/'],
+  ['projects', '/projects/'],
+]);
 const omitted = sections()
   .filter(([key, section]) => !rendered.includes(key) && entriesOf(section).length > 0)
   .map(([key]) => key);
-const omittedPages: Record<string, string> = {
-  service: '/service/',
-  projects: '/projects/',
-};
 
 const description =
   `Curriculum vitae — ${countPhrase(appointments.length, 'appointment', 'appointments').text}, ` +
@@ -275,8 +275,8 @@ const description =
           {omitted.map((key, index) => (
             <>
               {index > 0 && ', '}
-              {omittedPages[key] ? (
-                <a href={url(omittedPages[key])}>{key}</a>
+              {omittedPages.has(key) ? (
+                <a href={url(omittedPages.get(key)!)}>{key}</a>
               ) : (
                 <b>{key}</b>
               )}
