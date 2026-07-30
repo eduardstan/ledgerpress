@@ -18,25 +18,18 @@ because layout and routes cannot follow and the boundary would blur again. The b
 versus design — keep every document saying the same thing about it.
 
 Three documents are printed: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. `cv/preamble.tex`
-holds every package, style and macro they share, `cv/header.tex` the contact block and
-`cv/supervision.tex` that hand-set section, so the printed design is written once. A document body
-is only which sections it curates, in what order, and how many entries of each. No fact is repeated
-per variant, and none may be. Only `cv/cv.tex` prints `\cvAutoSections`: a variant is a curated
-subset, so printing every section the body did not name is what it exists not to do — it still
-honours `printed: false`, because it reaches every section through `\cvpart`. An entry count on
-`\cvpart` and a `\defbibfilter` only one document prints are layout; curation is marked on the fact,
-as `selected` is in `content/publications.bib`.
-
-Three documents are printed: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. `cv/preamble.tex`
 holds every package, style and macro they share; a block too particular for a macro is a body
-fragment they `\input`, as `cv/header.tex` and `cv/supervision.tex` are. The printed design is
-therefore written once, and a document body is only which sections it prints, in what order,
-and how many of each. No fact is repeated per variant, and none may be: a variant carrying its own
-copy of an appointment breaks the premise. What belongs to a variant is layout — including the
-entry count on `\cvpart` and any `\defbibfilter` only that document prints. What belongs to the
-record is curation, marked on the fact itself, as `selected` is in `content/publications.bib`. A
-section declared under `publications.sections` for one document's sake changes the full CV and the
-website, because each section subtracts the ones declared before it.
+fragment they `\input`, as `cv/header.tex` (the contact block) and `cv/supervision.tex` (that
+hand-set section) are. The printed design is therefore written once, and a document body is only
+which sections it curates, in what order, and how many entries of each. No fact is repeated per
+variant, and none may be: a variant carrying its own copy of an appointment breaks the premise.
+Only `cv/cv.tex` prints `\cvAutoSections`: a variant is a curated subset, so printing every section
+the body did not name is what it exists not to do — it still honours `printed: false`, because it
+reaches every section through `\cvpart`. What belongs to a variant is layout — including the entry
+count on `\cvpart` and any `\defbibfilter` only that document prints. What belongs to the record is
+curation, marked on the fact itself, as `selected` is in `content/publications.bib`. A section
+declared under `publications.sections` for one document's sake changes the full CV and the website,
+because each section subtracts the ones declared before it.
 
 `web/src/lib/record.ts` owns the complete list of source paths. It locates the repository by walking
 up for `content/cv.yaml`, the file no build can work without. `web/src/lib/record.test.ts` fails if a
