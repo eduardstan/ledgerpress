@@ -56,21 +56,21 @@ lives in `content/`, how it looks lives in code.
 
 ## Positioning
 
-Popular academic site templates like [al-folio](https://github.com/alshedivat/al-folio) and
-[academicpages](https://github.com/academicpages/academicpages.github.io) optimise for
-feature-rich personal sites or Markdown portfolios. While al-folio can generate a CV page from
-RenderCV or JSONResume data and, with RenderCV, optionally generate a PDF, neither template
-enforces consistency across the full site and printed document.
+[al-folio](https://github.com/alshedivat/al-folio) is a feature-rich academic site theme. It can
+render a CV page from either RenderCV or JSONResume data and can optionally generate a PDF from the
+RenderCV record. [Academic Pages](https://github.com/academicpages/academicpages.github.io) is a
+Markdown-first portfolio template. In both, facts can live in several site and CV inputs; neither
+template requires one record to drive the whole website and every printed CV.
 
-ledgerpress optimises for single-source accuracy. **One record produces both the website and the
-printed CV**, and the build **refuses to publish a contradiction between them.** The website lets
-readers inspect source provenance, while the consistency gate fails the production build if two
-hand-written dates on one fact disagree.
+ledgerpress makes that single-source contract the point: **one record produces the website, the
+full printed CV and its variants.** Change a fact once and every output rebuilds from it, so the web
+and print versions cannot drift into different copies. The website also exposes source provenance,
+and the production build refuses a contradiction when two hand-written dates on the same fact
+disagree.
 
-**Who this is not for:** If you want a blog-focused site with a photo grid and no CV, use al-folio
-or another general portfolio template. ledgerpress is built specifically for researchers who
-maintain an authoritative record and need their web and print publications, appointments and CV
-variants to stay in strict alignment.
+If a flexible blog or portfolio is the priority, al-folio or Academic Pages may be a better fit.
+ledgerpress is for researchers who want their website and printed CVs to remain publications of one
+authoritative record.
 
 ## Why ledgerpress
 
@@ -97,9 +97,8 @@ high-contrast editorial interface in `web/`, including the Ledger Serif type fam
   palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII
   names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via
   `printed: false`, a post and an SVG portrait.
-- **[eduardstan.github.io](https://eduardstan.github.io/)**: The personal site and CV of Ionel
-  Eduard Stan, Assistant Professor at the University of Milano-Bicocca. ledgerpress was extracted
-  from this site, proving the template survives contact with a real publication record.
+- **[eduardstan.github.io](https://eduardstan.github.io/)**: The real personal site and CV from
+  which ledgerpress was extracted.
 
 The example record is fictional. Your own record and media remain yours.
 
