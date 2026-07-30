@@ -181,7 +181,9 @@ projects:
     url: https://research.example.edu/tide
     announced: 2024-06-03
     items:
-      - Multiproxy reconstruction of Southern Ocean fronts across Termination II.
+      - >-
+        Multiproxy reconstruction of Southern Ocean fronts across Termination
+        II, with voyage support from [NIWA](https://niwa.co.nz).
   - title: Open Core Chronologies
     org: Australian Antarctic Program Partnership
     dates: 2022 – 2025
@@ -263,7 +265,7 @@ publications:
       types: [misc]
       printed: false
     - title: Manuscripts under review
-      short: Review
+      short: Under review
       prefix: R
       types: [article]
       keywords: [underreview]
@@ -272,9 +274,11 @@ talks:
   sections:
     - title: Invited and keynote talks
       short: Invited
+      prefix: I
       types: [unpublished]
       keywords: [invited]
     - title: Conference presentations
       short: Conference
+      prefix: C
       types: [unpublished]
       exclude_keywords: [invited]
