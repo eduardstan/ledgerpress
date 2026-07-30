@@ -31,6 +31,8 @@ const {
 } = Astro.props;
 const canonical = canonicalPath ? absoluteInternalUrl(canonicalPath, Astro.site!, base) : Astro.url;
 const url = (path: string) => internalUrl(path, base);
+/** Anything below `/blog/` is one post; the `/blog/` index itself is not. */
+const isPost = /\/blog\/./.test(canonical.pathname);
 const socialImageUrl =
   portrait && /\.(?:png|jpe?g|webp)$/i.test(portrait)
     ? new URL(portrait, Astro.site!).href
@@ -47,7 +49,7 @@ const socialImageUrl =
     {
       canonicalPath === undefined && (
         <>
-          <meta property="og:type" content="website" />
+          <meta property="og:type" content={isPost ? 'article' : 'website'} />
           <meta property="og:title" content={title} />
           <meta property="og:description" content={description} />
           <meta property="og:url" content={canonical.href} />
