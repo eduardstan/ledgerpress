@@ -17,12 +17,12 @@ import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { inline } from './inline.ts';
 import {
+  countPhrase,
   editionYear,
   entriesOf,
   groupByTitle,
   isEditorial,
   noteOf,
-  plural,
   sections,
   type CV,
   type Entry,
@@ -224,11 +224,37 @@ assert.ok(
   editorial.every((entry) => entry.title === 'Associate Editor'),
   'the editorial rule selected a role that is not an editorship',
 );
-assert.equal(plural(0, 'editorial board'), 'editorial boards');
-assert.equal(plural(1, 'editorial board'), 'editorial board');
-assert.equal(plural(2, 'entry', 'entries'), 'entries');
+assert.deepEqual(countPhrase(0, 'editorial board'), {
+  count: 0,
+  words: 'editorial boards',
+  text: '0 editorial boards',
+});
+assert.equal(countPhrase(1, 'editorial board').text, '1 editorial board');
+assert.equal(countPhrase(2).text, '2 entries');
+assert.equal(countPhrase(2, { category: 'Books' }).text, '2 Books');
+assert.equal(countPhrase(1, { category: 'Books' }).text, '1 Book');
+assert.equal(countPhrase(2, { category: 'Journal' }).text, '2 Journals');
+assert.equal(countPhrase(2, { category: 'Data' }).text, '2 Data');
+assert.equal(countPhrase(1, { category: undefined }).text, '1 entry');
+assert.equal(
+  countPhrase(
+    1,
+    'entry carries no date and is shown undated',
+    'entries carry no date and are shown undated',
+  ).text,
+  '1 entry carries no date and is shown undated',
+);
+assert.equal(
+  countPhrase(
+    2,
+    'entry carries no date and is shown undated',
+    'entries carry no date and are shown undated',
+  ).text,
+  '2 entries carry no date and are shown undated',
+);
 
 const countSensitivePages = [
+  '../pages/index.astro',
   '../pages/professional_activities.astro',
   '../pages/projects/index.astro',
   '../pages/publications/[...sort].astro',
@@ -240,12 +266,13 @@ const hardCodedCountNoun =
   /(?:\$\{[^{}]*(?:\.length|\.size)\}|\{[^{}]*(?:\.length|\.size)\})[^{}]{0,64}\b(?:appointments|awards|boards|courses|degrees|entries|items|labels|languages|posts|presentations|projects|roles|rows|talks|venues)\b/;
 for (const page of countSensitivePages) {
   const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
-  assert.match(source, /\bplural\(/, `${page}: generated count labels do not use plural()`);
-  assert.doesNotMatch(source, /\blength\s*===\s*1\s*\?/, `${page}: duplicates plural()`);
+  assert.match(source, /\bcountPhrase\(/, `${page}: generated count labels do not use countPhrase()`);
+  assert.doesNotMatch(source, /\bplural\(/, `${page}: bypasses whole-phrase agreement`);
+  assert.doesNotMatch(source, /\blength\s*===\s*1\s*\?/, `${page}: duplicates countPhrase()`);
   assert.doesNotMatch(
     source.replace(/\s+/g, ' '),
     hardCodedCountNoun,
-    `${page}: generated count noun bypasses plural()`,
+    `${page}: generated count noun bypasses countPhrase()`,
   );
 }
 

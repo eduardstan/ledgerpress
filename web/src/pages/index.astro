@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import { about, bibliography, identity, profile, SOURCES, yearSpan } from '../lib/record';
-import { CV_SOURCE, isEditorial, plural, service, serviceGroups, serviceWhen } from '../lib/cv';
+import { countPhrase, CV_SOURCE, isEditorial, service, serviceGroups, serviceWhen } from '../lib/cv';
 import { inline } from '../lib/inline';
 import { announcements, formatStamp } from '../lib/announcements';
 import { strands } from '../lib/strands';
@@ -37,21 +37,18 @@ const researchDescription = research
 const roles = service();
 const groups = serviceGroups();
 const editorials = groups.filter((group) => isEditorial(group.role)).flatMap((group) => group.entries);
+const bibliographyEntries = countPhrase(bib.entries.length);
+const editorialBoards = countPhrase(editorials.length, 'editorial board');
 
 const counts = [
-  {
-    n: bib.entries.length,
-    label: `${plural(bib.entries.length, 'entry', 'entries')} in this bibliography`,
-  },
-  ...bib.byKind.map((kind) => ({
-    n: kind.count,
-    label: `${kind.kind.toLowerCase()} ${plural(kind.count, 'entry', 'entries')}`,
-  })),
-  { n: editorials.length, label: plural(editorials.length, 'editorial board') },
-  {
-    n: roles.length,
-    label: `${plural(roles.length, 'service role')} on record`,
-  },
+  countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
+  ...bib.byKind.map((kind) =>
+    countPhrase(kind.count, {
+      category: kind.kind === 'Other' ? undefined : kind.kind.toLowerCase(),
+    }),
+  ),
+  editorialBoards,
+  countPhrase(roles.length, 'service role on record', 'service roles on record'),
 ];
 
 /**
@@ -77,8 +74,7 @@ const withheld = feed.items.length - shown.length;
     <div class="dateline label">
       {affiliation.map((line) => <span>{line}</span>)}
       <span class="em">
-        {bib.entries.length} {plural(bib.entries.length, 'publication')} · {editorials.length}{' '}
-        {plural(editorials.length, 'editorial board')}
+        {countPhrase(bib.entries.length, 'publication').text} · {editorialBoards.text}
       </span>
     </div>
   </section>
@@ -114,9 +110,9 @@ const withheld = feed.items.length - shown.length;
       {bio.paragraphs.map((paragraph) => <p set:html={paragraph} />)}
       <Record>
         <p>
-          <b>{bio.source}</b> — {bio.paragraphs.length}{' '}
-          {plural(bio.paragraphs.length, 'paragraph')}, rendered verbatim. The printed CV does not
-          carry them: it prints <b>profile.bio.short</b>, the same person in the third person.
+          <b>{bio.source}</b> — {countPhrase(bio.paragraphs.length, 'paragraph').text}, rendered
+          verbatim. The printed CV does not carry them: it prints <b>profile.bio.short</b>, the same
+          person in the third person.
         </p>
       </Record>
 
@@ -133,9 +129,9 @@ const withheld = feed.items.length - shown.length;
       </ol>
       <Record>
         <p>
-          <b>{CV_SOURCE}</b> — <b>strands[]</b>, {research.length}{' '}
-          {plural(research.length, 'entry', 'entries')} in file order. The title, explanatory copy
-          and evidence note are all part of the adopter-owned record.
+          <b>{CV_SOURCE}</b> — <b>strands[]</b>, {
+            countPhrase(research.length, 'entry in file order', 'entries in file order').text
+          }. The title, explanatory copy and evidence note are all part of the adopter-owned record.
         </p>
         {
           research.map((strand) => (
@@ -154,24 +150,22 @@ const withheld = feed.items.length - shown.length;
         {
           counts.map((count) => (
             <li>
-              <span class="n">{count.n}</span>
-              <span class="l label">{count.label}</span>
+              <span class="n">{count.count}</span>
+              <span class="l label">{count.words}</span>
             </li>
           ))
         }
       </ul>
       <Record>
         <p>
-          <b>{SOURCES.bibliography}</b> — {bib.entries.length}{' '}
-          {plural(bib.entries.length, 'entry', 'entries')}{
+          <b>{SOURCES.bibliography}</b> — {bibliographyEntries.text}{
             yearSpan(bib.years) && `, ${yearSpan(bib.years)}`
           }, counted at build by parsing the file. The two service figures are counted from <b
             >{CV_SOURCE}</b
-          >: <b>{editorials.length}</b> {plural(editorials.length, 'entry', 'entries')} of{' '}
-          <b>service[]</b> whose <b>title</b> matches “editor” ({
+          >: <b>{editorials.length}</b> {countPhrase(editorials.length).words} of <b>service[]</b>{' '}
+          whose <b>title</b> matches “editor” ({
             editorials.map((entry) => entry.org).join(', ')
-          }), and <b>{roles.length}</b> {plural(roles.length, 'entry', 'entries')} in that list
-          altogether.
+          }), and <b>{roles.length}</b> {countPhrase(roles.length).words} in that list altogether.
         </p>
       </Record>
 
@@ -215,9 +209,9 @@ const withheld = feed.items.length - shown.length;
       }
       <Record>
         <p>
-          <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length}{' '}
-          {plural(roles.length, 'entry', 'entries')} grouped into {groups.length}{' '}
-          {plural(groups.length, 'role')} by their own <b>title</b> field ({
+          <b>{CV_SOURCE}</b> — <b>service[]</b>, {
+            countPhrase(roles.length, 'entry grouped', 'entries grouped').text
+          } into {countPhrase(groups.length, 'role').text} by their own <b>title</b> field ({
             groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
           }), in the order those roles first appear in the file. The meta on each row is the entry's{' '}
           <b>dates</b> where it states a term and its <b>years[]</b> where it states editions; the
@@ -323,14 +317,12 @@ const withheld = feed.items.length - shown.length;
         }
       </ul>
       <p class="more-feed">
-        <a class="label" href={url('/lately/')}
-          >All {feed.items.length} {plural(feed.items.length, 'item')} →</a
-        >
+        <a class="label" href={url('/lately/')}>All {countPhrase(feed.items.length, 'item').text} →</a>
       </p>
       <Record>
         <p>
-          {feed.items.length} {plural(feed.items.length, 'announcement')}, generated from the facts
-          themselves — {
+          {countPhrase(feed.items.length, 'announcement').text}, generated from the facts themselves
+          — {
             feed.sources.map((file, index) => (
               <>
                 {index > 0 && ', '}

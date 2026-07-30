@@ -16,10 +16,10 @@ import PageHead from '../components/PageHead.astro';
 import Record from '../components/Record.astro';
 import SectionHead from '../components/SectionHead.astro';
 import {
+  countPhrase,
   CV_SOURCE,
   editionYear,
   keysOf,
-  plural,
   service,
   serviceGroups,
   type Entry,
@@ -47,21 +47,24 @@ const dateless = noTerm.filter((entry) => !entry.announced);
 const ranked = roles.filter((entry) => entry.metric);
 const linkedRanks = roles.filter((entry) => entry.rank_url);
 const venues = new Set(roles.map((entry) => entry.org)).size;
+const roleEntries = countPhrase(roles.length);
+const roleGroups = countPhrase(groups.length, 'role');
 
 const description =
   `Editorial boards, conference committees and journal reviewing — ` +
-  `${roles.length} ${plural(roles.length, 'role')} at ${venues} ${plural(venues, 'venue')}, ` +
+  `${countPhrase(roles.length, 'role').text} at ${countPhrase(venues, 'venue').text}, ` +
   `read from ${CV_SOURCE} at build time.`;
 ---
 
 <BaseLayout title="Professional activities" description={description}>
   <PageHead title="Professional activities">
     <p class="blurb">
-      <b>{roles.length} {plural(roles.length, 'service role')}</b>, grouped by role and read from{' '}
-      <b>{CV_SOURCE}</b> when this page was built — the same file the printed CV is generated from.
-      Where the file records a ranking it also records where that ranking is published, so every
-      badge below links to the CORE portal or SCImago entry behind it. Turn <b>inspect sources</b> on,
-      in the bar above, to see what each section is built from.
+      <b>{countPhrase(roles.length, 'service role').text}</b>, grouped by role and read from <b
+        >{CV_SOURCE}</b
+      > when this page was built — the same file the printed CV is generated from. Where the file
+      records a ranking it also records where that ranking is published, so every badge below links
+      to the CORE portal or SCImago entry behind it. Turn <b>inspect sources</b> on, in the bar above,
+      to see what each section is built from.
     </p>
   </PageHead>
 
@@ -110,7 +113,7 @@ const description =
         <Record>
           <p>
             <b>{CV_SOURCE}</b> — the {group.entries.length} <b>service[]</b>{' '}
-            {plural(group.entries.length, 'entry', 'entries')} whose <b>title</b> is “{group.role}”,
+            {countPhrase(group.entries.length).words} whose <b>title</b> is “{group.role}”,
             in file order. Keys read: {keysOf(group.entries)}.
             {group.entries.some((entry) => entry.years?.length) && (
               <>
@@ -131,32 +134,41 @@ const description =
 
   <Record>
     <p>
-      <b>{CV_SOURCE}</b> — <b>service[]</b>, {roles.length}{' '}
-      {plural(roles.length, 'entry', 'entries')} grouped into {groups.length}{' '}
-      {plural(groups.length, 'role')} ({
+      <b>{CV_SOURCE}</b> — <b>service[]</b>, {
+        countPhrase(roles.length, 'entry grouped', 'entries grouped').text
+      } into {roleGroups.text} ({
         groups.map((group) => `${group.role}: ${group.entries.length}`).join(', ')
       }). The grouping is by the <b>title</b> field and the order is the order those roles first
       appear in the file; no entry is filtered out and none is relabelled.
     </p>
     <p>
-      {ranked.length} of {roles.length} {plural(roles.length, 'entry', 'entries')}{' '}
-      {plural(ranked.length, 'carries', 'carry')} a <b>metric</b>, and {linkedRanks.length}{' '}
-      {plural(linkedRanks.length, 'carries', 'carry')} the <b>rank_url</b> the badge links to. The
-      badge text is the <b>metric</b> field verbatim — “{
+      {
+        countPhrase(
+          ranked.length,
+          `of ${roleEntries.text} carries`,
+          `of ${roleEntries.text} carry`,
+        ).text
+      } a <b>metric</b>, and {
+        countPhrase(linkedRanks.length, 'carries', 'carry').text
+      } the <b>rank_url</b> the badge links to. The badge text is the <b>metric</b> field verbatim — “{
         [...new Set(ranked.map((entry) => entry.metric))].join('”, “')
       }” — not a rank computed here.
     </p>
     <p>
-      {noTerm.length} {plural(noTerm.length, 'entry', 'entries')}{' '}
-      {plural(noTerm.length, 'states', 'state')} neither <b>dates</b> nor <b>years[]</b>, so the
-      column on the right is empty for them. {announcedOnly.length} of those{' '}
-      {plural(announcedOnly.length, 'carries', 'carry')} an <b>announced</b> day ({
+      {countPhrase(noTerm.length, 'entry states', 'entries state').text} neither <b>dates</b> nor{' '}
+      <b>years[]</b>, so the column on the right is empty for them. {
+        countPhrase(announcedOnly.length, 'of those carries', 'of those carry').text
+      } an <b>announced</b> day ({
         announcedOnly.map((entry) => entry.org).join('; ')
       }), which is the date the <a href={url('/lately/')}>register</a> announces the invitation on —
-      the day it was accepted, not a term of service, so it is not printed here as one. The
-      remaining {dateless.length} {plural(dateless.length, 'carries', 'carry')} no date of any kind
-      ({dateless.map((entry) => entry.org).join('; ')}), and are shown undated rather than given a
-      year the file does not state.
+      the day it was accepted, not a term of service, so it is not printed here as one. The remaining
+      {
+        countPhrase(
+          dateless.length,
+          `entry carries no date of any kind (${dateless.map((entry) => entry.org).join('; ')}), and is shown undated rather than given a year the file does not state`,
+          `entries carry no date of any kind (${dateless.map((entry) => entry.org).join('; ')}), and are shown undated rather than given a year the file does not state`,
+        ).text
+      }.
     </p>
   </Record>
 </BaseLayout>

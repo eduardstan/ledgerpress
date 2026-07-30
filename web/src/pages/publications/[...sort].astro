@@ -23,7 +23,7 @@ import {
   yearSpan,
   type Publication,
 } from '../../lib/record';
-import { plural } from '../../lib/cv';
+import { countPhrase } from '../../lib/cv';
 import { internalUrl } from '../../lib/urls';
 
 /**
@@ -97,11 +97,8 @@ const isOwner = (author: string) => author === owner;
 const pad = (index: number) => String(index + 1).padStart(2, '0');
 const span = yearSpan(bib.years);
 const abstracted = bib.entries.filter((entry) => entry.abstract).length;
-const description = `${bib.entries.length} ${plural(
-  bib.entries.length,
-  'entry',
-  'entries',
-)}${span && `, ${span}`}, read from ${SOURCES.bibliography} at build time.`;
+const entryCount = countPhrase(bib.entries.length);
+const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURCES.bibliography} at build time.`;
 ---
 
 {
@@ -118,14 +115,12 @@ const description = `${bib.entries.length} ${plural(
   <section class="pagehead">
     <h1>Index</h1>
     <p class="blurb">
-      <b>
-        {bib.entries.length} {plural(bib.entries.length, 'entry', 'entries')}{span && `, ${span}`}
-      </b>, read from <b>{SOURCES.bibliography}</b> when this page was built, and nothing is left out
-      — manuscripts under review and released software are entries here like any other. Open a row
-      for its abstract, its record and its BibTeX. Order the index by year, type or title, <a
-        href={url('/search/')}>search the site</a
-      > to find a paper by title, author or a word in its abstract, and turn <b>inspect sources</b>
-      on, in the bar above, to see where each part of this page comes from.
+      <b>{entryCount.text}{span && `, ${span}`}</b>, read from <b>{SOURCES.bibliography}</b> when this
+      page was built, and nothing is left out — manuscripts under review and released software are
+      entries here like any other. Open a row for its abstract, its record and its BibTeX. Order the
+      index by year, type or title, <a href={url('/search/')}>search the site</a> to find a paper by
+      title, author or a word in its abstract, and turn <b>inspect sources</b> on, in the bar above,
+      to see where each part of this page comes from.
     </p>
   </section>
 
@@ -276,23 +271,28 @@ const description = `${bib.entries.length} ${plural(
 
   <Record>
     <p>
-      <b>{SOURCES.bibliography}</b> — {bib.entries.length}{' '}
-      {plural(bib.entries.length, 'entry', 'entries')} parsed at build, shown here{' '}
-      {SORTS[active].label.toLowerCase()}. Every row is one entry: the number is its position in this
-      order, the type is its BibTeX entry type, and everything under an open row is that entry's own
-      text. Nothing on this page is transcribed by hand.
+      <b>{SOURCES.bibliography}</b> — {
+        countPhrase(bib.entries.length, 'entry parsed', 'entries parsed').text
+      } at build, shown here {SORTS[active].label.toLowerCase()}. Every row is one entry: the number
+      is its position in this order, the type is its BibTeX entry type, and everything under an open
+      row is that entry's own text. Nothing on this page is transcribed by hand.
     </p>
     <p>
       {bib.byKind
-        .map(
-          (kind) =>
-            `${kind.count} ${kind.kind.toLowerCase()} ${plural(kind.count, 'entry', 'entries')}`,
+        .map((kind) =>
+          countPhrase(kind.count, {
+            category: kind.kind === 'Other' ? undefined : kind.kind.toLowerCase(),
+          }).text
         )
-        .join(', ')}. {abstracted} of {bib.entries.length}{' '}
-      {plural(bib.entries.length, 'entry', 'entries')}{' '}
-      {plural(abstracted, 'carries', 'carry')} an abstract; the rest show their record only. The four
-      orders are four static pages — /publications/, /publications/year-asc/, /publications/type/ and
-      /publications/title/ — so ordering the index needs no JavaScript.
+        .join(', ')}. {
+        countPhrase(
+          abstracted,
+          `of ${entryCount.text} carries`,
+          `of ${entryCount.text} carry`,
+        ).text
+      } an abstract; the rest show their record only. The four orders are four static pages —
+      /publications/, /publications/year-asc/, /publications/type/ and /publications/title/ — so
+      ordering the index needs no JavaScript.
     </p>
   </Record>
 
