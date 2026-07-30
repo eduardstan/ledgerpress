@@ -84,8 +84,25 @@ export interface Entry {
   rows?: Record<string, string>[];
 }
 
-/** A section is a list of entries, or a list with a paragraph above it. */
-export type Section = Entry[] | { note?: string | string[]; entries: Entry[] };
+/**
+ * A section is a list of entries, or a list with the fields below above it.
+ *
+ * `heading` and `printed` are read by `scripts/build-cv-data.mjs` only: the
+ * printed CV prints every section of the record, under the heading its key spells
+ * out, unless the section says otherwise. The website has its own routes and
+ * headings, so neither field changes a page — `printed: false` is the record's way
+ * of saying "on the site, not in the CV", as it is for a publication group.
+ */
+export type Section =
+  | Entry[]
+  | {
+      note?: string | string[];
+      /** The heading the printed CV gives it. Defaults to the key, spelt out. */
+      heading?: string;
+      /** `false` keeps the section out of the printed CV. Website unaffected. */
+      printed?: boolean;
+      entries: Entry[];
+    };
 
 /** The entries of a section, whichever of the two shapes it is written in. */
 export const entriesOf = (section: Section | undefined): Entry[] =>

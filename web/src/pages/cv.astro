@@ -233,10 +233,9 @@ const description =
     <p>
       <b>{CV_SOURCE}</b> — <b>leadership[]</b>, {
         countPhrase(leadership.length, 'entry with', 'entries with').text
-      } keys {keysOf(leadership)}. It is an ordinary section of the file that <b>cv/cv.tex</b> does not
-      print, which is the whole answer to keeping a section off the PDF and on the site: leave its <code
-        >\cvpart</code
-      > line out.
+      } keys {keysOf(leadership)}. It is an ordinary section of the file, and the printed CV prints
+      every section unless the record says otherwise: this one carries <code>printed: false</code>,
+      which is the whole answer to keeping a section on the site and off the PDF.
     </p>
     <p>
       These sections exist in <b>{CV_SOURCE}</b> and this page does not render them: {

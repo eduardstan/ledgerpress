@@ -17,9 +17,16 @@
 % `content/talks.bib` through the biblatex refsections at the end of this file.
 %
 % To change what the CV says, edit content/cv.yaml and regenerate. To change how
-% it looks, edit this file. The document body is one `\cvpart` line per section:
-% reorder the CV by reordering those lines, and a section content/cv.yaml does
-% not have prints nothing at all.
+% it looks, edit this file.
+%
+% WHICH sections print is a record fact, not a layout one. The `\cvpart` lines in
+% the document below place the sections whose heading or setting this file
+% curates; `\cvAutoSections` then prints every remaining section of
+% content/cv.yaml, in the order the record writes them, under the heading its key
+% spells out. Adding a section to the record therefore needs no edit here. Give
+% a section `printed: false` in content/cv.yaml to keep it off the PDF - that
+% holds for the curated ones below too - and `heading:` to name an uncurated one
+% something other than its key.
 %
 % Build:  latexmk -xelatex -cd cv/cv.tex      (xelatex is required: academicons)
 % -----------------------------------------------------------------------------
@@ -157,11 +164,21 @@
 % amount of it lives here and the generator only says where the break goes.
 \newcommand{\cvnotesep}{\par\vspace{1.2mm}}
 
+% Record that this file lays out one section key itself, so \cvautopart below
+% does not print it a second time from the record's own section sequence.
+% \gdef, not \def: \cvpartflush sets its entries inside a group.
+\newcommand{\cvlaidout}[1]{\expandafter\gdef\csname cvlaidout@#1\endcsname{}}
+
 % Make the five generated macros this layout may mention safe even when
-% content/cv.yaml has no such section. (`Header` is the sixth generated macro,
-% but this layout supplies its own table headings.) `\cvpart` does this for you;
-% a hand-written section block must call it itself.
+% content/cv.yaml has no such section, and default the section to printing.
+% (`Header` is the sixth generated macro, but this layout supplies its own table
+% headings.) `\cvpart` does this for you; a hand-written section block must call it
+% itself.
 \newcommand{\cvdeclare}[1]{%
+  \cvlaidout{#1}%
+  % Printing is the default: only `printed: false` in content/cv.yaml generates a
+  % \cv<Key>Printed of 0, and this \providecommand leaves that definition alone.
+  \expandafter\providecommand\csname cv#1Printed\endcsname{1}%
   \expandafter\providecommand\csname cv#1Count\endcsname{0}%
   \expandafter\providecommand\csname cv#1\endcsname{}%
   \expandafter\providecommand\csname cv#1Note\endcsname{}%
@@ -183,12 +200,13 @@
 }
 
 % Print one section of content/cv.yaml. #1 is the heading, #2 the section's
-% macro name (`Awards` for the `awards:` key). A section the file does not have
-% prints nothing at all - no heading, no gap - so this line can stay.
-% Reorder the CV by reordering these lines in the document below.
+% macro name (`Awards` for the `awards:` key). A section the file does not have,
+% or gives `printed: false`, prints nothing at all - no heading, no gap - so this
+% line can stay. Reorder the CV by reordering these lines in the document below.
 \newcommand{\cvpart}[2]{%
   \cvdeclare{#2}%
   \ifnum\csname cv#2Count\endcsname>0
+  \ifnum\csname cv#2Printed\endcsname>0
   \section{\textbf{#1}}
   \vspace{-0.4mm}
   \resumeSubHeadingListStart
@@ -196,6 +214,15 @@
   \resumeSubHeadingListEnd
   \vspace{-6mm}
   \fi
+  \fi
+}
+
+% One section of the record's own section sequence: `\cvpart`, unless this file
+% has already laid that key out by hand above. Every line of \cvAutoSections is
+% one of these, so an adopter's new section prints with no edit here, and the
+% ones curated below keep their curated heading, order and setting.
+\newcommand{\cvautopart}[2]{%
+  \expandafter\ifx\csname cvlaidout@#2\endcsname\relax\cvpart{#1}{#2}\fi%
 }
 
 % `\cvpart`, with the second line of every entry set the other way. Which
@@ -409,9 +436,12 @@
 
 % A section set by hand rather than by \cvpart, because it prints a note and a
 % table of its own. Any such block must call \cvdeclare itself, or the macros
-% below are undefined for someone whose cv.yaml has no `supervision:` key.
+% below are undefined for someone whose cv.yaml has no `supervision:` key, and
+% must guard on \cv<Key>Printed too, so the record's `printed: false` holds here
+% exactly as it does for a \cvpart section.
 \cvdeclare{Supervision}
 \ifnum\cvSupervisionCount>0
+\ifnum\cvSupervisionPrinted>0
 \section{\textbf{Student Supervision (Theses \& Internships)}}
 \vspace{-0.4mm}
 
@@ -429,15 +459,23 @@
 \bottomrule
 \end{cvtable}
 \fi
+\fi
 
 \cvdeclare{Languages}
 \ifnum\cvLanguagesCount>0
+\ifnum\cvLanguagesPrinted>0
 \section{\textbf{Additional Information}}
 \vspace{-0.4mm}
 \small{
 \textbf{Languages:} \cvLanguagesInline
 }
 \fi
+\fi
+
+% Every section of content/cv.yaml the lines above did not place, in the order the
+% record writes them. This is the line that makes a new section print without a
+% LaTeX edit: nothing here names one.
+\cvAutoSections
 
 \cvdeclarebib{Talks}
 \ifnum\cvTalksCount>0

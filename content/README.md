@@ -1,6 +1,11 @@
 # `content/` — the adopter-owned records and media
 
-This directory owns every structured record and media asset about you.
+This directory owns every structured record and media asset about you — every fact, and which
+sections your CV prints. It does not own the **design**: the site's colours and type, the printed
+CV's layout, its curated section headings, the website's routes and the announcement wording live in
+code. Changing those is an ordinary edit outside this directory, documented in the repository
+[README](../README.md#make-it-yours-after-the-first-green-build). Replacing the record never requires
+one.
 
 ```
 content/
@@ -229,9 +234,37 @@ Honours)`, `Ph.D. in Mathematics (Excellent cum laude)`.
 
 ### Which sections exist
 
-`content/cv.yaml` may hold **any** top-level list you like, and `cv/cv.tex` decides which of them
-the PDF prints, in what order, under what heading — one line per section. Add a section to the
-YAML and a `\cvpart{Your Heading}{YourKey}` line to `cv.tex` and it is printed.
+`content/cv.yaml` may hold **any** top-level list you like, and **the printed CV prints all of
+them.** Add `fieldwork:` to the file and a Fieldwork section appears in the PDF with no LaTeX edit at
+all: `scripts/build-cv-data.mjs` hands `cv/cv.tex` the whole section sequence, in the order the file
+writes it, and the heading is the key spelt out. A section the layout does not curate itself prints
+after the ones it does, before the bibliographies, in file order among its own kind.
+
+Two optional keys are there for when the key is not what you want printed:
+
+```yaml
+outreach:
+  heading: Public engagement   # the PDF heading, when the key spelt out is not it
+  entries:
+    - title: Sediment cores for schools
+
+fieldwork:
+  printed: false               # on the site and in the register, not in the PDF
+  entries:
+    - title: Pukaki Rise coring voyage
+```
+
+`heading:` and `printed:` are the map form of a section, the same form a `note:` needs (below); a
+section that needs neither stays a plain list. `printed: false` is the answer to "on the site, not in
+the CV" — the bundled example uses it on `fieldwork:`, `leadership:` and `strands:`, so deleting one
+of those lines is how you see a section appear in the PDF.
+
+`cv/cv.tex` still curates the sections whose heading or setting is a design decision — the ones it
+places by hand as `\cvpart{Academic Appointments / Experience}{Appointments}` and friends keep that
+heading, that position and that setting, and are not printed twice. On those, `heading:` is ignored
+and the layout's own wording wins; `printed: false` still works, because whether a section exists in
+your CV at all is your record. Changing a curated heading or position is a layout edit, which is a
+code edit, and that is fine: what a section is called and where it sits on the page is design.
 
 **The website is not open in the same way.** It renders exactly these keys:
 
@@ -242,8 +275,9 @@ YAML and a `\cvpart{Your Heading}{YourKey}` line to `cv.tex` and it is printed.
 | `projects` | `/projects/` |
 
 A section you invent — `fieldwork:`, `outreach:` — reaches the **printed CV** and the **register**
-(where it announces as `Fieldwork`), and not a page of its own until a route is added for it. Use
-the names above where they fit.
+(where it announces as `Fieldwork`), and not a page of its own until a route is added for it in
+`web/src/pages/`. That route is a code edit; the section itself is not. Use the names above where
+they fit.
 
 **A section you have none of: leave the key out**, or write `awards: []`. Both are the same: no
 heading, no gap, nothing printed, no error.
@@ -291,7 +325,7 @@ teaching:
 ```
 
 A section-level `note` is not an entry field. A section that needs a paragraph of its own above
-its entries is written as a map:
+its entries is written as a map — the same map that carries `heading:` and `printed:` above:
 
 ```yaml
 supervision:
@@ -365,7 +399,8 @@ any carrying `printed: false`, so an entry two sections accept is printed once a
 same way. Two more keys: `prefix:` overrides the numbering letter (it defaults to `short`'s first
 letter, and two printed sections claiming the same one is an error, not a silent collision), and
 `printed: false` omits a section from the PDF; a publication section remains named on the website
-— the answer to "on the site, not in the CV", as `leadership:` is for ordinary sections. Every
+— the answer to "on the site, not in the CV", spelt exactly as it is
+[on an ordinary section](#which-sections-exist). Every
 section is checked, printed or not: one with no criteria at all would match the whole bibliography,
 so it is refused rather than accepted quietly.
 
@@ -445,15 +480,18 @@ reason, in the feed's provenance block. A **manuscript under review** is the cas
 you give it an `announced:` — the day you submitted it. It stays on `/publications/` either way.
 
 The sentence each kind of fact is announced in is one table, `TEMPLATES`, at the top of
-`web/src/lib/announcements.ts`. It is the first thing to edit if you want different wording.
+`web/src/lib/announcements.ts`. Wording is design, not record, so it lives in code: edit that table
+if you want different sentences. Nothing about a single announcement is written by hand there
+either — you change the sentence for a whole kind of fact at once.
 
 ## Research strands
 
 The home page renders the optional `strands:` list with the ordinary entry shape. `title` is the
 strand name, `detail` is its short explanation, and `items` are evidence notes visible when a
 reader turns on **Inspect sources** — they are not body text, so a reader who never opens the
-inspect view never sees them. `strands:` is website-only: `cv/cv.tex` prints no strands section.
-Omit `strands:` and the block disappears.
+inspect view never sees them. In the bundled record `strands:` carries `printed: false`, because a
+research-strands section belongs on the home page rather than in a CV; it is an ordinary section
+otherwise, and removing that line prints one. Omit `strands:` and the block disappears.
 
 ## Where the misleading fields land
 
@@ -466,10 +504,12 @@ Most fields reach both the website and the PDF. These land somewhere their names
 | `profile.bio.short` | shown on `/cv/` as "Short bio" | printed as "Short Bio" |
 | `profile.bio.long` | the home page, in full, first sentence quoted above the fold | never printed |
 | `profile.address` | the footer | never printed |
-| `strands` | the home page; `items` only under **Inspect sources** | no section |
+| `strands` | the home page; `items` only under **Inspect sources** | no section, by its own `printed: false` |
 | `funding` | shown under the dates on `/projects/` | never printed |
 | `rank_url` | links the `metric` badge | never printed |
 | a publication section with `printed: false` | still names and labels its entries | no section, and its entries are subtracted from every section declared below it |
+| an ordinary section with `printed: false` | rendered wherever it has a route | no section |
+| `heading` on a section | not rendered; the site uses its own headings | the section's heading |
 
 A section key the website has no route for — `fieldwork:`, `outreach:` — reaches the printed CV and
 the announcement register but no page of its own; see [Which sections exist](#which-sections-exist).

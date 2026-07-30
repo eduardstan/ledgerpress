@@ -1,8 +1,15 @@
 # Your CV and your website, from one file, that cannot disagree.
 
 ledgerpress turns one academic record into a searchable website and a typeset PDF CV. Drop in the
-BibTeX you already have, edit only `content/`, and every publication, date, count, feed item and
-source note is rebuilt from the same facts.
+BibTeX you already have, write your record in `content/`, and every publication, date, count, feed
+item and source note is rebuilt from the same facts.
+
+**`content/` owns your record — every fact about you, and which sections your CV prints.** Replacing
+the example with your own material is a `content/` job and nothing else. Changing the **design** —
+colours and type, the printed CV's layout, website routes, redirects, announcement wording — is a
+code edit, and it is normal, supported and documented in
+[Make it yours](#make-it-yours-after-the-first-green-build). That is the whole line: what you are
+lives in `content/`, how it looks lives in code.
 
 The website lets a reader turn on **Inspect sources** and see where every claim came from. The
 production build goes further: if two hand-written dates on one fact contradict, it refuses to
@@ -31,8 +38,8 @@ high-contrast editorial interface in `web/`, including the Ledger Serif type fam
 
 The repository opens with Dr. Sahana Aster Kōwhai, a fictional palaeoclimatologist in Aotearoa New
 Zealand. Her record deliberately exercises cross-appointments, non-ASCII names, several BibTeX
-types, talks, teaching tables, projects, service, fieldwork, a post and a non-photographic SVG
-portrait.
+types, talks, teaching tables, projects, service, fieldwork kept off the printed CV by its own
+`printed: false`, a post and a non-photographic SVG portrait.
 
 The example record is fictional. Your own record and media remain yours.
 
@@ -171,18 +178,30 @@ gate without publishing.
 
 ## Make it yours after the first green build
 
-All personal facts stay in `content/`. Machinery customisation is optional:
+Every fact stays in `content/`, including which sections your CV prints: add a top-level list to
+`content/cv.yaml` and it appears in the PDF, under the heading its key spells out, with no LaTeX
+edit. `content/README.md` documents `heading:` and `printed: false` for the two cases where you want
+something else.
+
+**Design is code, and changing it is expected.** Each of these is a deliberate edit outside
+`content/`, not a leak in the boundary:
 
 - Edit `web/src/styles/global.css` to change Ledger's colours, type and layout.
-- Edit `cv/cv.tex` to change the printed layout.
+- Edit `cv/cv.tex` to change how the printed CV looks — spacing, fonts, the setting of an entry, and
+  the curated heading and position of a section it lays out by hand.
 - Add migration redirects in `web/src/lib/legacy-urls.ts`.
-- Change website routes in `web/src/pages/`.
+- Change or add website routes in `web/src/pages/`.
+- Change announcement wording in the `TEMPLATES` table of `web/src/lib/announcements.ts`.
+
+None of them touches a fact about you, and taking a later ledgerpress update after one of them is a
+merge you resolve rather than a conflict with your record.
 
 To make a CV variant, copy the layout—not the record:
 
 ```sh
 cp cv/cv.tex cv/teaching.tex
-# In cv/teaching.tex, keep or reorder the \cvpart lines needed for this version.
+# In cv/teaching.tex, keep the sections this version prints: reorder the \cvpart
+# lines, and drop \cvAutoSections if it should print only the ones named there.
 latexmk -xelatex -cd cv/teaching.tex
 ```
 
@@ -301,6 +320,7 @@ The important contracts are kept executable:
 - the generator rejects stale generated data and malformed table rows;
 - tests prove website and biber grouping agree, first match wins, and empty bibliographies stay safe;
 - the consistency gate compares duplicate dates within the same record;
+- a test proves a section invented in the record joins the printed CV with no `.tex` edit;
 - the adopter check proves a new person does not inherit the example;
 - the baseline gate protects the printed result, not byte-identical build artefacts.
 
