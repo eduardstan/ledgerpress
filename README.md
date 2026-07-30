@@ -54,9 +54,23 @@ code edit, and it is normal, supported and documented in
 [Make it yours](#make-it-yours-after-the-first-green-build). That is the whole line: what you are
 lives in `content/`, how it looks lives in code.
 
-The website lets a reader turn on **Inspect sources** and see where every claim came from. The
-production build goes further: if two hand-written dates on one fact contradict, it refuses to
-publish.
+## Positioning
+
+[al-folio](https://github.com/alshedivat/al-folio) is a feature-rich academic site theme. It can
+render a CV page from either RenderCV or JSONResume data and can optionally generate a PDF from the
+RenderCV record. [Academic Pages](https://github.com/academicpages/academicpages.github.io) is a
+Markdown-first portfolio template. In both, facts can live in several site and CV inputs; neither
+template requires one record to drive the whole website and every printed CV.
+
+ledgerpress makes that single-source contract the point: **one record produces the website, the
+full printed CV and its variants.** Change a fact once and every output rebuilds from it, so the web
+and print versions cannot drift into different copies. The website also exposes source provenance,
+and the production build refuses a contradiction when two hand-written dates on the same fact
+disagree.
+
+If a flexible blog or portfolio is the priority, al-folio or Academic Pages may be a better fit.
+ledgerpress is for researchers who want their website and printed CVs to remain publications of one
+authoritative record.
 
 ## Why ledgerpress
 
@@ -77,12 +91,14 @@ The name is literal: a **ledger** is the record kept once and required to balanc
 publishes it. The product is **ledgerpress**. **Ledger** is the design system inside it—the
 high-contrast editorial interface in `web/`, including the Ledger Serif type family.
 
-## See the example
+## In the wild
 
-The repository opens with Dr. Sahana Aster Kōwhai, a fictional palaeoclimatologist in Aotearoa New
-Zealand. Her record deliberately exercises cross-appointments, non-ASCII names, several BibTeX
-types, talks, teaching tables, projects, service, fieldwork kept off the printed CV by its own
-`printed: false`, a post and a non-photographic SVG portrait.
+- **[Bundled example](https://eduardstan.github.io/ledgerpress/)**: The template's own fictional
+  palaeoclimatologist, Dr. Sahana Aster Kōwhai. Her record exercises cross-appointments, non-ASCII
+  names, talks, teaching tables, projects, service, fieldwork kept off the printed CV via
+  `printed: false`, a post and an SVG portrait.
+- **[eduardstan.github.io](https://eduardstan.github.io/)**: The real personal site and CV from
+  which ledgerpress was extracted.
 
 The example record is fictional. Your own record and media remain yours.
 
