@@ -329,12 +329,10 @@ years: [2024, { year: 2025, announced: 2024-06-10 }, 2026]
 ```
 
 `rows:` turns an entry into a heading over a table. **Each row's keys, in the order you write
-them, are the columns, and the key name becomes the heading.** Write `points:` and the column says
-"Points". Every word of the key is capitalised and whatever separates them is kept, so
-`programme / level` heads a column "Programme / Level": write the key in lower case, because the
-capitals are presentation and this key is a fact the site publishes verbatim where it says which
-columns a table has. The build refuses rows whose columns or key order disagree, and generates
-equal-width columns for however many keys you use.
+them, are the columns, and the key name becomes the heading.** Write `Points:` and the column says
+"Points". Column headers are printed verbatim as written in the record (e.g. `Programme / level` or
+`Programme / Level`), so write row keys exactly as they should print. The build refuses rows whose
+columns or key order disagree, and generates equal-width columns for however many keys you use.
 
 ```yaml
 teaching:
@@ -342,10 +340,10 @@ teaching:
     org: University of Example
     dates: 2024 – Present
     rows:
-      - course: Databases
-        programme: B.Sc. Computer Science
-        topics: SQL; relational algebra
-        hours: 30 h/yr
+      - Course: Databases
+        Programme: B.Sc. Computer Science
+        Topics: SQL; relational algebra
+        Hours: 30 h/yr
 ```
 
 A section-level `note` is not an entry field. A section that needs a paragraph of its own above

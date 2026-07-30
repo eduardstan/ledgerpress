@@ -125,18 +125,18 @@ teaching:
     place: Ōtepoti Dunedin, Aotearoa New Zealand
     dates: 2021 – Present
     rows:
-      - course: GEOL 273
-        programme: B.Sc. Geology
-        topics: Palaeoclimate archives; proxy calibration
-        points: "18"
-      - course: GEOL 472
-        programme: B.Sc. (Hons)
-        topics: Marine cores; age-depth modelling
-        points: "18"
-      - course: OCEN 405
-        programme: M.Sc. Oceanography
-        topics: Southern Ocean circulation; uncertainty
-        points: "20"
+      - Course: GEOL 273
+        Programme: B.Sc. Geology
+        Topics: Palaeoclimate archives; proxy calibration
+        Points: "18"
+      - Course: GEOL 472
+        Programme: B.Sc. (Hons)
+        Topics: Marine cores; age-depth modelling
+        Points: "18"
+      - Course: OCEN 405
+        Programme: M.Sc. Oceanography
+        Topics: Southern Ocean circulation; uncertainty
+        Points: "20"
 
 supervision:
   note:
