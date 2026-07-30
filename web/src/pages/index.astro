@@ -41,13 +41,19 @@ const bibliographyEntries = countPhrase(bib.entries.length);
 const editorialBoards = countPhrase(editorials.length, 'editorial board', 'editorial boards');
 
 const counts = [
-  countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
+  {
+    ...countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
+    label: undefined,
+  },
   ...bib.byKind.map((kind) => ({
-    count: kind.count,
-    words: kind.kind || countPhrase(kind.count).words,
+    ...countPhrase(kind.count),
+    label: kind.kind,
   })),
-  editorialBoards,
-  countPhrase(roles.length, 'service role on record', 'service roles on record'),
+  { ...editorialBoards, label: undefined },
+  {
+    ...countPhrase(roles.length, 'service role on record', 'service roles on record'),
+    label: undefined,
+  },
 ];
 
 /**
@@ -164,7 +170,9 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
           counts.map((count) => (
             <li>
               <span class="n">{count.count}</span>
-              <span class="l label">{count.words}</span>
+              <span class="l label">
+                {count.words}{count.label && <> · {count.label}</>}
+              </span>
             </li>
           ))
         }

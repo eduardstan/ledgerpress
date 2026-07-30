@@ -270,6 +270,11 @@ assert.equal(
 );
 assert.equal(countPhrase(1, 'is not', 'are not').text, '1 is not');
 assert.equal(countPhrase(2, 'is not', 'are not').text, '2 are not');
+assert.equal(`${countPhrase(2).text} · Journal`, '2 entries · Journal');
+assert.equal(
+  `${countPhrase(1).text} · Books & chapters`,
+  '1 entry · Books & chapters',
+);
 
 const countSensitivePages = [
   '../pages/index.astro',
@@ -286,7 +291,14 @@ const homeSource = readFileSync(
   fileURLToPath(new URL('../pages/index.astro', import.meta.url)),
   'utf8',
 );
-assert.match(homeSource, /words:\s*kind\.kind\s*\|\|\s*countPhrase\(kind\.count\)\.words/);
+assert.match(
+  homeSource.replace(/\s+/g, ' '),
+  /\.\.\.countPhrase\(kind\.count\), label: kind\.kind/,
+);
+assert.match(
+  homeSource.replace(/\s+/g, ' '),
+  /\{count\.words\}\{count\.label && <> · \{count\.label\}<\/>\}/,
+);
 assert.doesNotMatch(homeSource, /kind\.kind\.toLowerCase|category:/);
 const publicationsSource = readFileSync(
   fileURLToPath(new URL('../pages/publications/[...sort].astro', import.meta.url)),
