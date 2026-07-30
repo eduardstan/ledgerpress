@@ -58,9 +58,9 @@ lives in `content/`, how it looks lives in code.
 
 Popular academic site templates like [al-folio](https://github.com/alshedivat/al-folio) and
 [academicpages](https://github.com/academicpages/academicpages.github.io) optimise for
-feature-rich personal sites or Markdown portfolios. While al-folio can generate a CV page and PDF
-from RenderCV or JSONResume data, neither template enforces consistency across the full site and
-printed document.
+feature-rich personal sites or Markdown portfolios. While al-folio can generate a CV page from
+RenderCV or JSONResume data and, with RenderCV, optionally generate a PDF, neither template
+enforces consistency across the full site and printed document.
 
 ledgerpress optimises for single-source accuracy. **One record produces both the website and the
 printed CV**, and the build **refuses to publish a contradiction between them.** The website lets
