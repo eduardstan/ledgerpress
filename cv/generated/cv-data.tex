@@ -93,6 +93,8 @@ Ocean archives (Reading marine sediments as layered records of temperature, circ
 
 \newcommand{\cvStrandsCount}{3}
 
+\newcommand{\cvStrandsPrinted}{0}
+
 \newcommand{\cvAppointmentsNote}{%
 %
 }
@@ -354,6 +356,8 @@ Pukaki Rise sediment coring voyage (Co-chief scientist), East Antarctic margin c
 
 \newcommand{\cvFieldworkCount}{2}
 
+\newcommand{\cvFieldworkPrinted}{0}
+
 \newcommand{\cvAwardsNote}{%
 %
 }
@@ -419,6 +423,8 @@ Co-chair, Open Polar Data Working Group, Faculty representative%
 }
 
 \newcommand{\cvLeadershipCount}{2}
+
+\newcommand{\cvLeadershipPrinted}{0}
 
 \newcommand{\cvLanguagesNote}{%
 %
@@ -506,4 +512,18 @@ I=Invited, C=Conference%
 \begin{refcontext}[labelprefix=C]
 \printbibliography[heading=bibsubheading, title={Conference presentations}, filter=Talks2, resetnumbers=true]
 \end{refcontext}%
+}
+
+\newcommand{\cvAutoSections}{%
+\cvautopart{Strands}{Strands}%
+\cvautopart{Appointments}{Appointments}%
+\cvautopart{Education}{Education}%
+\cvautopart{Teaching}{Teaching}%
+\cvautopart{Supervision}{Supervision}%
+\cvautopart{Service}{Service}%
+\cvautopart{Projects}{Projects}%
+\cvautopart{Fieldwork}{Fieldwork}%
+\cvautopart{Awards}{Awards}%
+\cvautopart{Leadership}{Leadership}%
+\cvautopart{Languages}{Languages}%
 }
