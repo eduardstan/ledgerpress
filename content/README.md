@@ -547,7 +547,7 @@ Most fields reach both the website and the PDF. These land somewhere their names
 
 | Field | Website | Printed CV |
 | --- | --- | --- |
-| `profile.site` | the origin and base path of every canonical, feed and sitemap URL | never read |
+| `profile.site` | the origin and base path of every canonical, feed, sitemap and social-preview URL | never read |
 | `profile.website` | not rendered | printed in the header contact line |
 | `profile.bio.short` | shown on `/cv/` as "Short bio" | printed as "Short Bio" |
 | `profile.bio.long` | the home page, in full, first sentence quoted above the fold | never printed |
