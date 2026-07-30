@@ -486,7 +486,7 @@ function readProfile(value: unknown, where: string): void {
   if (profile.site) {
     let published: URL;
     try {
-      published = new URL(profile.site);
+      published = new URL(profile.site as string);
     } catch {
       throw new RecordError(
         `${where}.site: expected an absolute HTTP(S) URL without a query or fragment, found ${JSON.stringify(profile.site)}`,

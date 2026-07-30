@@ -19,7 +19,7 @@ Astro 7 requires Node.js 22.12 or newer.
 | -------------------------- | -------------------------------------------------------------- |
 | `src/lib/record.ts`        | BibTeX, talks, posts, identity and provenance readers          |
 | `src/lib/cv.ts`            | Vite-inlined `content/cv.yaml` reader for pages                |
-| `src/lib/cv-schema.ts`     | Shared shapes and pure grouping helpers                        |
+| `src/lib/cv-schema.ts`     | Shared schema boundary, shapes and pure grouping helpers       |
 | `src/lib/announcements.ts` | One generated announcement stream for home, `/lately/` and RSS |
 | `src/lib/consistency.ts`   | Production contradiction gate                                  |
 | `src/lib/inline.ts`        | Shared inline markup grammar                                   |

@@ -61,9 +61,38 @@ assert.equal(SOURCES.cv, 'content/cv.yaml', 'the CV source is registered in SOUR
 // performs are part of the shape asserted below.
 const cv = readCv(parse(readFileSync(fixture, 'utf8')), SOURCES.cv);
 
+const numericDate = readCv(
+  { profile: { name: 'Researcher' }, appointments: [{ title: 'Fellow', dates: 2021 }] },
+  SOURCES.cv,
+);
+assert.equal(
+  entriesOf(numericDate.appointments)[0].dates,
+  '2021',
+  'an unquoted numeric year was not coerced to text at the record boundary',
+);
+
 assert.throws(
   () => readCv({ profile: { name: 'Researcher', site: 2021 } }, SOURCES.cv),
   /content\/cv\.yaml: profile\.site: expected an absolute HTTP\(S\) URL/,
+);
+assert.throws(
+  () =>
+    readCv(
+      { profile: { name: 'Researcher' }, appointments: [{ title: 'Fellow', datse: '2021' }] },
+      SOURCES.cv,
+    ),
+  /content\/cv\.yaml: appointments\[0\]\.datse: unknown field/,
+);
+assert.throws(
+  () =>
+    readCv(
+      {
+        profile: { name: 'Researcher' },
+        appointments: [{ title: 'Fellow', dates: { from: 2021 } }],
+      },
+      SOURCES.cv,
+    ),
+  /content\/cv\.yaml: appointments\[0\]\.dates: expected text, found a map/,
 );
 
 const text = (value: unknown, what: string) =>

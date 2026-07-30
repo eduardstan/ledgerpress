@@ -162,7 +162,7 @@ npm run build:cv-data          # your record, regenerated into cv/generated/cv-d
 npm test                       # the readers, the generators, and your record
 npm --prefix web run check     # types
 npm --prefix web run build     # the site, including the consistency gate
-npm run check:deployment-base  # every internal URL under your profile.site
+npm run check:deployment-base  # internal URLs under a project-site base
 npm run check:adopter          # the cold-start proof
 npm run check:format           # Prettier
 ```
@@ -313,8 +313,7 @@ git diff --stat HEAD
 git commit -m "chore: connect ledgerpress updates"
 npm ci
 npm ci --prefix web
-npm test
-npm run check:adopter
+npm run check
 ```
 
 `-X theirs` is deliberate only for this first unrelated merge: it takes ledgerpress's current
@@ -378,8 +377,7 @@ git diff --stat HEAD
 git commit -m "chore: take ledgerpress improvements"
 npm ci
 npm ci --prefix web
-npm test
-npm run check:adopter
+npm run check
 ```
 
 The `git restore` line deliberately puts your current `content/` back before the merge commit. Read
