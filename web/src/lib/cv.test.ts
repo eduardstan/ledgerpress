@@ -22,6 +22,8 @@ import {
   entriesOf,
   groupByTitle,
   isEditorial,
+  kindTally,
+  labelledCount,
   noteOf,
   sections,
   type CV,
@@ -281,25 +283,38 @@ const countSensitivePages = [
 ];
 const hardCodedCountNoun =
   /(?:\$\{[^{}]*(?:\.length|\.size)\}|\{[^{}]*(?:\.length|\.size)\})[^{}]{0,64}\b(?:appointments|awards|boards|courses|degrees|entries|items|labels|languages|posts|presentations|projects|roles|rows|talks|venues)\b/;
-const homeSource = readFileSync(
-  fileURLToPath(new URL('../pages/index.astro', import.meta.url)),
-  'utf8',
+// What a reader actually sees on a count row. This used to be asserted by
+// matching the page's own markup, which a reformat of that markup broke while
+// every rendered word stayed correct; the composition now lives in
+// `labelledCount` and is asserted as text.
+assert.equal(labelledCount(countPhrase(1), 'Journal').line, 'entry · Journal');
+assert.equal(labelledCount(countPhrase(2), 'Journal').line, 'entries · Journal');
+assert.equal(
+  labelledCount(countPhrase(1), 'Books & chapters').line,
+  'entry · Books & chapters',
+  'a declared label is reproduced verbatim, never inflected or recased',
 );
-assert.match(
-  homeSource.replace(/\s+/g, ' '),
-  /\.\.\.countPhrase\(kind\.count\), label: kind\.kind/,
+assert.equal(labelledCount(countPhrase(2)).line, 'entries', 'no label, no separator');
+assert.equal(
+  labelledCount(countPhrase(1, 'editorial board', 'editorial boards')).line,
+  'editorial board',
 );
-assert.match(
-  homeSource.replace(/\s+/g, ' '),
-  /\{count\.words\}\{count\.label && <> · \{count\.label\}<\/>\}/,
-);
-assert.doesNotMatch(homeSource, /kind\.kind\.toLowerCase|category:/);
-const publicationsSource = readFileSync(
-  fileURLToPath(new URL('../pages/publications/[...sort].astro', import.meta.url)),
-  'utf8',
-);
-assert.match(publicationsSource, /`\$\{kind\.kind\}: \$\{kind\.count\}`/);
-assert.doesNotMatch(publicationsSource, /kind\.kind\.toLowerCase|category:/);
+assert.equal(labelledCount(countPhrase(2), 'Journal').label, 'Journal');
+assert.equal(labelledCount(countPhrase(2), 'Journal').count, 2);
+
+assert.equal(kindTally({ kind: 'Journal', count: 1 }), 'Journal: 1');
+assert.equal(kindTally({ kind: 'Books & chapters', count: 4 }), 'Books & chapters: 4');
+assert.equal(kindTally({ count: 1 }), '1 entry', 'an unkinded tally still inflects its own noun');
+assert.equal(kindTally({ count: 3 }), '3 entries');
+
+for (const page of ['../pages/index.astro', '../pages/publications/[...sort].astro']) {
+  const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
+  assert.doesNotMatch(
+    source,
+    /kind\.kind\.toLowerCase|category:/,
+    `${page}: recases a declared label`,
+  );
+}
 for (const page of countSensitivePages) {
   const source = readFileSync(fileURLToPath(new URL(page, import.meta.url)), 'utf8');
   assert.match(
@@ -389,10 +404,20 @@ for (const html of rendered) {
   );
 }
 
+// This line counts things too, so it inflects through the same helper the pages
+// use rather than hard-coding plural nouns beside a variable count.
+const tally = (rows: unknown[], singular: string, plural: string) =>
+  countPhrase(rows.length, singular, plural).text;
 console.log(
-  `ok — ${sections(cv).length} sections: ${appointments.length} appointments, ` +
-    `${education.length} degrees, ${teaching.length} teaching posts / ${courses.length} courses, ` +
-    `${supervision.length} supervision rows, ${awards.length} awards, ` +
-    `${service.length} service roles, ${projects.length} projects, ` +
-    `${languages.length} languages, ${leadership.length} leadership roles`,
+  `ok — ${tally(sections(cv), 'section', 'sections')}: ` +
+    `${tally(appointments, 'appointment', 'appointments')}, ` +
+    `${tally(education, 'degree', 'degrees')}, ` +
+    `${tally(teaching, 'teaching post', 'teaching posts')} / ` +
+    `${tally(courses, 'course', 'courses')}, ` +
+    `${tally(supervision, 'supervision row', 'supervision rows')}, ` +
+    `${tally(awards, 'award', 'awards')}, ` +
+    `${tally(service, 'service role', 'service roles')}, ` +
+    `${tally(projects, 'project', 'projects')}, ` +
+    `${tally(languages, 'language', 'languages')}, ` +
+    `${tally(leadership, 'leadership role', 'leadership roles')}`,
 );

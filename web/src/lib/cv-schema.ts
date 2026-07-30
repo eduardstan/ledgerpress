@@ -241,6 +241,34 @@ export function countPhrase(count: number, singular = 'entry', plural = 'entries
   return { count, words, text: `${count} ${words}` };
 }
 
+export interface LabelledCount extends CountPhrase {
+  /** The declared label, or nothing when the phrase already names what it counts. */
+  label?: string;
+  /** The whole label line, the count itself excluded: inflected words, then the label. */
+  line: string;
+}
+
+/**
+ * A count phrase carrying the declared section label it belongs to.
+ *
+ * A declared label is arbitrary and translatable, so it is reproduced verbatim
+ * and never inflected; only the phrase's own noun follows the count. The whole
+ * line is composed here rather than in page markup, so `cv.test.ts` asserts the
+ * text a reader sees instead of the shape of the markup that emits it.
+ */
+export const labelledCount = (phrase: CountPhrase, label?: string): LabelledCount => ({
+  ...phrase,
+  label,
+  line: label ? `${phrase.words} · ${label}` : phrase.words,
+});
+
+/**
+ * One kind's tally in a provenance record: its declared label against its
+ * count, or the inflected phrase when the bibliography declares no kind.
+ */
+export const kindTally = (kind: { kind?: string; count: number }) =>
+  kind.kind ? `${kind.kind}: ${kind.count}` : countPhrase(kind.count).text;
+
 /**
  * Whether a role is an editorship, matched on the file's own word for it.
  *

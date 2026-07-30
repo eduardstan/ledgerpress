@@ -23,7 +23,7 @@ import {
   yearSpan,
   type Publication,
 } from '../../lib/record';
-import { countPhrase } from '../../lib/cv';
+import { countPhrase, kindTally } from '../../lib/cv';
 import { internalUrl } from '../../lib/urls';
 
 /**
@@ -273,11 +273,7 @@ const description = `${entryCount.text}${span && `, ${span}`}, read from ${SOURC
       row is that entry's own text. Nothing on this page is transcribed by hand.
     </p>
     <p>
-      {
-        bib.byKind
-          .map((kind) => (kind.kind ? `${kind.kind}: ${kind.count}` : countPhrase(kind.count).text))
-          .join(', ')
-      }. {
+      {bib.byKind.map(kindTally).join(', ')}. {
         countPhrase(abstracted, `of ${entryCount.text} carries`, `of ${entryCount.text} carry`).text
       } an abstract; the rest show their record only. The four orders are four static pages — /publications/,
       /publications/year-asc/, /publications/type/ and /publications/title/ — so ordering the index needs

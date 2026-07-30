@@ -24,7 +24,8 @@ family without the generator naming the section. Publication and talk grouping i
 
 - `npm test` runs the repository and website self-checks plus the generated-data freshness gate.
 - `npm run build` regenerates CV data and builds the production website.
-- `cd web && npm run dev` runs the local site.
+- `npm run dev` runs the local site; it forwards to the `web` package.
+- `npm run check:format` is the Prettier gate; `npm test` does not cover formatting.
 - `latexmk -xelatex -cd cv/cv.tex` builds the PDF. XeLaTeX is required.
 - `bash scripts/check-cv-baseline.sh` compares the built PDF with `data/cv-baseline/`.
 - `npm run check:adopter` creates a tracked-file-only copy, replaces only `content/`, and proves
@@ -44,6 +45,10 @@ family without the generator naming the section. Publication and talk grouping i
   Do not replace them with hand-written numbers or copy.
 - A zero-entry bibliography must skip its entire `refsection`; biber otherwise silently emits `[0]`
   labels. `\cvdeclare` and `\cvdeclarebib` keep missing sections safe for a minimal record.
+- `scripts/check-deployment-base.mjs` builds its fixture-base proof into its own ignored throwaway
+  directory and asserts `web/dist` is byte-identical afterwards. `web/dist` is the published
+  artifact: a verification build must be structurally incapable of becoming it. It once rebuilt in
+  place and the deploy published the fixture base with every check green.
 - `web/public/fonts/LICENSES.md` travels unchanged with the bundled Ledger fonts.
 - Root Prettier checks the whole repository with `.prettierrc`; keep nested configuration compatible.
 

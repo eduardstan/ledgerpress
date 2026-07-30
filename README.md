@@ -49,6 +49,11 @@ npm ci
 npm ci --prefix web
 ```
 
+Both installs are required: `web/` is a separate npm package with its own `web/package.json`,
+`web/package-lock.json` and `web/node_modules`. The root install brings the CV generator's
+dependencies; the `--prefix web` install brings Astro and the website's. Running only the first
+leaves every website command failing on missing dependencies.
+
 This is the quickest route: GitHub gives the new repository a clean one-commit history rather than
 ledgerpress's history. That means its first upstream update must explicitly join unrelated
 histories, as documented below. Choose the history-preserving fork or clone route instead if clean
@@ -58,6 +63,26 @@ GitHub does not show the button, use that history-preserving route.
 You need Node.js 22.12 or newer. Building the PDF locally also needs XeLaTeX, biber and latexmk;
 checking it against the included baseline additionally needs Poppler's `pdftotext`/`pdfinfo`. The
 GitHub workflows provide all of those tools in CI.
+
+A minimal TeX Live install is not enough. `cv/cv.tex` loads `fontspec`, `biblatex`, `academicons`,
+`fontawesome5`, `eurosym`, `marvosym`, `tcolorbox`, `titlesec`, `enumitem`, `wrapfig` and `lipsum`,
+and sets the document in the TeX Gyre Pagella family. On Debian or Ubuntu that is:
+
+```sh
+sudo apt-get install texlive-xetex texlive-latex-recommended texlive-latex-extra \
+  texlive-fonts-recommended texlive-fonts-extra texlive-bibtex-extra \
+  fonts-texgyre latexmk biber poppler-utils
+```
+
+With upstream TeX Live or MacTeX, `scheme-full` covers all of it. A smaller scheme needs:
+
+```sh
+tlmgr install fontspec biblatex biber academicons fontawesome5 eurosym marvosym \
+  tcolorbox titlesec enumitem wrapfig lipsum tex-gyre latexmk
+```
+
+A missing `.sty` or an unregistered TeX Gyre Pagella fails the XeLaTeX pass; the log names the file
+or the font.
 
 Now replace the example:
 
@@ -72,8 +97,11 @@ The complete field reference, a smallest working record and BibTeX grouping exam
 Run the website:
 
 ```sh
-npm --prefix web run dev
+npm run dev
 ```
+
+That forwards to the website package; `npm --prefix web run dev` and `cd web && npm run dev` are the
+same command.
 
 Build the PDF:
 
@@ -114,7 +142,7 @@ npm run check:deployment-base
 npm run check:adopter
 latexmk -xelatex -cd cv/cv.tex
 bash scripts/check-cv-baseline.sh
-npx prettier . --check --ignore-unknown
+npm run check:format
 ```
 
 `npm run check:adopter` is the decisive test. It creates a clean tracked-file-only copy, replaces
@@ -129,17 +157,17 @@ text or pages, rebuild the baseline and explain why in that directory's README.
 The deploy workflow builds and validates both outputs, stages the fresh PDF into the site, and
 publishes `web/dist/` to the `gh-pages` branch.
 
-In the repository settings:
+The branch must exist before Pages can be pointed at it, so publish first and configure second:
 
-1. Set `profile.site` to the exact published URL, including `/YOUR-REPOSITORY/` for a GitHub project
-   site.
-2. Open **Pages**.
-3. Choose **Deploy from a branch**.
-4. Select `gh-pages` and `/ (root)`.
-5. Keep Actions enabled.
+1. Set `profile.site` in `content/cv.yaml` to the exact published URL, including
+   `/YOUR-REPOSITORY/` for a GitHub project site.
+2. Keep Actions enabled, and push to `main` (or run **Deploy site** from the Actions tab).
+3. Wait for **Deploy site** to finish. That run creates the `gh-pages` branch.
+4. Open **Settings → Pages**, choose **Deploy from a branch**, and select `gh-pages` and
+   `/ (root)`. Before that first run the branch is not in the dropdown.
 
-Push to `main`, or run **Deploy site** from the Actions tab. Pull requests run every build and gate
-without publishing.
+Every later push republishes without touching the settings again. Pull requests run every build and
+gate without publishing.
 
 ## Make it yours after the first green build
 

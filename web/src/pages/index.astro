@@ -7,6 +7,7 @@ import {
   countPhrase,
   CV_SOURCE,
   isEditorial,
+  labelledCount,
   service,
   serviceGroups,
   serviceWhen,
@@ -50,23 +51,12 @@ const bibliographyEntries = countPhrase(bib.entries.length);
 const editorialBoards = countPhrase(editorials.length, 'editorial board', 'editorial boards');
 
 const counts = [
-  {
-    ...countPhrase(
-      bib.entries.length,
-      'entry in this bibliography',
-      'entries in this bibliography',
-    ),
-    label: undefined,
-  },
-  ...bib.byKind.map((kind) => ({
-    ...countPhrase(kind.count),
-    label: kind.kind,
-  })),
-  { ...editorialBoards, label: undefined },
-  {
-    ...countPhrase(roles.length, 'service role on record', 'service roles on record'),
-    label: undefined,
-  },
+  labelledCount(
+    countPhrase(bib.entries.length, 'entry in this bibliography', 'entries in this bibliography'),
+  ),
+  ...bib.byKind.map((kind) => labelledCount(countPhrase(kind.count), kind.kind)),
+  labelledCount(editorialBoards),
+  labelledCount(countPhrase(roles.length, 'service role on record', 'service roles on record')),
 ];
 
 /**
@@ -171,10 +161,7 @@ const withheldClause = countPhrase(withheld, 'is not', 'are not');
           counts.map((count) => (
             <li>
               <span class="n">{count.count}</span>
-              <span class="l label">
-                {count.words}
-                {count.label && <> · {count.label}</>}
-              </span>
+              <span class="l label">{count.line}</span>
             </li>
           ))
         }
