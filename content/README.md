@@ -16,7 +16,7 @@ content/
   media/             portrait, favicon and post images
 ```
 
-Two consumers read it: the website (`web/`) and the printed CV (`cv/cv.tex`, via
+Two consumers read it: the website (`web/`) and the printed documents in `cv/` (via
 `npm run build:cv-data`). Neither has a second copy of anything.
 
 A few fields reach only one of the two. Every such case is stated where the field is documented, and
@@ -266,6 +266,20 @@ and the layout's own wording wins; `printed: false` still works, because whether
 your CV at all is your record. Changing a curated heading or position is a layout edit, which is a
 code edit, and that is fine: what a section is called and where it sits on the page is design.
 
+Three documents read this file: `cv/cv.tex`, `cv/short.tex` and `cv/teaching.tex`. Everything above
+describes the full CV, which is the one that prints the whole sequence. The two variants are curated
+subsets: each prints only the sections its own `.tex` names, so a new section reaches `cv/cv.tex`
+automatically and reaches a variant when you add its line there. `printed: false` still holds in all
+three.
+
+Two things a variant decides that this file does not. `\cvpart[3]{...}{...}` prints only the first
+three entries of a section: **how many is never written here**, because it is a page budget belonging
+to one document, and the same section is worth three entries in a short CV and all of them in the
+full one. A variant may also print a narrower slice of the bibliography with a filter of its own.
+What *is* written here is curation — mark the entries themselves, as `content/publications.bib` marks
+two with the `selected` keyword that `cv/short.tex` filters on. See the CV variants section of the
+top-level `README.md`.
+
 **The website is not open in the same way.** It renders exactly these keys:
 
 | Key | Where it appears on the site |
@@ -338,6 +352,20 @@ supervision:
       detail: End-to-end supervision of ...
 ```
 
+A section may be **nothing but** a note. That is how a document gets prose `profile:` has no field
+for — a teaching statement in place of the research focus — without the generator learning a new
+field name:
+
+```yaml
+teaching_statement:
+  note:
+    - I teach palaeoclimate reasoning as **evidence work**.
+  entries: []
+```
+
+`cv/teaching.tex` prints it; the full CV does not, and neither does the website, which renders
+nothing for a section with no entries.
+
 ### Prose you may write in any field
 
 `**bold**`, `_italic_`, `[text](url)`. Write typographic characters as the real character:
@@ -363,7 +391,7 @@ Both `journal` and BibLaTeX's `journaltitle` are read, so a Better BibTeX BibLaT
 ### How they are grouped: `publications:` and `talks:` in `cv.yaml`
 
 **A section is a title plus a filter, and you declare it.** No publication entry type is named in
-`cv.tex` or in the website's source, so every BibTeX type is expressible — an adopter whose career
+the printed layout or in the website's source, so every BibTeX type is expressible — an adopter whose career
 is books, datasets or patents declares a section and it works, with no LaTeX edit. The
 `publications:` declaration is read by both, so the PDF and the publication index cannot disagree
 about how the work is grouped.
@@ -403,6 +431,13 @@ letter, and two printed sections claiming the same one is an error, not a silent
 [on an ordinary section](#which-sections-exist). Every
 section is checked, printed or not: one with no criteria at all would match the whole bibliography,
 so it is refused rather than accepted quietly.
+
+**This list is shared, so do not add a section here for one document's sake.** A "Selected
+publications" section declared for a short CV would subtract those papers from "Journal articles" in
+`cv/cv.pdf` and change their Type on the website, because the subtraction above is what keeps the two
+consumers agreeing. Mark the entries instead — the bundled record puts `selected` in the `keywords`
+of two — and let the one document that wants them filter on it in its own `.tex`; `cv/short.tex`
+shows how.
 
 **Types and keywords are matched exactly as Biber matches them**, because Biber is the other
 consumer: entry types are written in **lower case** (biber lower-cases every one before testing a
@@ -541,9 +576,11 @@ CI runs the same cold-start proof with a synthetic adopter on every push and pul
 ## The two builds
 
 ```bash
-npm run build:cv-data            # content/cv.yaml -> cv/generated/cv-data.tex
-latexmk -xelatex -cd cv/cv.tex   # the PDF. xelatex, not pdflatex
-npm run dev                      # the site
+npm run build:cv-data                 # content/cv.yaml -> cv/generated/cv-data.tex
+latexmk -xelatex -cd cv/cv.tex        # the PDF. xelatex, not pdflatex
+latexmk -xelatex -cd cv/short.tex     # the same record, one page
+latexmk -xelatex -cd cv/teaching.tex  # the same record, led by teaching
+npm run dev                           # the site
 ```
 
 `web` refuses to build when two records in `content/` contradict each other; it tells you which

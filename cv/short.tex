@@ -1,0 +1,93 @@
+% -----------------------------------------------------------------------------
+% THE SHORT CV: the two-page record cut to one page.
+%
+% This file is a VARIANT. It repeats no fact: every line below either shares
+% cv/preamble.tex and cv/header.tex with the full CV, or names a generated macro
+% that content/cv.yaml already fills. Editing content/cv.yaml reaches this
+% document and cv/cv.tex at the same time.
+%
+% A variant differs from the full CV in three ways, all of them layout:
+%   - it omits a section, by not writing its \cvpart line (teaching, service,
+%     projects, supervision, talks and languages are all absent here);
+%   - it truncates a section, with \cvpart's optional count;
+%   - it prints a narrower slice of the bibliography, with the filter below.
+%
+%
+% It does NOT print \cvAutoSections, and that is the deliberate difference from
+% cv/cv.tex. There, the record's own section sequence prints everything the
+% layout did not curate, so a new section in content/cv.yaml appears with no
+% LaTeX edit. A variant is a curated subset by definition: printing every
+% remaining section is exactly what it exists not to do. So a section added to
+% the record reaches cv/cv.tex automatically and reaches this file when you add
+% its \cvpart line. The record's `printed: false` still holds here either way -
+% \cvpart guards on \cv<Key>Printed, so a section the record withdraws cannot
+% reappear through a variant.
+% Build:  latexmk -xelatex -cd cv/short.tex
+% -----------------------------------------------------------------------------
+\input{preamble.tex}
+
+% The publications this CV prints. `selected` is a keyword on the entries in
+% content/publications.bib - a judgement about the work, recorded once with the
+% work itself.
+%
+% This filter is deliberately NOT a section under `publications:` in
+% content/cv.yaml. That list is a single ordering shared with the full CV and
+% the website, and each of its sections subtracts the ones declared before it so
+% that an entry prints under exactly one heading. Adding a `selected` section
+% there would therefore take these papers OUT of "Journal articles" in cv.pdf
+% and out of their type on the website. A filter that only one document uses
+% belongs to that document.
+\defbibfilter{shortselected}{keyword=selected}
+
+\begin{document}
+\headerfontiii
+
+\input{header.tex}
+
+% The ungrouped declaration keeps the rest of the CV at the compact body size.
+% Using \small{ here would leave a group open at \end{document}.
+\ifx\cvShortBio\cvempty\else
+\section{\textbf{Short Bio}}
+\fi
+\vspace{1mm}
+\small
+\cvShortBio
+\vspace{-2mm}
+
+\ifx\cvFocus\cvempty\else
+\section{\textbf{Research Focus}}
+\vspace{1mm}
+\small{
+\cvFocus
+}
+\vspace{-2mm}
+\fi
+
+\cvpart[2]{Appointments}{Appointments}
+
+\cvpart[2]{Education}{Education}
+
+\cvpartflush{Awards \& Scholarships}{Awards}
+
+% \cvPublicationsCount is how many entries content/publications.bib holds, not
+% how many the filter matches, so this guards against an empty file rather than
+% against an empty selection. A record with publications but nothing marked
+% `selected` prints this heading over nothing.
+\cvdeclarebib{Publications}
+\ifnum\cvPublicationsCount>0
+\section{\textbf{Selected Publications}}
+
+\begin{refsection}[../content/publications.bib]
+\nocite{*}
+
+\printbibliography[heading=bibsubheading, title={Peer-reviewed}, filter=shortselected, resetnumbers=true]
+
+\end{refsection}
+\fi
+
+\vspace{5mm}
+{\footnotesize
+\cvFooter
+}
+
+\end{document}
