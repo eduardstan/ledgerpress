@@ -40,19 +40,29 @@ appointments:
 
 ## Import your ORCID record
 
-If you already maintain an ORCID record, you do not need to retype your past employments and degrees into `cv.yaml` by hand:
+If you already maintain an ORCID record, you do not need to retype its public employment,
+education and qualification history into `cv.yaml` by hand:
 
 ```sh
 node scripts/import-orcid.mjs 0000-0002-1825-0097
 ```
 
-It fetches the public record for that iD and prints YAML fragments to stdout:
-- **employments** formatted as `appointments` entries
-- **educations** and **qualifications** formatted as `education` entries
+Pass either a bare ORCID iD or its full `https://orcid.org/...` URL. The importer fetches that
+public record and prints YAML to standard output:
 
-**It prints, never writes.** Review the output, edit any entries as you see fit, and paste what you want into `content/cv.yaml`. It never modifies `cv.yaml` directly.
+- **employments** as `appointments` entries
+- **educations** and **qualifications** as `education` entries
 
-**What it does not import:** publications, funding, or works. ORCID's publication metadata is inconsistent; your existing BibTeX export (`content/publications.bib`) is already the better path for works.
+Entries are newest first. The importer carries over the role title, organisation, place, dates,
+department and URL when ORCID supplies them. If ORCID has no role title, the output marks the entry
+with a comment for you to complete.
+
+**It prints, never writes.** Review the output, edit any entries as you see fit, and paste what you
+want into `content/cv.yaml`. It never modifies `cv.yaml` directly.
+
+**What it does not import:** publications, funding, or works. ORCID's publication metadata is
+inconsistent; your existing BibTeX export (`content/publications.bib`) is already the better path
+for works.
 
 ## Bring the publications you already have
 

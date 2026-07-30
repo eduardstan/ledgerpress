@@ -93,10 +93,7 @@ test("selects the highest display-index assertion from each affiliation group", 
     organization: { name: "Example University" },
   });
   const group = (key, lowerTitle, preferredTitle) => ({
-    summaries: [
-      { [key]: summary(lowerTitle, 1) },
-      { [key]: summary(preferredTitle, 10) },
-    ],
+    summaries: [{ [key]: summary(lowerTitle, 1) }, { [key]: summary(preferredTitle, 10) }],
   });
   const parsed = parseOrcidRecord({
     "activities-summary": {
@@ -114,10 +111,10 @@ test("selects the highest display-index assertion from each affiliation group", 
 
   assert.deepEqual(
     parsed.appointments.map(({ entry }) => entry.title),
-    ["Preferred employment"],
+    ["Preferred employment"]
   );
   assert.deepEqual(
     parsed.education.map(({ entry }) => entry.title),
-    ["Preferred education", "Preferred qualification"],
+    ["Preferred education", "Preferred qualification"]
   );
 });
