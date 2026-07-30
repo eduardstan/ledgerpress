@@ -23,6 +23,13 @@ fragment they `\input`, as `cv/header.tex` (the contact block) and `cv/supervisi
 hand-set section) are. The printed design is therefore written once, and a document body is only
 which sections it curates, in what order, and how many entries of each. No fact is repeated per
 variant, and none may be: a variant carrying its own copy of an appointment breaks the premise.
+Three things a document may set for itself instead of editing the shared layout — `\cvtypeface`,
+`\cvcoursecols` and `\cvsourcemaps`, defined before its `\input{preamble.tex}`; README.md's "Three
+printed-CV settings a document carries itself" documents them and `cv/preamble.tex` explains each
+where it is read. They exist so an adopter with a forked `cv/preamble.tex` can drop the fork. Each is
+`\providecommand`ed to today's look, so the bundled example is unaffected, and no check asserts any
+of them. Do not grow the set into a theming system: a fourth setting needs the same evidence, a real
+fork that a shared layout otherwise cannot absorb.
 Only `cv/cv.tex` prints `\cvAutoSections`: a variant is a curated subset, so printing every section
 the body did not name is what it exists not to do — it still honours `printed: false`, because it
 reaches every section through `\cvpart`. What belongs to a variant is layout — including the entry
