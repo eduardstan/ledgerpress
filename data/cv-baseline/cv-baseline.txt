@@ -33,7 +33,7 @@ TEACHING
 •   Course coordinator and lecturer                                                                                 2021 – Present
     Kārearea University                                                                            Ōtepoti Dunedin, Aotearoa New
                                                                                                                          Zealand
-    Course                              Programme                       Topics                       Points
+    Course                              Programme                       Topics                       Credit points
     GEOL 273                            B.Sc. Geology                   Palaeoclimate archives;      18
                                                                         proxy calibration
     GEOL 472                            B.Sc. (Hons)                    Marine cores; age-depth      18
@@ -86,19 +86,11 @@ PUBLIC ENGAGEMENT
 •   Antarctic archives teacher residency                                                                                        Jul 2023
     Polar Evidence Studio, Short course on proxy evidence for secondary-school teachers                  Ōtepoti Dunedin, Aotearoa New
                                                                                                                                Zealand
-TALKS & PRESENTATIONS                                                                                              I=INVITED, C=CONFERENCE
+TALKS & PRESENTATIONS                                                                                                            I=INVITED
 
 Invited and keynote talks
     [I1]   S. A. Kōwhai. “What an open sediment record should remember”. Tideglass Earth Assembly (Bergen, Norway). Invited
            keynote. June 18, 2026.
-
-Conference presentations
-[C1]       S. A. Kōwhai and M. Te Rangi. “First results from the Pukaki Rise coring transect”. Tāwhirimātea Polar Forum (Te
-           Whanganui-a-Tara Wellington, Aotearoa New Zealand). Oral presentation. Aug. 21, 2025.
-[C2]       S. A. Kōwhai. “Age-depth ensembles without hidden decisions”. Open Core Biennial (nipaluna Hobart, Australia). Poster
-           presentation. Dec. 4, 2024. URL: https://talks.example.edu/kowhai2024ensembles.
-[C3]       S. A. Kōwhai. “From core description to an auditable climate record”. Southern Archives Methods Forum (Ōtepoti Dunedin,
-           Aotearoa New Zealand). Sept. 14, 2023.
 
 PUBLICATIONS                                                                      J=JOURNAL, C=CONFERENCE, B=BOOKS, D=DATA, R=UNDER REVIEW
 
@@ -113,17 +105,16 @@ Conference papers (peer-reviewed)
            the International Palaeoceanography Symposium. Bergen, Norway, 2023, pp. 145–152. DOI: 10.5555/palaeo.2023.0145.
 
 Books and chapters
-[B1]   S. A. Kōwhai. “Proxy agreement and disagreement in high-latitude marine archives”. In: Southern Ocean Palaeoceanography:
-       Methods and Records. Ed. by L. Navarro and K. Adeyemi. Cape Town: Aster Academic Press, 2023, pp. 81–108.
-[B2]   S. A. Kōwhai and C. Okafor. “Southern Ocean Foraminiferal Assemblages as Thermal Proxies”. In: Advances in Marine
-       Palaeoecology. Ed. by L. Navarro. Aster Academic Press, 2022. Chap. 4, pp. 89–112.
-[B3]   S. A. Kōwhai and M. Te Rangi. Field Notes for Reciprocal Polar Science. Ōtepoti Dunedin: Koru Open Books, 2021.
+[B1]       S. A. Kōwhai. “Proxy agreement and disagreement in high-latitude marine archives”. In: Southern Ocean Palaeoceanography:
+           Methods and Records. Ed. by L. Navarro and K. Adeyemi. Cape Town: Aster Academic Press, 2023, pp. 81–108.
+[B2]       S. A. Kōwhai and C. Okafor. “Southern Ocean Foraminiferal Assemblages as Thermal Proxies”. In: Advances in Marine
+           Palaeoecology. Ed. by L. Navarro. Aster Academic Press, 2022. Chap. 4, pp. 89–112.
+[B3]       S. A. Kōwhai and M. Te Rangi. Field Notes for Reciprocal Polar Science. Ōtepoti Dunedin: Koru Open Books, 2021.
 
 Data archives
-[D1]   S. A. Kōwhai and C. Okafor. Pukaki Rise multiproxy core chronology, version 1.0. Aotearoa Polar Data Commons, 2025. URL:
-       https://data.example.edu/pukaki-rise-v1.
-
-Manuscripts under review
+[D1]       S. A. Kōwhai and C. Okafor. Pukaki Rise multiproxy core chronology, version 1.0. Aotearoa Polar Data Commons, 2025. URL:
+           https://data.example.edu/pukaki-rise-v1.
+Manuscripts under review
 [R1]   S. A. Kōwhai and M. Te Rangi. “Shelf-water change at the Pacific Antarctic margin”. In: Open Core Review (2028).
 [R2]   S. A. Kōwhai and T. Ndlovu. “Sea-ice retreat and productivity at the East Antarctic margin”. In: Tāwhirimātea Ice Records
        (2027).

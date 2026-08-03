@@ -227,7 +227,7 @@ Ph.D. in Marine Geology, M.Sc. in Earth Sciences (First Class Honours), B.Sc. in
   {Kārearea University}
   {2021 -- Present}
   {Ōtepoti Dunedin, Aotearoa New Zealand}
-\cvcourses{Y Y Y Y}{\textbf{Course} & \textbf{Programme} & \textbf{Topics} & \textbf{Points} \\}{
+\cvcourses{Y Y Y Y}{\textbf{Course} & \textbf{Programme} & \textbf{Topics} & \textbf{Credit points} \\}{
 GEOL 273 & B.Sc. Geology & Palaeoclimate archives; proxy calibration & 18 \\
 GEOL 472 & B.Sc. (Hons) & Marine cores; age-depth modelling & 18 \\
 OCEN 405 & M.Sc. Oceanography & Southern Ocean circulation; uncertainty & 20 \\}
@@ -636,19 +636,14 @@ J=Journal, C=Conference, B=Books, D=Data, R=Under review%
 \newcommand{\cvTalksCount}{4}
 
 \defbibfilter{Talks1}{type=unpublished and keyword=invited}
-\defbibfilter{Talks2}{type=unpublished and not keyword=invited and not ( type=unpublished and keyword=invited )}
 
 \newcommand{\cvTalksKey}{%
-I=Invited, C=Conference%
+I=Invited%
 }
 
 \newcommand{\cvTalksSections}{%
 \begin{refcontext}[labelprefix=I]
 \printbibliography[heading=bibsubheading, title={Invited and keynote talks}, filter=Talks1, resetnumbers=true]
-\end{refcontext}
-
-\begin{refcontext}[labelprefix=C]
-\printbibliography[heading=bibsubheading, title={Conference presentations}, filter=Talks2, resetnumbers=true]
 \end{refcontext}%
 }
 
