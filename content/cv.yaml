@@ -128,15 +128,15 @@ teaching:
       - Course: GEOL 273
         Programme: B.Sc. Geology
         Topics: Palaeoclimate archives; proxy calibration
-        Points: "18"
+        Credit points: "18"
       - Course: GEOL 472
         Programme: B.Sc. (Hons)
         Topics: Marine cores; age-depth modelling
-        Points: "18"
+        Credit points: "18"
       - Course: OCEN 405
         Programme: M.Sc. Oceanography
         Topics: Southern Ocean circulation; uncertainty
-        Points: "20"
+        Credit points: "20"
 
 supervision:
   note:
@@ -304,3 +304,7 @@ talks:
       prefix: C
       types: [unpublished]
       exclude_keywords: [invited]
+      # The printed CV curates the invited/keynote register only; the conference
+      # presentations stay on the web page - the same `printed: false` opt-out
+      # publications exercises on Software & code.
+      printed: false
