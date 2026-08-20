@@ -550,12 +550,13 @@ export const slug = (text: string) =>
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/^-/, '')
+    .replace(/-$/, '');
 
 export function allocateKindSlugs(names: Iterable<string>): Map<string, string> {
   const allocated = new Map<string, string>();
   const taken = new Set(['all']);
-  for (const name of [...new Set(names)].sort()) {
+  for (const name of [...new Set(names)].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))) {
     const stem = slug(name) || 'kind';
     let candidate = stem;
     let suffix = 2;

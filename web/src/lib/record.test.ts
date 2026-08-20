@@ -13,11 +13,12 @@
  * fixture; `live-record.test.ts` holds what must be true of the real record.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   about,
   bibliography,
+  listSources,
   profile,
   parseBib,
   publicationKind,
@@ -43,6 +44,23 @@ const owner = profile();
 // The count the page shows must be the count in the file.
 const grepped = readSource(SOURCES.bibliography).match(/^@/gm)!.length;
 assert.equal(bib.entries.length, grepped, 'entry count disagrees with `grep -c "^@"`');
+
+// Directory entries use an explicit UTF-16 comparator, so an adopter with
+// both `alpha.md` and `Zulu.md` gets the same source order on every platform.
+// Exercise the real reader with those names, then leave the fixture as it was
+// found.
+const sortFixture = `${process.env.LEDGERPRESS_RECORD_ROOT}/content/posts/.sort-test`;
+mkdirSync(sortFixture, { recursive: true });
+try {
+  writeFileSync(`${sortFixture}/Zulu.md`, '');
+  writeFileSync(`${sortFixture}/alpha.md`, '');
+  assert.deepEqual(listSources('content/posts/.sort-test'), [
+    'content/posts/.sort-test/Zulu.md',
+    'content/posts/.sort-test/alpha.md',
+  ]);
+} finally {
+  rmSync(sortFixture, { recursive: true, force: true });
+}
 
 // Fields the index columns depend on. Nothing is filtered: every entry in the
 // file is shown, including manuscripts under review and released software, so
