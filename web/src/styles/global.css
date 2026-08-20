@@ -1160,8 +1160,8 @@ body {
   }
 }
 
-.entry::details-content {
-  /* NOSONAR: this modern details animation pseudo-element is intentional. */
+/* prettier-ignore */
+.entry::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
   block-size: 0;
   overflow: hidden;
   opacity: 0.001;
@@ -1171,15 +1171,15 @@ body {
     content-visibility 430ms allow-discrete;
 }
 
-.entry[open]::details-content {
-  /* NOSONAR: this modern details animation pseudo-element is intentional. */
+/* prettier-ignore */
+.entry[open]::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
   block-size: auto;
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .entry::details-content {
-    /* NOSONAR: this modern details animation pseudo-element is intentional. */
+  /* prettier-ignore */
+  .entry::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
     transition: none;
   }
 }
