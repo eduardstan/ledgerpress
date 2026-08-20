@@ -120,8 +120,8 @@ text(profile.portrait, 'profile.portrait');
 // `affiliation` is a LIST because a cross-appointment is a list. The printed
 // header sets the primary one and nothing here assumes a single employer.
 assert.ok(Array.isArray(profile.affiliation), 'profile.affiliation must be a list');
-assert.ok(profile.affiliation!.length > 0, 'profile.affiliation is empty');
-for (const entry of profile.affiliation!) text(entry.label, 'profile.affiliation[].label');
+assert.ok(profile.affiliation.length > 0, 'profile.affiliation is empty');
+for (const entry of profile.affiliation) text(entry.label, 'profile.affiliation[].label');
 
 // Known services hold compact IDs; arbitrary services hold one labelled URL
 // that both the site and PDF consume.
@@ -432,8 +432,10 @@ assert.equal(inline('a & b <i>c</i>'), 'a &amp; b &lt;i&gt;c&lt;/i&gt;');
 assert.equal(inline('[x](https://a/"onerror=b)'), '<a href="https://a/&quot;onerror=b">x</a>');
 
 // The real prose: both markers render, and no delimiter survives into the page.
+const shortBio = profile.bio?.short;
+assert.ok(shortBio, 'profile.bio.short is missing');
 assert.ok(
-  inline(profile.bio!.short!).includes('<b>') && inline(profile.bio!.short!).includes('<i>'),
+  inline(shortBio).includes('<b>') && inline(shortBio).includes('<i>'),
   'profile.bio.short lost its emphasis',
 );
 

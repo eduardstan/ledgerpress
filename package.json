@@ -13,11 +13,14 @@
     "check:format": "prettier . --check",
     "dev": "npm --prefix web run dev",
     "format": "prettier . --write --ignore-unknown",
-    "test": "npm --prefix web test && node --test scripts/build-cv-data.test.mjs && node --test scripts/check-cv-baseline.test.mjs && node --test scripts/import-orcid.test.mjs && node scripts/build-cv-data.mjs --check"
+    "test": "npm --prefix web test && node --test scripts/build-cv-data.test.mjs && node --test scripts/check-cv-baseline.test.mjs && node --test scripts/import-orcid.test.mjs && node scripts/build-cv-data.mjs --check",
+    "lint": "eslint web"
   },
   "devDependencies": {
+    "eslint": "9.39.5",
     "js-yaml": "^5.2.2",
     "prettier": "3.9.6",
-    "prettier-plugin-astro": "0.14.1"
+    "prettier-plugin-astro": "0.14.1",
+    "typescript-eslint": "8.46.0"
   }
 }

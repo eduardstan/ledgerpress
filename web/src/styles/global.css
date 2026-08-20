@@ -3,7 +3,7 @@
 
 /* Dark mode is driven by `data-theme="dark"` on <html> (see ThemeScript.astro),
    not by the media query alone, so the toggle can override the OS preference. */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *)); /* NOSONAR: Tailwind v4 consumes this directive; generic CSS tools do not. */
 
 /* ------------------------------------------------------------------ type ---
    Three roles, three faces, each doing something the others cannot.
@@ -94,14 +94,11 @@
   --color-hair: #282828;
   --color-record: #101218;
   --color-accent: #8aa5ff;
+  color-scheme: dark;
 }
 
 html {
   color-scheme: light;
-}
-
-[data-theme='dark'] {
-  color-scheme: dark;
 }
 
 body {
@@ -112,7 +109,11 @@ body {
      target. This is the resulting 15px × 1.092 used size, hard-coded for
      browsers that do not support `font-size-adjust`. */
   font-size: 16.38px;
-  line-height: 1.55;
+  /* The approved build restated every upright text-face leading at 1.092× while
+     `font-size-adjust` enlarged only the used glyphs. With that enlargement now
+     written into each `font-size`, dividing the restated values by 1.092 keeps
+     exactly the same used line-height instead of applying the scale twice. */
+  line-height: 1.5476190476;
   font-feature-settings: 'tnum' 1;
 }
 
@@ -860,9 +861,6 @@ body {
    click and nothing to hunt for. */
 .pagehead {
   padding-top: clamp(18px, 2.4vw, 34px);
-}
-
-.pagehead {
   border-bottom: 4px solid var(--color-ink);
   padding-bottom: clamp(10px, 1.4vw, 16px);
   margin-bottom: clamp(16px, 2vw, 26px);
@@ -1162,7 +1160,8 @@ body {
   }
 }
 
-.entry::details-content {
+/* prettier-ignore */
+.entry::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
   block-size: 0;
   overflow: hidden;
   opacity: 0.001;
@@ -1172,13 +1171,15 @@ body {
     content-visibility 430ms allow-discrete;
 }
 
-.entry[open]::details-content {
+/* prettier-ignore */
+.entry[open]::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
   block-size: auto;
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .entry::details-content {
+  /* prettier-ignore */
+  .entry::details-content { /* NOSONAR: this modern details animation pseudo-element is intentional. */
     transition: none;
   }
 }
@@ -1469,14 +1470,6 @@ body {
 [data-theme='dark'] .astro-code span {
   color: var(--shiki-dark);
   background-color: var(--shiki-dark-bg);
-}
-
-/* The approved build restated every upright text-face leading at 1.092× while
-   `font-size-adjust` enlarged only the used glyphs. With that enlargement now
-   written into each `font-size`, dividing the restated values by 1.092 keeps
-   exactly the same used line-height instead of applying the scale twice. */
-body {
-  line-height: 1.5476190476;
 }
 
 .lead p,

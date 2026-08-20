@@ -11,7 +11,7 @@
  * review is named as undated rather than announced in the year it is aimed at.
  */
 import assert from 'node:assert/strict';
-import { allocateKindSlugs, announcements, TEMPLATES } from './announcements.ts';
+import { allocateKindSlugs, announcements, slug, TEMPLATES } from './announcements.ts';
 import { bibliography, SOURCES } from './record.ts';
 
 assert.ok(
@@ -59,6 +59,11 @@ for (const item of feed.items) {
 assert.equal(new Set(feed.kinds.map((kind) => kind.slug)).size, feed.kinds.length);
 const adversarialKindSlugs = allocateKindSlugs(['R&D', 'R D', '研究', '開発', 'All']);
 assert.equal(new Set(adversarialKindSlugs.values()).size, adversarialKindSlugs.size);
+// Hyphens at either edge are separators, not part of the identifier. Keeping
+// the two removals explicit also makes the deterministic UTF-16 sort separate
+// from the slug's boundary trimming.
+assert.equal(slug('-Alpha-'), 'alpha');
+assert.deepEqual([...allocateKindSlugs(['Zulu', 'alpha']).keys()], ['Zulu', 'alpha']);
 for (const identifier of adversarialKindSlugs.values()) {
   assert.match(identifier, /^[a-z0-9][a-z0-9-]*$/);
   assert.notEqual(identifier, 'all');

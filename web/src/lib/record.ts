@@ -108,7 +108,7 @@ export function listSources(directory: string, extensions: readonly string[] = [
     }
   };
   visit(base);
-  return found.sort();
+  return found.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
 // ---------------------------------------------------------------- LaTeX ----
